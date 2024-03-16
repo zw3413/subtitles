@@ -1,0 +1,33 @@
+{
+    "name": "subtitleX",
+    "version": "0.0.1",
+    "manifest_version": 3,
+    "description": "subtitleX",
+    "action": {
+        "default_popup":"index.html",
+        "default_icon": "icon.png"
+    },
+    "permissions": [
+        "activeTab",
+        "scripting"
+    ],
+    "host_permissions":[
+        "https://api.subtitleX.xyz/"
+    ],
+    "web_accessible_resources": [
+        {
+            "resources": [
+                "wantsubtitle.js",
+                "subtitlexscript.js",
+                "subtitle/*",
+                "https://api.subtitlex.xyz/page/subtitle"
+            ],
+            "matches": [
+                "<all_urls>"
+            ]
+        }
+    ],
+    "background": {
+        "service_worker": "background.js"
+    }
+}
