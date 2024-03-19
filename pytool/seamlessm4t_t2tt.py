@@ -45,7 +45,19 @@ pattern_timestamp = re.compile(r'^\d{2}:\d{2}:\d{2},\d{3} --> \d{2}:\d{2}:\d{2},
 
 tgt_langs = ("cmn","cmn_Hant","spa","por","swe","deu","arb","rus","fra","jpn")
 
-def translate(src_path, tgt_path, src_lang, tgt_lang,translator) :
+def translate(src_path, tgt_path, src_lang, tgt_lang) :
+    print("start to init Translator")
+    t1 = time.time()
+    translator = Translator(
+        model_name,
+        vocoder_name,
+        device=torch.device("cuda:0"),
+        dtype=torch.float16,
+    )
+    print("finished to init Translator")
+    t2 = time.time()
+    te = t2 - t1
+    print(f"完成耗时 {te:.6f} seconds")
     start_time = time.time()
     print(tgt_lang+" "+ time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
     if src_path is None or src_path == "":
@@ -79,6 +91,9 @@ def translate(src_path, tgt_path, src_lang, tgt_lang,translator) :
     except Exception as e:
         return str(e)
     finally:
+        del translator
+        gc.collect()
+        torch.cuda.empty_cache()
         tgt_file.close()
         src_file.close()
         end_time = time.time()
@@ -102,26 +117,12 @@ def generate_new_filepath(existing_filepath, after_fix):
 
 def t2tt_func():
      #如果源语言就是eng，则直接存入subtitle表
-    #   获取待翻译seed        
-    #seeds = request.GetNextNeedProcessSeed("translate")
-    # if the json array seeds length is zero, then stop the precess
-    
+    #   获取待翻译seed            
     seeds = request.GetWantSeed()
     if seeds is None or len(seeds) == 0 :
         #print(cmd,"没有待翻译的seed")
         return
-    print("start to init Translator")
-    t1 = time.time()
-    translator = Translator(
-        model_name,
-        vocoder_name,
-        device=torch.device("cuda:0"),
-        dtype=torch.float16,
-    )
-    print("finished to init Translator")
-    t2 = time.time()
-    te = t2 - t1
-    print(f"完成耗时 {te:.6f} seconds")
+
     try:
         seed = seeds[0]  
         id = seed["id"]
@@ -222,10 +223,6 @@ def t2tt_func():
         #seed["process_status"] = "3e"
         #seed["err_msg"] = cmd + "翻译异常" + str(e)
         #request.SaveSeed(seed)
-    finally:
-        del translator
-        gc.collect()
-        torch.cuda.empty_cache()
 
 
 
