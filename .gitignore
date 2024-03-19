@@ -3,3 +3,4 @@ bigtranslate/
 seamless_communication/
 desktop.ini
 */*/.vscode/
+pytool/__pycache__/

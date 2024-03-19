@@ -36,15 +36,6 @@ sys.stdout=Unbuffered(sys.stdout)
 model_name = "seamlessM4T_medium"
 vocoder_name = "vocoder_v2" #if model_name == "seamlessM4T_v2_large" else "vocoder_36langs"
 
-
-
-
-
-
-        
-        
-
-
 def generate_new_filepath(existing_filepath, after_fix):
     # Split the existing filepath into directory and filename
     directory, filename = os.path.split(existing_filepath)
@@ -57,15 +48,13 @@ def generate_new_filepath(existing_filepath, after_fix):
     new_filepath = os.path.join(directory, new_filename)
     return new_filepath, extension, new_filename
 
-
-def t2tt_func():
+def translate_func():
      #如果源语言就是eng，则直接存入subtitle表
     #   获取待翻译seed            
     seeds = request.GetWantSeed()
     if seeds is None or len(seeds) == 0 :
         #print(cmd,"没有待翻译的seed")
         return
-
     try:
         seed = seeds[0]  
         id = seed["id"]
@@ -124,7 +113,8 @@ def t2tt_func():
             src_path = filePath_prefix+srt_path 
             tgt_lang = want_lang
             tgt_path, extension, tgt_filename = generate_new_filepath(src_path, tgt_lang)
-            out_put = translate(src_path, tgt_path, src_lang_eng, tgt_lang, translator) 
+            
+            out_put = translate(src_path, tgt_path, src_lang_eng, tgt_lang) 
             if len(out_put) > 0:
                 request.PostWantFullfilled(want["id"],out_put)
                 return
@@ -143,16 +133,13 @@ def t2tt_func():
         #seed["process_status"] = "3e"
         #seed["err_msg"] = cmd + "翻译异常" + str(e)
         #request.SaveSeed(seed)
-    finally:
-        gc.collect()
-        torch.cuda.empty_cache()
 
 
-def t2tt():
+def doTranslate():
     while True :
         try:
-            t2tt_func()
+            translate_func()
         finally:
             time.sleep(2)
 
-t2tt_func()
+translate_func()
