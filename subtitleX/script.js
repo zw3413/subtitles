@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', (loadEvent) => {
             if (!result) {
                 result = "submitted"
             }
-            showStatus(result, seedObj.process_status)
+            showStatus(result, seedObj?.process_status)
         });
     })
     
@@ -295,9 +295,9 @@ function getWantLangFromUserLang(userLanguage) {
     return wantLang
 }
 function showStatus(status, process_status) {
-    if (process_status) {
+    
         let est = undefined
-        if (process_status === "1") {
+        if (process_status === "1" || process_status ==="1e" || process_status ==="2e" || !process_status) {
             est = " 1-2 hour "
         } else if (process_status === "2") {
             est = " 30 minutes - 1 hour "
@@ -308,7 +308,7 @@ function showStatus(status, process_status) {
         if (est) {
             status += ", EST: " + est + "."
         }
-    }
+    
 
     const statusDom = document.getElementById("subtitlex_status")
     statusDom.textContent = status

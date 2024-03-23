@@ -393,3 +393,16 @@ func CheckIfWanted(seed_id, lang string) string {
 		return "no"
 	}
 }
+
+func UpdateSeedProcessstatus(seedId int64, processStatus string) {
+	defer func() {
+		if r := recover(); r != nil {
+			log.Println("Recovered from ", r)
+			return
+		}
+	}()
+	sql := `
+		update seed set process_status = $1 where seed_id = $2
+	`
+	utils.GetAllData(sql, processStatus, seedId)
+}

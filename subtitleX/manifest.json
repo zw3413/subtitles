@@ -1,9 +1,7 @@
 {
     "name": "SubtitleX",
     "version": "0.1.0",
-    "icons":[
 
-    ],
     "description":"Provide subtitle in your desired language for online videos.",
     "manifest_version": 3,
   

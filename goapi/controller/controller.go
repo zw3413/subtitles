@@ -220,6 +220,13 @@ func WantSubtitle(c *gin.Context) {
 			}
 			dao.InsertWant(fmt.Sprint(seed_id), clientIP, want_language, "N")
 		}
+
+		if r[0]["process_status"] == "2e" {
+			dao.UpdateSeedProcessstatus(r[0]["id"].(int64), "1")
+		} else if r[0]["process_status"] == "1e" {
+			dao.UpdateSeedProcessstatus(r[0]["id"].(int64), "0")
+		}
+
 	} else {
 		//需要新生成
 		//videoNo, videoName, videoPageUrl, videoM3u8Url, mp3Path, srtPath, videoLanguage, videoDesc
