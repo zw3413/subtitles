@@ -3,7 +3,7 @@ import re
 import hashlib
 import request
 import time
-import utils
+from utils import *
 import sys
 
 class Unbuffered:
@@ -35,7 +35,7 @@ te1 = open(current_directory+"/../file/log/subtitle_download.log",'a', encoding=
 sys.stdout=Unbuffered(sys.stdout)
 
 #命令行的方式使用streamlink下载视频
-def downloadFlv(url,  quality = 'worst'):
+def downloadFlv(url,  quality = 'worst', origin = ''):
     threads = '4'
     quality = quality # "worst"
     afterfix = FLV_afterfix
@@ -52,7 +52,7 @@ def downloadFlv(url,  quality = 'worst'):
         
         cmd = 'yt-dlp -f worst --merge-output-format flv -o "'+filePath+'" https://www.youtube.com/watch?v=i2Z_nKRgDyU'
     else:
-        cmd = 'streamlink --retry-max 200 --stream-segment-attempts 20 --stream-segment-timeout 60 --stream-timeout 720 --http-timeout 720 --stream-segment-threads '+threads+' -o "'+filePath+'" --http-header "User-Agent=Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.130 AOL/9.8 AOLBuild/4346.2019.US Safari/537.36" --http-header "Referer=" "hlsvariant://'+ url +'" '+quality
+        cmd = 'streamlink --retry-max 10 --retry-streams 10 --stream-segment-attempts 20 --stream-segment-timeout 60 --stream-timeout 120 --http-timeout 120 --stream-segment-threads '+threads+' -o "'+filePath+'" --http-header "User-Agent=Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.130 AOL/9.8 AOLBuild/4346.2019.US Safari/537.36" --http-header "Origin='+ origin +'" "hlsvariant://'+ url +'" '+quality
     print(cmd)
     output = os.system(cmd)
     return output,fileName    
@@ -71,7 +71,15 @@ def download_func():
         seed["id"] = str(id)
         print(cmd,"开始下载seed："+str(id))
         video_m3u8_url = seed["video_m3u8_url"]
-        output, flvPath = downloadFlv(video_m3u8_url)
+        quality = 'worst'
+        pageUrl = seed["video_page_url"]
+        match = re.findall(pattern_domain, pageUrl)
+        if len(match)>0:
+            origin = match[0]
+        else:
+            origin = ''
+        #origin = 'https://missav.com'
+        output, flvPath = downloadFlv(video_m3u8_url,quality,origin)
         if output != 0:
             print(cmd,"下载失败")
             seed["process_status"] = "1e"

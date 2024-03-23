@@ -208,12 +208,16 @@ func WantSubtitle(c *gin.Context) {
 		dao.IncreaseWantTime(r[0]["id"].(int64))
 
 		//从subtitle表中查找seed_id和lang是否已经生成过
-		fullfilled := dao.CheckIfFullfilled(fmt.Sprint(seed_id), want_language)
-		if fullfilled {
+		fullfilled, wantedTimes := dao.CheckIfFullfilled(fmt.Sprint(seed_id), want_language)
+		if fullfilled { //已经生成
 			msg = "generated"
 			dao.InsertWant(fmt.Sprint(seed_id), clientIP, want_language, "Y")
-		} else {
-			msg = "submitted"
+		} else { //已经提交过，还未生成
+			if wantedTimes > 0 {
+				msg = "generating"
+			} else {
+				msg = "submitted"
+			}
 			dao.InsertWant(fmt.Sprint(seed_id), clientIP, want_language, "N")
 		}
 	} else {
@@ -441,6 +445,38 @@ func WantSeed(c *gin.Context) {
 		c.JSON(200, data)
 	}()
 	data, err = dao.WantSeed()
+}
+
+func CheckIfWanted(c *gin.Context) {
+	var err error
+	var data string
+	defer func() {
+		if r := recover(); r != nil {
+			println("Recovered in f", r)
+			c.String(500, "error")
+			return
+		}
+		if err != nil {
+			log.Println(err)
+			c.String(500, "error")
+			return
+		}
+		c.String(200, data)
+	}()
+	json := make(map[string]interface{})
+	c.BindJSON(&json)
+	seed_id := getString(json["seed_id"])
+	want_lang := getString(json["want_lang"])
+	data = dao.CheckIfWanted(seed_id, want_lang)
+
+	if data == "yes" {
+		clientIP := c.GetHeader("X-Forwarded-For")
+		// If X-Forwarded-For is not present, fall back to RemoteAddr
+		if clientIP == "" {
+			clientIP = c.Request.RemoteAddr
+		}
+		//dao.InsertWant(fmt.Sprint(seed_id), clientIP, want_lang, "N")
+	}
 }
 
 func WantFullfilled(c *gin.Context) {

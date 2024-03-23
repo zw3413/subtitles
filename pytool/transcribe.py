@@ -8,7 +8,7 @@ import sys
 from faster_whisper import WhisperModel
 import torch
 from datetime import timedelta, datetime
-from t2tt import t2tt_func
+#from translate import translate_func
 
 class Unbuffered:
     def __init__(self, stream):
@@ -78,7 +78,12 @@ def transcribe_func() :
         #flvPath = filePath_prefix +"d131749d-18e2-42fe-ad5e-382131f5cf4b.flv"
         #fast-whisper
        
-        segments, info = model.transcribe(filePath_prefix+flvPath, beam_size=5, vad_filter=True, task = "transcribe")
+        segments, info = model.transcribe(
+            filePath_prefix+flvPath, 
+            beam_size=5, 
+            vad_filter=True, 
+            task = "transcribe"
+            )
         language = info.language
         #print(cmd,"Detected language '%s' with probability %f" % (language, info.language_probability))
         #srtPath = filePath.split('.')[0]+ info.language + '.srt'
@@ -90,6 +95,7 @@ def transcribe_func() :
         #print(cmd,srtPath)
         lineCount = 1
         t_start = datetime.now()
+        pt = ''
         for segment in segments :
             #print("write linecount")
             f.write(str(lineCount)+"\n")
@@ -97,7 +103,10 @@ def transcribe_func() :
             s = utils.secondsToStr(segment.start)
             e = utils.secondsToStr(segment.end)
             f.write( s + ' --> ' + e +"\n")
-            print(e.split(",",1)[0].replace(":",""), end=" ")
+            t = e.split(",",1)[0].replace(":","")[0,3]
+            if t != pt:
+                print(t, end=" ")
+                pt= t
             #print("write segment text")
             #str_content = str(segment.text.encode('gbk'),encoding = 'utf-8')
             f.write(segment.text)
@@ -133,7 +142,7 @@ def transcribe():
     while True:
         try:
             transcribe_func()
-            t2tt_func()
+            #translate_func()
         finally:
             time.sleep(5)
     

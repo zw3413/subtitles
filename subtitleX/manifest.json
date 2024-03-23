@@ -1,8 +1,12 @@
 {
-    "name": "subtitleX",
-    "version": "0.0.1",
+    "name": "SubtitleX",
+    "version": "0.1.0",
+    "icons":[
+
+    ],
+    "description":"Provide subtitle in your desired language for online videos.",
     "manifest_version": 3,
-    "description": "subtitleX",
+  
     "action": {
         "default_popup":"index.html",
         "default_icon": "icon.png"
@@ -29,5 +33,16 @@
     ],
     "background": {
         "service_worker": "background.js"
-    }
+    },
+    "content_scripts":[
+        {
+            "matches": ["*://missav.com/*/*"],
+            "js": ["content-script.js"],
+            "all_frames": false,
+            "match_origin_as_fallback": false,
+            "match_about_blank": false,
+            "run_at": "document_idle",
+            "world": "ISOLATED"
+        }
+    ]
 }

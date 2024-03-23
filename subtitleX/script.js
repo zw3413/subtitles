@@ -2,32 +2,100 @@ const subtitlexserver = "https://api.subtitlex.xyz"
 const youtube = 'https://www.youtube.com'
 const missav = 'https://missav.com'
 const supportWebsites = [youtube, missav]
+var seedId,seedObj,tabUrl,processStatus 
 
 document.addEventListener('DOMContentLoaded', (loadEvent) => {
-    //常量定义
+
+    document.getElementById("wantSubtitle").addEventListener('click', async (e) => {
+        console.log('wantSubtitle buttun was clicked.')
+        console.log(seedId)
+        let wantLang = document.getElementById("want_lang").value
+        // info.want_language = wantLang + "&&" + userLanguage
+        // let url_want = subtitlexserver+"/want_subtitle"
+        // let xhr_want = new XMLHttpRequest();
+        // xhr_want.open("POST", url_want, true);
+        // xhr_want.setRequestHeader('Content-Type', 'application/json');
+        // xhr_want.send(JSON.stringify(info));
+        // xhr_want.onreadystatechange = function () {
+        //   if (xhr_want.readyState == 4) {
+        //     console.log(xhr_want.responseText)
+        //     showStatus(xhr_want.responseText)
+        //   }
+        // }
+    
+        //先看看是否已经wanted过了
+        if (seedId) {
+            const r = await fetch(subtitlexserver + "/check_if_wanted", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    "seed_id": seedId.toString(),
+                    "want_lang": wantLang
+                })
+            })
+    
+            const re = await r.text()
+            //如果是,提示generating，只保存want
+            if (re == "yes") {
+                showStatus("generating", processStatus)
+                return
+            } else if (re === "fullfilled") {
+                showStatus("generated")
+                await checkSubTitle(tabUrl)
+                return
+            }
+        }
+    
+        //如果不是，提示submitted,走want_subtitle
+        const userLanguage = navigator.language || navigator.userLanguage;
+        v = { "wl": wantLang + "&&" + userLanguage }
+        let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+        chrome.scripting.executeScript({
+            args: [v],
+            target: { tabId: tab.id },
+            func: wantSubtitleFunc
+        }).then(injectionResults => {
+            let injectionResult = injectionResults[0]
+            let result = injectionResult.result
+            if (!result) {
+                result = "submitted"
+            }
+            showStatus(result, seedObj.process_status)
+        });
+    })
+    
+    document.getElementById("showSubtitle").addEventListener('click', async () => {
+        console.log('showSubtitle buttun was clicked.')
+        //获取到选择的language
+        seedObj.video_language = document.getElementById("show_lang").value
+        let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    
+        chrome.scripting.executeScript({
+            args: [seedObj],
+            target: { tabId: tab.id },
+            func: showSubtitleFunc
+        })
+    })
+
+    load()
+   
+})
+function load(){
+     //常量定义
     //获取激活的选项卡
     chrome.tabs.query({
         active: true,
         lastFocusedWindow: true
     }, async function (tabs) {
+        let seedId
         //选取激活的选项卡
         var tab = tabs[0];
         console.log(tab.url);
+        tabUrl = tab.url
 
-        //if missav.com 
-        if (tab.url.startsWith(missav)) {
-            let theaterMode = document.getElementById("theaterMode")
-            theaterMode.addEventListener('click', async () => {
-                let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-                chrome.scripting.executeScript({
-                    target: { tabId: tab.id },
-                    func: hideAds
-                })
-            })
-            document.getElementById("theaterMode").style.display = "block";
-        } else {
-            document.getElementById("theaterMode").style.display = "none";
-        }
+        missavTheaterMode(tab.url)
 
 
         let result = await chrome.scripting.executeScript({
@@ -41,135 +109,108 @@ document.addEventListener('DOMContentLoaded', (loadEvent) => {
             showTip("Didn't find supported video stream on this page, please check the supported website list.")
             return
         }
-        //check if the page was processed
-        const url = subtitlexserver + "/check_subtitle"
-        video_no = tab.url.split("/")[tab.url.split("/").length - 1]
-        const param = {
-            pageurl: tab.url,
-            video_no: video_no
-        }
-        try {
-            const response = await fetch(url, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    'Access-Control-Allow-Origin': '*'
-                },
-                body: JSON.stringify(param)
-            })
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
+        await checkSubTitle(tab.url)
+    });
+}
+function missavTheaterMode(tabUrl){
+        //if missav.com 
+        if (tabUrl.startsWith(missav)) {
+            let theaterMode = document.getElementById("theaterMode")
+            theaterMode.addEventListener('click', async () => {
+                let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+                chrome.scripting.executeScript({
+                    target: { tabId: tab.id },
+                    func: hideAds
+                })
+            })
+            document.getElementById("theaterMode").style.display = "block";
+        } else {
+            document.getElementById("theaterMode").style.display = "none";
+        }
+}
+async function checkSubTitle(tabUrl){
+            //check if the page was processed
+            const url = subtitlexserver + "/check_subtitle"
+           
+            video_no = tabUrl.split("/")[tabUrl.split("/").length - 1]
+            const param = {
+                pageurl: tabUrl,
+                video_no: video_no
             }
-            const seed = await response.json()
-            console.log(seed)
-            const availLangs = []
-            //有
-            if (seed.length > 0) {
-                const processStatus = seed[0].process_status
-                const seedId = seed[0].id
-                if (processStatus == '2' || processStatus == '3') {
-                    //获取到当前seed有哪些生成过的language
-                    const url1 = subtitlexserver + "/get_subtitle_info?id=" + seedId
-                    const response1 = await fetch(url1, {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json"
-                        }
-                    })
-                    const subtitles = await response1.json()
-                    console.log(subtitles)
-                    if (subtitles.length > 0) {
-                        document.getElementById("ready").style.display = "block"
-                        let tip = "Subtitles in "
-                        const show_lang = document.getElementById("show_lang")
-                        for (let i = 0; i < subtitles.length; i++) {
-                            var lang = subtitles[i]["language"]
-                            var option = document.createElement("option")
-                            option.value = lang
-                            availLangs.push(lang)
-                            var language = getLangNameFromLangCode(lang)
-                            option.textContent = language
-                            show_lang.appendChild(option)
-                            tip += language + " "
-                        }
-                        tip += "on this page is ready"
-                        showTip(tip)
-                        const showSubtitle = document.getElementById("showSubtitle")
-                        showSubtitle.addEventListener('click', async () => {
-                            console.log('showSubtitle buttun was clicked.')
-                            //获取到选择的language
-                            seed[0].video_language = document.getElementById("show_lang").value
-                            let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-                            chrome.scripting.executeScript({
-                                args: [seed[0]],
-                                target: { tabId: tab.id },
-                                func: showSubtitleFunc
-                            })
+            try {
+                const response = await fetch(url, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        'Access-Control-Allow-Origin': '*'
+                    },
+                    body: JSON.stringify(param)
+                })
+    
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                const seed = await response.json()
+                console.log(seed)
+                const availLangs = []
+    
+                if (seed.length > 0) {            //本页已在seed列表
+                    seedObj =seed[0]
+                    processStatus = seed[0].process_status
+                    seedId = seed[0].id
+                    if (processStatus == '2' || processStatus == '3') {
+                        //获取到当前seed有哪些生成过的language
+                        const url1 = subtitlexserver + "/get_subtitle_info?id=" + seedId
+                        const response1 = await fetch(url1, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json"
+                            }
                         })
+                        const subtitles = await response1.json()
+                        console.log(subtitles)
+                        if (subtitles.length > 0) {
+                            document.getElementById("ready").style.display = "block"
+                            const show_lang = document.getElementById("show_lang")
+                            show_lang.innerHTML = ''
+                            for (let i = 0; i < subtitles.length; i++) {
+                                var lang = subtitles[i]["language"]
+                                var option = document.createElement("option")
+                                option.value = lang
+                                availLangs.push(lang)
+                                var language = getLangNameFromLangCode(lang)
+                                option.textContent = language
+                                show_lang.appendChild(option)
+                            }
+                            let tip = "Subtitles in some languages are ready."
+                            showTip(tip)
+                          
+                        }
+                    } else { //有记录，但是没有有效字幕
+                        document.getElementById("ready").style.display = "none"
+                        showTip("Subtitles on this page have not been generated, pleses select the desired language and click the Want Subtitle button.")
                     }
-                } else { //有记录，但是没有有效字幕
+                } else { //还没有任何记录
                     document.getElementById("ready").style.display = "none"
                     showTip("Subtitles on this page have not been generated, pleses select the desired language and click the Want Subtitle button.")
                 }
-            } else { //还没有任何记录
-                document.getElementById("ready").style.display = "none"
-                showTip("Subtitles on this page have not been generated, pleses select the desired language and click the Want Subtitle button.")
+    
+                //添加尚未生成的语言选项
+                addOptionsToWantLang(availLangs)
+                //默认选择用户浏览器设置
+                const userLanguage = navigator.language || navigator.userLanguage;
+                //document.getElementById("want_lang").value=getWantLangFromUserLang(userLanguage)
+            } catch (e) {
+                console.error("Error fetching data:", e);
             }
-
-            //添加尚未生成的语言选项
-            addOptionsToWantLang(availLangs, want_lang)
-            //默认选择用户浏览器设置
-            const userLanguage = navigator.language || navigator.userLanguage;
-            //document.getElementById("want_lang").value=getWantLangFromUserLang(userLanguage)
-            const wantSubtitle = document.getElementById("wantSubtitle")
-            wantSubtitle.addEventListener('click', async () => {
-                console.log('wantSubtitle buttun was clicked.')
-                let wantLang = document.getElementById("want_lang").value
-                // info.want_language = wantLang + "&&" + userLanguage
-                // let url_want = subtitlexserver+"/want_subtitle"
-                // let xhr_want = new XMLHttpRequest();
-                // xhr_want.open("POST", url_want, true);
-                // xhr_want.setRequestHeader('Content-Type', 'application/json');
-                // xhr_want.send(JSON.stringify(info));
-                // xhr_want.onreadystatechange = function () {
-                //   if (xhr_want.readyState == 4) {
-                //     console.log(xhr_want.responseText)
-                //     showStatus(xhr_want.responseText)
-                //   }
-                // }
-                v = { "wl": wantLang + "&&" + userLanguage }
-                let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-                chrome.scripting.executeScript({
-                    args: [v],
-                    target: { tabId: tab.id },
-                    func: wantSubtitleFunc
-                }).then(injectionResults => {
-                    let injectionResult = injectionResults[0]
-                    let result = injectionResult.result
-                    showStatus(result)
-                });
-            })
-
-            chrome.runtime.onMessage.addListener(
-                function (request, sender, sendResponse) {
-                    console.log(sender.tab ?
-                        "from a content script:" + sender.tab.url :
-                        "from the extension");
-                    console.log(request)
-                }
-            );
-
-        } catch (e) {
-            console.error("Error fetching data:", e);
-        }
-
-    });
-})
-function addOptionsToWantLang(availLangs, dom) {
+}
+function addOptionsToWantLang(availLangs) {
     tgtLangs = ["eng", "cmn", "cmn_Hant", "spa", "por", "swe", "deu", "arb", "rus", "fra", "jpn"]
     hasCount = 0
     console.log(availLangs)
+    dom = document.getElementById("want_lang")
+    dom.innerHTML=''
     for (var i = 0; i < tgtLangs.length; i++) {
         var langCode = tgtLangs[i]
         if (availLangs.indexOf(langCode) < 0) {
@@ -253,9 +294,24 @@ function getWantLangFromUserLang(userLanguage) {
     }
     return wantLang
 }
-function showStatus() {
-    statusDom = document.getElementById("subtitlex_status")
-    statusDom.textContent = "submitted"
+function showStatus(status, process_status) {
+    if (process_status) {
+        let est = undefined
+        if (process_status === "1") {
+            est = " 1-2 hour "
+        } else if (process_status === "2") {
+            est = " 30 minutes - 1 hour "
+        } else if (process_status === "3") {
+            est = " several minutes "
+        }
+
+        if (est) {
+            status += ", EST: " + est + "."
+        }
+    }
+
+    const statusDom = document.getElementById("subtitlex_status")
+    statusDom.textContent = status
     setTimeout(function () {
         statusDom.textContent = " "
     }, 3000)
@@ -306,6 +362,7 @@ function wantSubtitleFunc(want_lang_value) {
     (document.head || document.documentElement).appendChild(s);
 }
 function showSubtitleFunc(seed) {
+
     document.getElementById("subX")?.remove()
 
     function dragElement(elmnt) {
@@ -360,9 +417,9 @@ function showSubtitleFunc(seed) {
     d1.style.display = "flex"
 
     var h1 = document.createElement("div");
-    h1.style.backgroundColor = "#2196F3"
+    h1.style.backgroundColor = "#95d6a4"
     h1.style.display = "inline-block"
-    h1.style.width = "50px"
+    h1.style.width = "85px"
     h1.style.height = "100px"
     h1.id = "subXheader"
 
@@ -405,7 +462,8 @@ function showSubtitleFunc(seed) {
     //s3.style.zIndex =1000
     var id = seed.id
     var language = seed.video_language
-    s3.src = subtitlexServer + '/page/subtitle?id=' + id + '&language=' + language;
+    const subtitlexserver = "https://api.subtitlex.xyz"
+    s3.src = subtitlexserver + '/page/subtitle?id=' + id + '&language=' + language;
     d1.appendChild(s3)
     d1.appendChild(h1)
     document.body.appendChild(d1);
@@ -461,9 +519,9 @@ function supportCheckFunc() {
         //     result.support = false
         //     return result
         // }
-        if(document.querySelector(".plyr__controls")){
+        if (document.querySelector(".plyr__controls")) {
             result.support = true
-        }else {
+        } else {
             result.support = false
         }
         video_no = window.location.href.split("/")[window.location.href.split("/").length - 1]
@@ -477,5 +535,5 @@ function supportCheckFunc() {
     }
     result = { ...result, ...param }
     return result
-    
+
 }

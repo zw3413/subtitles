@@ -4,3 +4,4 @@ seamless_communication/
 desktop.ini
 */*/.vscode/
 pytool/__pycache__/
+docs/

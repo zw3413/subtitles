@@ -15,16 +15,18 @@ from utils import *
 
 googleEngine='http://translate.google.com/translate_a/single?client=gtx&dt=t&dj=1&ie=UTF-8&sl=%s&tl=%s&q='
 
-def translate_by_google(enText,sl,tl):
+def translate_by_google(enText,sl,tl):  #enText length<5000
+    print(len(enText))
     def resolveGoogle(res):
         j={}
         result=''
         try:
             j=json.loads(res)
-        except:
-            print('eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee')
+        except Exception as e:
+            print(str(e))
             print(res)
-            j['sentences']=[]    
+            j['sentences']=[]
+            result = 'error:' + str(e)
         else:    
             if len(j['sentences'])>0:
                 for sentence in j['sentences']:
@@ -32,17 +34,23 @@ def translate_by_google(enText,sl,tl):
                 result=result[1:len(result)]    
         return result
     engine=googleEngine % (sl,tl)
-    enText_list=split_text(enText,5000)
-    result=''
-    for t in enText_list:
-        if(t is not None and len(t)>0):
-            url=engine+t
-            headers={'user-agent': 'Mozilla/5.0'}
+    #enText_list=split_text(enText,5000)
+    for i in range(5):
+        url=engine+enText
+        headers={'user-agent': 'Mozilla/5.0'}
+        try:
             res=requests.get(url,headers=headers)
             res.encoding="UTF-8"
-            result= result+resolveGoogle(res.text)
+            result= resolveGoogle(res.text)
+            if not result.startswith('error:'):
+                return result
+            result = ''
+            print("失败重试"+str(i))
+        except Exception as e:
+            print(str(e))
+            result = "error:"+str(e)
+            print("失败重试"+str(i))
     return result
-
 
 cmd ="translate"
 
@@ -56,33 +64,77 @@ def translate(src_path, tgt_path, src_lang, tgt_lang) :
     if os.path.exists(tgt_path):
         os.remove(tgt_path)
     tgt_file = open(tgt_path, "w", encoding='utf-8')
+
+    tgt_path_tmp = tgt_path + ".tmp"
+    if os.path.exists(tgt_path_tmp):
+        os.remove(tgt_path_tmp)
+    tgt_file_tmp = open(tgt_path_tmp, "w", encoding='utf-8')
     # f.write(segment.text)
     # f.write("\n")
     src_file = open(src_path, "r", encoding = "utf-8")
     try:
+        sl = langCode3To2(src_lang)
+        tl = langCode3To2(tgt_lang)
+        if tl =="yue":
+            tl = "zh-tw"
+        # line by line
+        # for line_from_file in src_file:
+        #     line = line_from_file.strip()
+        #     if re.match(pattern_num, line) or re.match(pattern_timestamp, line):
+        #         tgt_file.write(line+"\n")
+        #     elif len(line) == 0 :
+        #         tgt_file.write("\n")
+        #     else:        
+        #         text_output=translate_by_google(line,sl, tl)
+        #         # text_output, _ = translator.predict(
+        #         #     input = line,
+        #         #     task_str="t2tt",
+        #         #     tgt_lang=tgt_lang,
+        #         #     src_lang=src_lang,
+        #         # )
+        #         tgt_file.write(f"{text_output}\n")
+        #         #print(f"{tgt_lang}: {text_output_en[0]}")
+        #         print(text_output)
+        input = ''
         for line_from_file in src_file:
             line = line_from_file.strip()
-            if re.match(pattern_num, line) or re.match(pattern_timestamp, line):
-                tgt_file.write(line+"\n")
-            elif len(line) == 0 :
-                tgt_file.write("\n")
-            else:        
-                sl = langCode3To2(src_lang)
-                tl = langCode3To2(tgt_lang)
-                text_output=translate_by_google(line,sl, tl)
-                # text_output, _ = translator.predict(
-                #     input = line,
-                #     task_str="t2tt",
-                #     tgt_lang=tgt_lang,
-                #     src_lang=src_lang,
-                # )
-                tgt_file.write(f"{text_output[0]}\n")
-                #print(f"{tgt_lang}: {text_output_en[0]}")
+            input =input + line+"\n"
+            if len(input) >1000:
+                #print(str(len(input)))
+                text_output = translate_by_google(input, sl,tl)
+                if text_output.startswith('error:'):
+                    #翻译失败
+                    return text_output
+                tgt_file_tmp.write(text_output)
+                tgt_file_tmp.write("\r\n")
+                input = ''
+        if len(input.strip())>0 :
+            #print(str(len(input)))
+            text_output = translate_by_google(input, sl,tl)
+            if text_output.startswith('error:'):
+                #翻译失败
+                return text_output
+            tgt_file_tmp.write(text_output)
+
+        tgt_file_tmp.flush()
+        tgt_file_tmp.close()
+
+        tgt_file_tmp = open(tgt_path_tmp, "r", encoding='utf-8')
+
+        for line_from_file in tgt_file_tmp:
+            line = line_from_file.strip()
+            if re.match(pattern_num, line):
+                tgt_file.write('\n')
+            tgt_file.write(line)
+        
+        tgt_file.close()
+        tgt_file_tmp.close()
+        #os.remove(tgt_path_tmp)
+
         return ""    
     except Exception as e:
         return str(e)
     finally:
-
         tgt_file.close()
         src_file.close()
         end_time = time.time()

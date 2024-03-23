@@ -1,7 +1,6 @@
 
-const subtitlexServer = "https://api.subtitlex.xyz"
-
 function wantSubtitleFunc() {
+  const subtitlexServer = "https://api.subtitlex.xyz"
   try {
 
     m3u8Url = undefined
@@ -44,9 +43,9 @@ function wantSubtitleFunc() {
         if (xhr_want.readyState == 4) {
           result = xhr_want.responseText
           console.log(result);
-          const response = await chrome.tabs.sendMessage(tab.id, { result: result });
+          //const response = await chrome.tabs.sendMessage(tab.id, { result: result });
           // do something with response here, not outside the function
-          console.log(response);
+          //console.log(response);
         }
       }
     }

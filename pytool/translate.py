@@ -48,7 +48,7 @@ def generate_new_filepath(existing_filepath, after_fix):
     new_filepath = os.path.join(directory, new_filename)
     return new_filepath, extension, new_filename
 
-def translate_func():
+def translate_func_v1():
      #如果源语言就是eng，则直接存入subtitle表
     #   获取待翻译seed            
     seeds = request.GetWantSeed()
@@ -135,6 +135,43 @@ def translate_func():
         #request.SaveSeed(seed)
 
 
+def translate_func():
+     #如果源语言就是eng，则直接存入subtitle表
+    #   获取待翻译seed            
+    seeds = request.GetWantSeed()
+    if seeds is None or len(seeds) == 0 :
+        #print(cmd,"没有待翻译的seed")
+        return
+    seed = seeds[0] 
+    try:
+        id = seed["id"]
+        seed["id"] = str(id)
+        print(cmd,"开始翻译seed："+str(id))
+        srt_path = seed["srt_path"]
+        src_path = filePath_prefix + srt_path
+        video_language = seed["video_language"]
+        src_lang = language_codes[video_language]
+        tgt_lang = seed["want_lang"]
+        tgt_path, extension, tgt_filename = generate_new_filepath(src_path, tgt_lang)
+        out_put = translate(src_path, tgt_path, src_lang, tgt_lang) 
+        if len(out_put) > 0:
+            request.PostWantFullfilled(seed["want_id"],out_put)
+            #print(out_put)
+            return
+        subtitle = {}
+        subtitle["language"] = tgt_lang
+        subtitle["path"] = tgt_filename
+        subtitle["seed_id"] = seed["id"]
+        subtitle["format"] = extension
+        request.SaveSubtitle(subtitle)  
+        request.PostWantFullfilled(seed["want_id"],'Y') 
+        seed["process_status"] = "3" 
+        seed["err_msg"]= ""
+        request.SaveSeed(seed)
+    except Exception as e:
+        print(cmd,"翻译异常"+str(e))
+        request.PostWantFullfilled(seed["want_id"],str(e)) 
+
 def doTranslate():
     while True :
         try:
@@ -142,4 +179,4 @@ def doTranslate():
         finally:
             time.sleep(2)
 
-translate_func()
+doTranslate()

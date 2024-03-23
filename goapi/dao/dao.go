@@ -208,7 +208,11 @@ func GetSeedByPageUrl(pageUrl, videoNo string) ([]map[string]interface{}, error)
 		}
 	}()
 	sql = `
-		select * from seed where (video_page_url is not null and video_page_url != '' and video_page_url = $1)   or (video_no is not null and video_no != '' and $2 ilike video_no || '%')
+		select * 
+		from seed 
+		where 
+			(video_page_url is not null and video_page_url != '' and video_page_url = $1)   
+			or (video_no is not null and video_no != '' and $2 ilike video_no || '%')
 		`
 	data, err = utils.GetAllData(sql, pageUrl, videoNo)
 
@@ -240,10 +244,13 @@ func GetSubtitle_BySeedIdAndLanguage(id, language string) ([]map[string]interfac
 		}
 	}()
 	if len(language) == 0 {
-		sql = "select * from subtitle where seed_id = $1 "
+		sql = `
+			select * from subtitle where create_time in (
+				select max(create_time) over (partition by seed_id, language, format) from subtitle where seed_id = $1)
+		`
 		data, err = utils.GetAllData(sql, id)
 	} else {
-		sql = "select * from subtitle where seed_id = $1 and language = $2"
+		sql = "select * from subtitle where seed_id = $1 and language = $2 order by create_time desc limit 1 "
 		data, err = utils.GetAllData(sql, id, language)
 	}
 
@@ -302,7 +309,7 @@ func WangFullfilled(want_id, fullfilled string) ([]map[string]interface{}, error
 		update want t1
 		set fullfilled = $2
 		from want t2
-		where t1.want_lang = t2.want_lang
+		where split_part(t1.want_lang,'&&',1) = split_part(t2.want_lang,'&&',1)
 		and t1.seed_id = t2.seed_id
 		and t2.id = $1
 	`
@@ -317,7 +324,7 @@ func WangFullfilled(want_id, fullfilled string) ([]map[string]interface{}, error
 	return data, nil
 }
 
-func CheckIfFullfilled(seed_id, lang string) bool {
+func CheckIfFullfilled(seed_id, lang string) (bool, int) {
 	sql := `
 		select count(1)
 		from subtitle 
@@ -327,13 +334,62 @@ func CheckIfFullfilled(seed_id, lang string) bool {
 	data, err := utils.GetAllData(sql, seed_id, lang)
 	if err != nil {
 		log.Fatal(err)
-		return false
+		return false, 0
 	}
 	count := data[0]["count"].(int64)
-	if count > 0 {
-		return true
-	} else {
-		return false
+
+	sql1 := `
+		select count(1)
+		from want
+		where seed_id = $1
+			and want_lang = $2
+	`
+	data1, err1 := utils.GetAllData(sql1, seed_id, lang)
+	if err1 != nil {
+		log.Fatal(err1)
+		return false, 0
 	}
 
+	count1 := data1[0]["count"].(int64)
+
+	return count > 0, int(count1)
+
+}
+
+func CheckIfWanted(seed_id, lang string) string {
+	sql := `
+		select count(1)
+		from want
+		where seed_id = $1
+			and split_part(want_lang,'&&',1) = $2
+	`
+	data, err := utils.GetAllData(sql, seed_id, lang)
+	if err != nil {
+		log.Fatal(err)
+		return "no"
+	}
+	count := data[0]["count"].(int64)
+
+	if count > 0 {
+
+		sql = `
+		select count(1)
+		from want
+		where seed_id = $1
+			and split_part(want_lang,'&&',1) = $2
+			and fullfilled = 'Y'
+		`
+		data, err = utils.GetAllData(sql, seed_id, lang)
+		if err != nil {
+			log.Fatal(err)
+			return "no"
+		}
+		count = data[0]["count"].(int64)
+		if count > 0 {
+			return "fullfilled"
+		}
+		return "yes"
+	} else {
+		return "no"
+	}
 }

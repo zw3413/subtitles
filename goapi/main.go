@@ -59,6 +59,7 @@ func main() {
 	r.POST("/seed_need_process", controller.GetSeedNeedProcess)
 	r.POST("/get_wants_not_process", controller.GetWantsNotProcess)
 	r.POST("/get_want_seed", controller.WantSeed)
+	r.POST("/check_if_wanted", controller.CheckIfWanted)
 	r.POST("/update_want_fullfilled", controller.WantFullfilled)
 
 	r.POST("/upload-files", func(c *gin.Context) {
