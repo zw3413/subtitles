@@ -103,7 +103,7 @@ def transcribe_func() :
             s = utils.secondsToStr(segment.start)
             e = utils.secondsToStr(segment.end)
             f.write( s + ' --> ' + e +"\n")
-            t = e.split(",",1)[0].replace(":","")[0,3]
+            t = e.split(",",1)[0].replace(":","")[0:3]
             if t != pt:
                 print(t, end=" ")
                 pt= t

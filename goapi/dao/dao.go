@@ -371,7 +371,6 @@ func CheckIfWanted(seed_id, lang string) string {
 	count := data[0]["count"].(int64)
 
 	if count > 0 {
-
 		sql = `
 		select count(1)
 		from want
