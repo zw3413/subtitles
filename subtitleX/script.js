@@ -297,7 +297,7 @@ function getWantLangFromUserLang(userLanguage) {
 function showStatus(status, process_status) {
     
         let est = undefined
-        if (process_status === "1" || process_status ==="1e" || process_status ==="2e" || !process_status) {
+        if (process_status === "1" || process_status ==="1e" || process_status ==="2e" || process_status === "0" || !process_status) {
             est = " 1-2 hour "
         } else if (process_status === "2") {
             est = " 30 minutes - 1 hour "
