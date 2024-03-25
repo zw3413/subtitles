@@ -419,7 +419,7 @@ function showSubtitleFunc(seed) {
     var h1 = document.createElement("div");
     h1.style.backgroundColor = "#95d6a4"
     h1.style.display = "inline-block"
-    h1.style.width = "85px"
+    //h1.style.width = "85px"
     h1.style.height = "100px"
     h1.id = "subXheader"
 
@@ -427,7 +427,7 @@ function showSubtitleFunc(seed) {
     h2.textContent = "subtitleX"
     h2.style.cursor = 'move'
     h2.style.display = "block"
-    h2.style.height = "80px"
+    h2.style.height = "90px"
     h2.style.textAlign = "center"
     h2.style.lineHeight = "80px"
     h1.appendChild(h2)
