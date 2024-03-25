@@ -427,7 +427,7 @@ function showSubtitleFunc(seed) {
     h2.textContent = "subtitleX"
     h2.style.cursor = 'move'
     h2.style.display = "block"
-    h2.style.height = "80px"
+    h2.style.height = "90px"
     h2.style.textAlign = "center"
     h2.style.lineHeight = "90px"
     h1.appendChild(h2)
