@@ -2,6 +2,7 @@ package main
 
 import (
 	"goapi/controller"
+	"goapi/controller/wheel"
 	"goapi/dao"
 	"goapi/library/response"
 	"log"
@@ -61,6 +62,10 @@ func main() {
 	r.POST("/get_want_seed", controller.WantSeed)
 	r.POST("/check_if_wanted", controller.CheckIfWanted)
 	r.POST("/update_want_fullfilled", controller.WantFullfilled)
+
+	r.POST("/check_save_get_seed", controller.CheckSaveGetSeed)
+
+	r.POST("/common/allPurpose", wheel.AllPurpose) //數據庫函數調用通用接口
 
 	r.POST("/upload-files", func(c *gin.Context) {
 		// 单文件

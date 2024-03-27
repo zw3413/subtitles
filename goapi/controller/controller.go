@@ -506,3 +506,96 @@ func WantFullfilled(c *gin.Context) {
 	fullfilled := c.Query("fullfilled")
 	data, err = dao.WangFullfilled(want_id, fullfilled)
 }
+
+func CheckSaveGetSeed(c *gin.Context) {
+	var err error
+	var data response
+	defer func() {
+		if r := recover(); r != nil {
+			println("Recovered in f", r)
+			c.JSON(500, data)
+			return
+		}
+		if err != nil {
+			log.Println(err)
+			c.JSON(500, data)
+			return
+		}
+		c.JSON(200, data)
+	}()
+
+	json := make(map[string]interface{})
+	c.BindJSON(&json)
+	//id := getString(json["id"])
+	pageUrl := getString(json["pageurl"])
+	m3u8Url := getString(json["m3u8url"])
+	videoName := getString(json["video_name"])
+	videoNo := getString(json["video_no"])
+	videoDesc := getString(json["video_desc"])
+
+	clientIP := c.GetHeader("X-Forwarded-For")
+	// If X-Forwarded-For is not present, fall back to RemoteAddr
+	if clientIP == "" {
+		clientIP = c.Request.RemoteAddr
+	}
+
+	seed := seed{}
+	// 1. 是否存在，不存在新增一条，并返回
+
+	r, err := dao.GetSeedByCondition(pageUrl, m3u8Url, videoName, videoNo)
+	if len(r) == 0 {
+		result, err := dao.InsertSeed(videoNo, videoName, pageUrl, m3u8Url, "", "", "", videoDesc)
+		if err != nil {
+			log.Println(err)
+			data.rc = "500"
+			data.rm = err.Error()
+			return
+		}
+		seed.seed_id = result[0]["id"].(int64)
+		seed.video_no = videoNo
+		seed.video_name = videoName
+		seed.video_page_url = pageUrl
+		seed.video_m3u8_url = m3u8Url
+		seed.video_desc = videoDesc
+		data.data = seed
+		return
+	} else {
+		//seed.seed_id
+	}
+
+	// 2. 存在的话，继续查找want表和subtitle表
+	//data, err = dao.WantSeed()
+}
+
+type response struct {
+	rc   string      `json:"rc"`
+	rm   string      `json:"rm"`
+	cost int64       `json:"cost"`
+	data interface{} `json:"data"`
+}
+
+type seed struct {
+	seed_id        int64      `json:"seed_id"`
+	video_no       string     `json:"video_no"`
+	video_name     string     `json:"video_name"`
+	video_m3u8_url string     `json:"video_m3u8_url"`
+	video_page_url string     `json:"video_page_url"`
+	video_language string     `json:"video_language"`
+	video_desc     string     `json:"video_desc"`
+	want           []want     `json:"want"`
+	subtile        []subtitle `json:"subtle"`
+}
+
+type want struct {
+	want_id       int    `json:"want_id"`
+	seed_id       int    `json:"seed_id"`
+	want_language string `json:"want_language"`
+	want_status   string `json:"want_status"`
+}
+
+type subtitle struct {
+	subtitle_id       int    `json:"subtitle_id"`
+	seed_id           int    `json:"seed_id"`
+	subtitle_language string `json:"subtitle_language"`
+	subtitle_path     string `json:"subtitle_path"`
+}
