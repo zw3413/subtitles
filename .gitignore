@@ -5,3 +5,5 @@ desktop.ini
 */*/.vscode/
 pytool/__pycache__/
 docs/
+LibreTranslate/
+goapi/goapi.exe

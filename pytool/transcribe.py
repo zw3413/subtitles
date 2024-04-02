@@ -98,7 +98,7 @@ def transcribe_func() :
         pt = ''
         for segment in segments :
             #print("write linecount")
-            f.write(str(lineCount)+"\n")
+            #f.write(str(lineCount)+"\n")
             #print(str(lineCount))
             s = utils.secondsToStr(segment.start)
             e = utils.secondsToStr(segment.end)

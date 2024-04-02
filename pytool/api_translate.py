@@ -16,7 +16,7 @@ from utils import *
 googleEngine='http://translate.google.com/translate_a/single?client=gtx&dt=t&dj=1&ie=UTF-8&sl=%s&tl=%s&q='
 
 def translate_by_google(enText,sl,tl):  #enText length<5000
-    print(len(enText))
+    #print(len(enText))
     def resolveGoogle(res):
         j={}
         result=''
@@ -37,7 +37,9 @@ def translate_by_google(enText,sl,tl):  #enText length<5000
     #enText_list=split_text(enText,5000)
     for i in range(5):
         url=engine+enText
-        headers={'user-agent': 'Mozilla/5.0'}
+        #headers={'user-agent': 'Mozilla/5.0'}
+        headers = {'Cookie':'HSID=An3yVavDXnJsCjJX4; APISID=GbFUPsblEdd9yiZI/AI527FAyf4FINb0vq; SID=g.a000hQj3jVOCCN7Ek-sE52vGKZeIwoXdv8Z8v_kGPw_dL-UPX_B1Ku3G8nvn3bQziVv-sD7HRwACgYKAQQSAQASFQHGX2MiBqKkQKmc-bPZFswg03wcaRoVAUF8yKqGY4hd0hlKb2Y9lCJ79sBz0076; SEARCH_SAMESITE=CgQI3poB; GOOGLE_ABUSE_EXEMPTION=ID=e364c4a9bf89ecb1:TM=1711970932:C=r:IP=104.28.245.199-:S=bMjdCgQgPPS-y7P_2F9Rr3k; SIDCC=AKEyXzUl8lGt0yPWFecqog05uipQCkP2i-ViZDrOySZq-H8LZzrr3Qq02tdXMbo0O1YLA83Tes0c',
+                   'Host':'translate.google.com'}
         try:
             res=requests.get(url,headers=headers)
             res.encoding="UTF-8"
@@ -51,6 +53,8 @@ def translate_by_google(enText,sl,tl):  #enText length<5000
             result = "error:"+str(e)
             print("失败重试"+str(i))
     return result
+
+
 
 cmd ="translate"
 
@@ -99,7 +103,7 @@ def translate(src_path, tgt_path, src_lang, tgt_lang) :
         for line_from_file in src_file:
             line = line_from_file.strip()
             input =input + line+"\n"
-            if len(input) >1000:
+            if len(input) >2000:
                 #print(str(len(input)))
                 text_output = translate_by_google(input, sl,tl)
                 if text_output.startswith('error:'):
@@ -123,13 +127,15 @@ def translate(src_path, tgt_path, src_lang, tgt_lang) :
 
         for line_from_file in tgt_file_tmp:
             line = line_from_file.strip()
-            if re.match(pattern_num, line):
+            # if re.match(pattern_num, line) and line != "1":
+            #     tgt_file.write('\n')
+            if len(line)==0 or re.match(pattern_timestamp, line):
                 tgt_file.write('\n')
             tgt_file.write(line)
         
         tgt_file.close()
         tgt_file_tmp.close()
-        #os.remove(tgt_path_tmp)
+        os.remove(tgt_path_tmp)
 
         return ""    
     except Exception as e:
