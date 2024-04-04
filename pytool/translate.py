@@ -135,7 +135,7 @@ def translate_func_v1():
         #request.SaveSeed(seed)
 
 
-def translate_func():
+def translate_func_v2():
      #如果源语言就是eng，则直接存入subtitle表
     #   获取待翻译seed            
     seeds = request.GetWantSeed()
@@ -163,6 +163,52 @@ def translate_func():
         subtitle["path"] = tgt_filename
         subtitle["seed_id"] = seed["id"]
         subtitle["format"] = extension
+        request.SaveSubtitle(subtitle)  
+        request.PostWantFullfilled(seed["want_id"],'Y') 
+        seed["process_status"] = "3" 
+        seed["err_msg"]= ""
+        request.SaveSeed(seed)
+    except Exception as e:
+        print(cmd,"翻译异常"+str(e))
+        request.PostWantFullfilled(seed["want_id"],str(e)) 
+
+
+def translate_func():
+     #如果源语言就是eng，则直接存入subtitle表
+    #   获取待翻译seed            
+    seeds = request.GetWantSeed()
+    if seeds is None or len(seeds) == 0 or seeds[0]["id"] == 0:
+        #print(cmd,"没有待翻译的seed")
+        return
+    seed = seeds[0] 
+    try:
+        id = seed["id"]
+        seed["id"] = str(id)
+        print(cmd,"开始翻译seed："+str(id))
+        
+        LocalPathPrefix = './file/'
+        #从服务端拉取原始语言的字幕到本地
+        request.PullSrtFromServer(seed,LocalPathPrefix)
+        
+        srt_path = seed["srt_path"]
+        src_path = LocalPathPrefix + srt_path
+        video_language = seed["video_language"]
+        src_lang = language_codes[video_language]
+        tgt_lang = seed["want_lang"]
+        tgt_path, extension, tgt_filename = generate_new_filepath(src_path, tgt_lang)
+        out_put = translate(src_path, tgt_path, src_lang, tgt_lang) 
+        if len(out_put) > 0:
+            request.PostWantFullfilled(seed["want_id"],out_put)
+            #print(out_put)
+            return
+        subtitle = {}
+        subtitle["language"] = tgt_lang
+        subtitle["path"] = tgt_filename
+        subtitle["seed_id"] = seed["id"]
+        subtitle["format"] = extension
+        
+        request.PushSubtitleToServer(tgt_path,tgt_filename)
+        
         request.SaveSubtitle(subtitle)  
         request.PostWantFullfilled(seed["want_id"],'Y') 
         seed["process_status"] = "3" 

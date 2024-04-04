@@ -67,6 +67,23 @@ func main() {
 
 	r.POST("/common/allPurpose", wheel.AllPurpose) //數據庫函數調用通用接口
 
+	r.POST("/pushSrtFile", func(c *gin.Context) {
+		// 单文件
+		file, _ := c.FormFile("file")
+		// 上传文件到指定的路径
+		filename := c.Query("filename")
+
+		dst := "../file/subtitle/" + filename
+
+		ostype := runtime.GOOS
+		if ostype == "windows" {
+			dst = strings.Replace(dst, "/", "\\", -1)
+		}
+		//将\替换成/
+		c.SaveUploadedFile(file, dst)
+		c.JSON(http.StatusOK, response.JsonSuccessData(dst))
+	})
+
 	r.POST("/upload-files", func(c *gin.Context) {
 		// 单文件
 		file, _ := c.FormFile("file")

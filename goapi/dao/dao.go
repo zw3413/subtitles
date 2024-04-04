@@ -125,7 +125,7 @@ func SelectSeed(h string) ([]map[string]interface{}, error) {
 		data, err = utils.GetAllData(sql)
 	}
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		return nil, err
 	}
 
@@ -165,7 +165,7 @@ func SelectSeedNeedProcess(t string) ([]map[string]interface{}, error) {
 	data, err = utils.GetAllData(sql, status)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		return nil, err
 	}
 
@@ -191,7 +191,7 @@ func GetSeedByCondition(pageUrl, m3u8Url, video_name, video_no string) ([]map[st
 	data, err = utils.GetAllData(sql, pageUrl, m3u8Url, video_name, video_no)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		return nil, err
 	}
 	return data, nil
@@ -217,7 +217,7 @@ func GetSeedByPageUrl(pageUrl, videoNo string) ([]map[string]interface{}, error)
 	data, err = utils.GetAllData(sql, pageUrl, videoNo)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		return nil, err
 	}
 	return data, nil
@@ -226,7 +226,7 @@ func IncreaseWantTime(id int64) ([]map[string]interface{}, error) {
 	sql := "update seed set wanttimes = wanttimes + 1 where id = $1"
 	data, err := utils.GetAllData(sql, id)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		return nil, err
 	}
 	return data, nil
@@ -255,7 +255,7 @@ func GetSubtitle_BySeedIdAndLanguage(id, language string) ([]map[string]interfac
 	}
 
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		return nil, err
 	}
 	// if len(data) == 0 {
@@ -275,7 +275,7 @@ func GetWantsNotProcess(seed_id string) ([]map[string]interface{}, error) {
 	`
 	data, err := utils.GetAllData(sql, seed_id)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		return nil, err
 	}
 	// if len(data) == 0 {
@@ -285,17 +285,30 @@ func GetWantsNotProcess(seed_id string) ([]map[string]interface{}, error) {
 }
 
 func WantSeed() ([]map[string]interface{}, error) {
+	// sql := `
+	// 	select t1.id as "want_id", split_part(t1.want_lang,'&&',1)  as "want_lang" , t2.*
+	// 	from want t1
+	// 	join seed t2 on t1.seed_id = t2.id::text
+	// 	where t1.fullfilled = 'N' and t2.process_status in ('2','3')
+	// 	order by t1.create_time
+	// 	limit 1
+	// `
+	defer func() {
+		if r := recover(); r != nil {
+			log.Println("Recovered from ", r)
+			return
+		}
+	}()
 	sql := `
-		select t1.id as "want_id", split_part(t1.want_lang,'&&',1)  as "want_lang" , t2.* 
-		from want t1
-		join seed t2 on t1.seed_id = t2.id::text
-		where t1.fullfilled = 'N' and t2.process_status in ('2','3')
-		order by t1.create_time	
-		limit 1
+	select o_want_id as "want_id", o_want_lang as "want_lang", o_id as "id", o_srt_path as "srt_path", 
+	o_video_language as "video_language", o_process_status as "process_status", o_wanttimes as "wanttimes" ,
+	o_video_name as "video_name",o_video_page_url as "video_page_url", o_video_m3u8_url as "video_m3u8_url", 
+	o_mp3_path as "mp3_path", o_video_no as "video_no", o_video_desc as "video_desc"
+	from p_get_want()
 	`
 	data, err := utils.GetAllData(sql)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		return nil, err
 	}
 	// if len(data) == 0 {
@@ -315,7 +328,7 @@ func WangFullfilled(want_id, fullfilled string) ([]map[string]interface{}, error
 	`
 	data, err := utils.GetAllData(sql, want_id, fullfilled)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		return nil, err
 	}
 	// if len(data) == 0 {
@@ -333,7 +346,7 @@ func CheckIfFullfilled(seed_id, lang string) (bool, int) {
 	`
 	data, err := utils.GetAllData(sql, seed_id, lang)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		return false, 0
 	}
 	count := data[0]["count"].(int64)
@@ -346,7 +359,7 @@ func CheckIfFullfilled(seed_id, lang string) (bool, int) {
 	`
 	data1, err1 := utils.GetAllData(sql1, seed_id, lang)
 	if err1 != nil {
-		log.Fatal(err1)
+		log.Println(err1)
 		return false, 0
 	}
 
@@ -365,7 +378,7 @@ func CheckIfWanted(seed_id, lang string) string {
 	`
 	data, err := utils.GetAllData(sql, seed_id, lang)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		return "no"
 	}
 	count := data[0]["count"].(int64)
@@ -380,7 +393,7 @@ func CheckIfWanted(seed_id, lang string) string {
 		`
 		data, err = utils.GetAllData(sql, seed_id, lang)
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
 			return "no"
 		}
 		count = data[0]["count"].(int64)

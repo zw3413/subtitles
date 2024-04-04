@@ -25,7 +25,7 @@ def translate_by_google(enText,sl,tl):  #enText length<5000
         except Exception as e:
             print(str(e))
             print(res)
-            j['sentences']=[]
+            #j['sentences']=[]
             result = 'error:' + str(e)
         else:    
             if len(j['sentences'])>0:
@@ -35,8 +35,9 @@ def translate_by_google(enText,sl,tl):  #enText length<5000
         return result
     engine=googleEngine % (sl,tl)
     #enText_list=split_text(enText,5000)
-    for i in range(5):
+    for i in range(3):
         url=engine+enText
+        #print(url)
         #headers={'user-agent': 'Mozilla/5.0'}
         headers = {'Cookie':'HSID=An3yVavDXnJsCjJX4; APISID=GbFUPsblEdd9yiZI/AI527FAyf4FINb0vq; SID=g.a000hQj3jVOCCN7Ek-sE52vGKZeIwoXdv8Z8v_kGPw_dL-UPX_B1Ku3G8nvn3bQziVv-sD7HRwACgYKAQQSAQASFQHGX2MiBqKkQKmc-bPZFswg03wcaRoVAUF8yKqGY4hd0hlKb2Y9lCJ79sBz0076; SEARCH_SAMESITE=CgQI3poB; GOOGLE_ABUSE_EXEMPTION=ID=e364c4a9bf89ecb1:TM=1711970932:C=r:IP=104.28.245.199-:S=bMjdCgQgPPS-y7P_2F9Rr3k; SIDCC=AKEyXzUl8lGt0yPWFecqog05uipQCkP2i-ViZDrOySZq-H8LZzrr3Qq02tdXMbo0O1YLA83Tes0c',
                    'Host':'translate.google.com'}
@@ -46,7 +47,7 @@ def translate_by_google(enText,sl,tl):  #enText length<5000
             result= resolveGoogle(res.text)
             if not result.startswith('error:'):
                 return result
-            result = ''
+            #result = ''
             print("失败重试"+str(i))
         except Exception as e:
             print(str(e))
@@ -81,30 +82,15 @@ def translate(src_path, tgt_path, src_lang, tgt_lang) :
         tl = langCode3To2(tgt_lang)
         if tl =="yue":
             tl = "zh-tw"
-        # line by line
-        # for line_from_file in src_file:
-        #     line = line_from_file.strip()
-        #     if re.match(pattern_num, line) or re.match(pattern_timestamp, line):
-        #         tgt_file.write(line+"\n")
-        #     elif len(line) == 0 :
-        #         tgt_file.write("\n")
-        #     else:        
-        #         text_output=translate_by_google(line,sl, tl)
-        #         # text_output, _ = translator.predict(
-        #         #     input = line,
-        #         #     task_str="t2tt",
-        #         #     tgt_lang=tgt_lang,
-        #         #     src_lang=src_lang,
-        #         # )
-        #         tgt_file.write(f"{text_output}\n")
-        #         #print(f"{tgt_lang}: {text_output_en[0]}")
-        #         print(text_output)
         input = ''
         for line_from_file in src_file:
             line = line_from_file.strip()
+            
+            if len(line)>200 :
+                line = line[0:200]
             input =input + line+"\n"
-            if len(input) >2000:
-                #print(str(len(input)))
+            if len(input) >1800:
+                print(str(len(input)))
                 text_output = translate_by_google(input, sl,tl)
                 if text_output.startswith('error:'):
                     #翻译失败

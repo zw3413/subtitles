@@ -1,10 +1,42 @@
 import requests
 import json
+import os
+from utils import *
 
 #serverIp = "http://127.0.0.1:12801"
 #serverIp = "https://api.subtitlex.xyz"
 serverIp = "http://192.168.2.202:12801"
 
+def upload_file(file_path, url):
+    with open(file_path, 'rb') as file:
+        files = {'file': file}
+        response = requests.post(url, files=files)
+        
+        if response.status_code == 200:
+            print("File uploaded successfully!")
+        else:
+            print("Failed to upload file. Status code:", response.status_code)
+            print("Response:", response.text)
+
+
+def PushSubtitleToServer(tgt_path, file_name):
+    upload_url = serverIp+"/upload-files?filename="+file_name 
+    file_path = tgt_path
+    upload_file(file_path, upload_url)
+
+
+def PullSrtFromServer(seed, LocalPathPrefix):
+    id = str(seed["id"])
+    video_language = seed["video_language"]
+    src_lang = language_codes[video_language]
+    srt_path = seed["srt_path"]
+    tgt_path = LocalPathPrefix+srt_path
+    if not os.path.exists(tgt_path):
+        url = serverIp + "/get_subtitle?id="+id+"&language="+src_lang
+        r= requests.get(url)
+        tgt_file = open(tgt_path, "w", encoding='utf-8')
+        tgt_file.write(r.text)
+    
 
 def GetNextNeedProcessSeed(type):
     try:
