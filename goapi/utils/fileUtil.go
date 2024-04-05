@@ -36,7 +36,7 @@ import (
 func ReadFile(filePath string) string {
 	content, error := ioutil.ReadFile(filePath)
 	if error != nil {
-		log.Fatal(error)
+		log.Println(error)
 	}
 	str := string(content)
 	return str

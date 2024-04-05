@@ -90,7 +90,7 @@ def translate(src_path, tgt_path, src_lang, tgt_lang) :
                 line = line[0:200]
             input =input + line+"\n"
             if len(input) >1800:
-                print(str(len(input)))
+                #print(str(len(input)))
                 text_output = translate_by_google(input, sl,tl)
                 if text_output.startswith('error:'):
                     #翻译失败
