@@ -121,7 +121,7 @@ def translate(src_path, tgt_path, src_lang, tgt_lang) :
         
         tgt_file.close()
         tgt_file_tmp.close()
-        os.remove(tgt_path_tmp)
+       #os.remove(tgt_path_tmp)
 
         return ""    
     except Exception as e:

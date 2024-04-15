@@ -26,6 +26,7 @@ class Unbuffered:
             pass
 
 filePath_prefix = '../file/subtitle/'
+video_download_filePath_prefix = 'D:\\abc\\'
 MP3_afterfix = '.mp3'
 SRT_afterfix = '.srt'
 FLV_afterfix = '.flv'
@@ -36,14 +37,14 @@ sys.stdout=Unbuffered(sys.stdout)
 
 #命令行的方式使用streamlink下载视频
 def downloadFlv(url,  quality = 'worst', origin = ''):
-    threads = '4'
+    threads = '8'
     quality = quality # "worst"
     afterfix = FLV_afterfix
     fileName =  hashlib.md5(url.encode()).hexdigest() +afterfix
     match = re.search(r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}", url)
     if match != None:
         fileName = match.group(0)+afterfix
-    filePath = filePath_prefix + fileName
+    filePath = video_filePath_prefix + fileName
     #delete the file at filePath if exist
     if os.path.exists(filePath):
         os.remove(filePath)
@@ -52,7 +53,7 @@ def downloadFlv(url,  quality = 'worst', origin = ''):
         
         cmd = 'yt-dlp -f worst --merge-output-format flv -o "'+filePath+'" https://www.youtube.com/watch?v=i2Z_nKRgDyU'
     else:
-        cmd = 'streamlink --retry-max 10 --retry-streams 10 --stream-segment-attempts 20 --stream-segment-timeout 60 --stream-timeout 120 --http-timeout 120 --stream-segment-threads '+threads+' -o "'+filePath+'" --http-header "User-Agent=Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.130 AOL/9.8 AOLBuild/4346.2019.US Safari/537.36" --http-header "Origin='+ origin +'" "hlsvariant://'+ url +'" '+quality
+        cmd = 'streamlink --retry-max 3 --retry-streams 10 --stream-segment-attempts 20 --stream-segment-timeout 60 --stream-timeout 120 --http-timeout 120 --stream-segment-threads '+threads+' -o "'+filePath+'" --http-header "User-Agent=Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.130 AOL/9.8 AOLBuild/4346.2019.US Safari/537.36" --http-header "Origin='+ origin +'" "hlsvariant://'+ url +'" '+quality
     print(cmd)
     output = os.system(cmd)
     return output,fileName    
@@ -73,6 +74,10 @@ def download_func():
         video_m3u8_url = seed["video_m3u8_url"]
         quality = 'worst'
         pageUrl = seed["video_page_url"]
+
+        #使用bs重新获取video_m3u8_url
+
+
         match = re.findall(pattern_domain, pageUrl)
         if len(match)>0:
             origin = match[0]

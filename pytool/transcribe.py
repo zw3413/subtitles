@@ -30,6 +30,7 @@ class Unbuffered:
             pass
 
 filePath_prefix = '../file/subtitle/'
+video_filePath_prefix = 'D:\\abc\\'
 MP3_afterfix = '.mp3'
 SRT_afterfix = '.srt'
 FLV_afterfix = '.flv'
@@ -79,9 +80,12 @@ def transcribe_func() :
         #fast-whisper
        
         segments, info = model.transcribe(
-            filePath_prefix+flvPath, 
+            video_filePath_prefix+flvPath, 
             beam_size=5, 
             vad_filter=True, 
+            #vad_parameters=dict(min_silence_duration_ms=2000,max_speech_duration_s=10, threshold=0.4),
+            #vad_parameters=dict(min_silence_duration_ms=2000,threshold=0.4),
+            #vad_parameters=dict(min_silence_duration_ms=1000,threshold=0.4),
             task = "transcribe"
             )
         language = info.language
