@@ -132,6 +132,8 @@ def transcribe_func() :
         request.SaveSubtitle(subtitle)
         
     except Exception as e:
+        
+        
         print(cmd,"字幕生成失败")
         print(e)
         seed["process_status"] = "2e"

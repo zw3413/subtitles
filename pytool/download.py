@@ -26,7 +26,7 @@ class Unbuffered:
             pass
 
 filePath_prefix = '../file/subtitle/'
-video_download_filePath_prefix = 'D:\\abc\\'
+video_filePath_prefix = 'D:\\abc\\'
 MP3_afterfix = '.mp3'
 SRT_afterfix = '.srt'
 FLV_afterfix = '.flv'

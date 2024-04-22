@@ -96,7 +96,7 @@ def translate(src_path, tgt_path, src_lang, tgt_lang) :
                     #翻译失败
                     return text_output
                 tgt_file_tmp.write(text_output)
-                tgt_file_tmp.write("\r\n")
+                tgt_file_tmp.write("\n\n")
                 input = ''
         if len(input.strip())>0 :
             #print(str(len(input)))

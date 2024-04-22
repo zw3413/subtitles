@@ -7,6 +7,30 @@ from utils import *
 #serverIp = "https://api.subtitlex.xyz"
 serverIp = "http://192.168.2.201:12801"
 
+def remote_call(f, pl):  
+    headers = {  
+        "Content-Type": "application/json",  
+    }  
+    data = {  
+        "hashcode": "xxx",  
+        "request_id": "xxx",  
+        "device_ip": "0.0.0.0",  
+        "function": f,  
+        "params": pl,  
+    }  
+    try:  
+        response = requests.post(serverIp + "/common/allPurpose", headers=headers, data=json.dumps(data))  
+        if response.status_code == 200:  
+            return response.json()  
+        else:  
+            # TODO: 显示调用失败的消息给用户  
+            print(f"Call failed with status code: {response.status_code}")  
+            return None  
+    except requests.RequestException as e:  
+        # TODO: 显示调用失败的消息给用户  
+        print(f"Call failed: {e}")  
+        return None
+
 def upload_file(file_path, url):
     with open(file_path, 'rb') as file:
         files = {'file': file}
@@ -42,6 +66,16 @@ def GetNextNeedProcessSeed(type):
     try:
         url = serverIp+"/seed_need_process?type="+type
         r = requests.post(url,timeout=60)
+        jData = json.loads(r.text)
+        return jData
+    except Exception as e:
+        print(e)
+        return []
+
+def GetSeed(hint):
+    try:
+        url = serverIp+"/get_seed?hint="+hint
+        r = requests.post(url, timeout=60)
         jData = json.loads(r.text)
         return jData
     except Exception as e:

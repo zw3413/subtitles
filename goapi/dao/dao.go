@@ -116,7 +116,15 @@ func SelectSeed(h string) ([]map[string]interface{}, error) {
 		hint := "%" + h + "%"
 		println(hint)
 		sql = `
-			select * from seed where video_no like $1  or video_name like $2  or video_page_url like $3  or  video_m3u8_url like $4  or  mp3_path like $5  or  srt_path like $6  or  video_language like $7  or  video_desc like $8
+			select * from seed 
+			where video_no like $1  
+				or video_name like $2  
+				or video_page_url like $3  
+				or  video_m3u8_url like $4  
+				or  mp3_path like $5  
+				or  srt_path like $6  
+				or  video_language like $7  
+				or  video_desc like $8
 			`
 		println(sql)
 		data, err = utils.GetAllData(sql, hint, hint, hint, hint, hint, hint, hint, hint)
@@ -147,7 +155,10 @@ func SelectSeedNeedProcess(t string) ([]map[string]interface{}, error) {
 	switch t {
 	case "download":
 		status = "0"
-		sql = "select * from seed where process_status = $1 order by process_status, wanttimes desc, create_time limit 1"
+		sql = `select * from seed 
+			where process_status = $1 
+			order by client_ip nulls first , process_status, wanttimes desc, create_time 
+			limit 1`
 	case "transcribe":
 		status = "1"
 		sql = "select * from seed where process_status = $1 order by process_status, wanttimes desc, create_time limit 1"
