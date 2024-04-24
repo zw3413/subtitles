@@ -52,8 +52,10 @@ func SaveSubtitle(c *gin.Context) {
 	path := getString(json["path"])
 	language := getString(json["language"])
 	format := getString(json["format"])
+	source := getString(json["source"])
+	origin_id := getString(json["origin_id"])
 
-	_, err = dao.InsertSubtitle(seed_id, path, language, format)
+	_, err = dao.InsertSubtitle(seed_id, path, language, format, source, origin_id)
 
 }
 
@@ -315,7 +317,6 @@ func GetSubtitle1(c *gin.Context) {
 	if err != nil {
 		log.Println(err)
 	}
-	log.Println(path)
 
 	fileName := r[0]["path"].(string)
 	filePath := filepath.Join(path, filePath_prefix, fileName)

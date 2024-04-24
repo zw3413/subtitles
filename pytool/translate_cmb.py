@@ -67,7 +67,7 @@ def translate_func():
         request.PullSrtFromServerBySubtitleId(subtitle_id,srt_path,LocalPathPrefix)
         src_path = LocalPathPrefix + srt_path
         video_language = origin_subtitle["language"]
-        src_lang = language_codes[video_language]
+        src_lang = video_language
         tgt_langs = ['cmn_Hant','eng','spa','por','swe','deu','arb','rus','fra']
         for tgt_lang in tgt_langs:
             if tgt_lang == src_lang:
@@ -80,13 +80,14 @@ def translate_func():
                 print(msg)
                 return msg
             subtitle = {}
+            file_path = os.path.join('trans/',  tgt_path.replace(LocalPathPrefix, ''))
             subtitle["language"] = tgt_lang
-            subtitle["path"] = tgt_filename
-            subtitle["seed_id"] = origin_subtitle["seed_id"]
+            subtitle["path"] = file_path
+            subtitle["seed_id"] = str(origin_subtitle["seed_id"])
             subtitle["format"] = extension
             subtitle['source'] = 'zmb2'
             subtitle['origin_id'] = str(subtitle_id)
-            request.PushSubtitleToServer(tgt_path,tgt_filename)            
+            request.PushSubtitleToServer(tgt_path,file_path)            
             request.SaveSubtitle(subtitle)  
     except Exception as e:
         print(f"翻译异常{subtitle_id} "+str(e))

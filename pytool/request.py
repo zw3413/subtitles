@@ -3,9 +3,9 @@ import json
 import os
 from utils import *
 
-serverIp = "http://127.0.0.1:12801"
+#serverIp = "http://127.0.0.1:12801"
 #serverIp = "https://api.subtitlex.xyz"
-#serverIp = "http://192.168.2.201:12801"
+serverIp = "http://192.168.2.201:12801"
 
 def remote_call(f, pl):  
     headers = {  
@@ -65,10 +65,11 @@ def PullSrtFromServerBySubtitleId(subtitleId,src_path, LocalPathPrefix):
     url = serverIp + "/get_subtitle?titleSubaId="+ subtitleId
     r= requests.get(url)
     tgt_path = LocalPathPrefix + src_path
+    parent_path = os.path.dirname(tgt_path)
+    if not os.path.exists(parent_path):
+        os.makedirs(parent_path)
     if os.path.exists(tgt_path):
         os.remove(tgt_path)
-    if not os.path.exists(tgt_path):
-        os.makedirs(tgt_path)
     tgt_file = open(tgt_path, "w", encoding='utf-8')
     tgt_file.write(r.text)   
     return tgt_path 

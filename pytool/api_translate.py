@@ -30,8 +30,8 @@ def translate_by_google(enText,sl,tl):  #enText length<5000
         else:    
             if len(j['sentences'])>0:
                 for sentence in j['sentences']:
-                    result=result+'\n'+sentence['trans']
-                result=result[1:len(result)]    
+                    result=result+sentence['trans']+'\n'
+                #result=result[1:len(result)]    
         return result
     engine=googleEngine % (sl,tl)
     #enText_list=split_text(enText,5000)
@@ -76,7 +76,8 @@ def translate(src_path, tgt_path, src_lang, tgt_lang) :
     tgt_file_tmp = open(tgt_path_tmp, "w", encoding='utf-8')
     # f.write(segment.text)
     # f.write("\n")
-    src_file = open(src_path, "r", encoding = "utf-8")
+    encoding = detect_encoding(src_path)
+    src_file = open(src_path, "r", encoding = encoding)
     try:
         sl = langCode3To2(src_lang)
         tl = langCode3To2(tgt_lang)
@@ -85,10 +86,11 @@ def translate(src_path, tgt_path, src_lang, tgt_lang) :
         input = ''
         for line_from_file in src_file:
             line = line_from_file.strip()
-            
             if len(line)>200 :
                 line = line[0:200]
-            input =input + line+"\n"
+            if re.match(re.compile(r'^\d+$'),line):
+                continue  #翻译时，先略去数字行
+            input =input + line + '\n'
             if len(input) >1800:
                 #print(str(len(input)))
                 text_output = translate_by_google(input, sl,tl)
@@ -96,7 +98,7 @@ def translate(src_path, tgt_path, src_lang, tgt_lang) :
                     #翻译失败
                     return text_output
                 tgt_file_tmp.write(text_output)
-                tgt_file_tmp.write("\n\n")
+                tgt_file_tmp.write("\n")
                 input = ''
         if len(input.strip())>0 :
             #print(str(len(input)))
@@ -111,13 +113,20 @@ def translate(src_path, tgt_path, src_lang, tgt_lang) :
 
         tgt_file_tmp = open(tgt_path_tmp, "r", encoding='utf-8')
 
+        count = 0
         for line_from_file in tgt_file_tmp:
             line = line_from_file.strip()
+            if len(line) == 0:
+                continue
             # if re.match(pattern_num, line) and line != "1":
             #     tgt_file.write('\n')
-            if len(line)==0 or re.match(pattern_timestamp, line):
+            if re.match(pattern_timestamp, line):
+                tgt_file.write('\n')
+                count += 1
+                tgt_file.write(str(count))
                 tgt_file.write('\n')
             tgt_file.write(line)
+            tgt_file.write('\n')
         
         tgt_file.close()
         tgt_file_tmp.close()
@@ -133,7 +142,9 @@ def translate(src_path, tgt_path, src_lang, tgt_lang) :
         elapsed_time = end_time - start_time
         print(f"完成耗时 {elapsed_time:.6f} seconds")
 
-if(__name__=='__main__'):
-    enText="<a>Hello, my dear.</a>"
-    zhText=translate_by_google(enText)
-    print(zhText)
+translate('file\\字幕包\\骑兵字幕\\Z开头\\ZUKO\\ZUKO-059 和我们家的4个辣妹姐妹1天中出40次 涼風ことの 上城りおな AIKA 澄川ロア.srt','file\\字幕包\\骑兵字幕\\Z开头\\ZUKO\\ZUKO-059 和我们家的4个辣妹姐妹1天中出40次 涼風ことの 上城りおな AIKA 澄川ロア_eng.srt','cmn','eng')
+
+# if(__name__=='__main__'):
+#     enText="<a>Hello, my dear.</a>"
+#     zhText=translate_by_google(enText)
+#     print(zhText)

@@ -89,6 +89,7 @@ def crawl_video_links(url):
         
     except Exception as e:
         print(f"Error: {e}")
+        r.rpush(pending_check_url_list,url)
     finally:
         try:
             dr.quit()
