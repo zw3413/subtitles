@@ -294,62 +294,22 @@ func GetSubtitle1(c *gin.Context) {
 	//id := getString(json["id"])
 	id := c.Query("id")
 	language := c.Query("language")
+	subtitleId := c.Query("titleSubaId")
+	seedUuid := c.Query("uuid")
 
-	if len(id) == 0 || id == "null" {
-		log.Println("错误")
-		log.Println(err)
-		c.JSON(500, "error，id is null")
+	//id+language
+	//uuid+language
+	//subtitleId
+	//以上三种情形，必须满足一种
+
+	if len(id) == 0 && len(subtitleId) == 0 && len(seedUuid) == 0 {
+		c.JSON(400, "error，id is null")
 		return
-	}
-	if len(language) == 0 || language == "null" {
-		log.Println("错误")
-		log.Println(err)
-		c.JSON(500, "error，language is null")
-		return
-	}
-
-	path, err := os.Getwd()
-	if err != nil {
-		log.Println(err)
-	}
-	log.Println(path)
-
-	r, _ := dao.GetSubtitle_BySeedIdAndLanguage(id, language) //返回srt路径
-	fileName := r[0]["path"].(string)
-	filePath := filepath.Join(path, filePath_prefix, fileName)
-
-	result = utils.ReadFile(filePath)
-
-}
-
-func GetSubtitle(c *gin.Context) {
-	var err error
-	var result string
-	defer func() {
-		if r := recover(); r != nil {
-			log.Println("Recovered in f", r)
-			c.JSON(500, "error")
-		}
-		if err != nil {
-			log.Println("错误")
-			log.Println(err)
-			c.JSON(500, "error")
-		} else {
-			c.JSON(200, result)
-		}
-	}()
-	json := make(map[string]interface{})
-	c.BindJSON(&json)
-	//id := getString(json["id"])
-	id := getString(json["id"])
-	language := getString(json["language"])
-
-	if len(id) == 0 {
-		panic("id is null")
 	}
 	if len(language) == 0 {
-		language = "en"
+		language = "eng"
 	}
+	r, _ := dao.GetSubtitle_BySeedIdAndLanguage(id, seedUuid, subtitleId, language) //返回srt路径
 
 	path, err := os.Getwd()
 	if err != nil {
@@ -357,14 +317,55 @@ func GetSubtitle(c *gin.Context) {
 	}
 	log.Println(path)
 
-	r, _ := dao.GetSubtitle_BySeedIdAndLanguage(id, language) //返回srt路径
 	fileName := r[0]["path"].(string)
-	//filePath := path + "/" + filePath_prefix + r
 	filePath := filepath.Join(path, filePath_prefix, fileName)
 
 	result = utils.ReadFile(filePath)
 
 }
+
+// func GetSubtitle(c *gin.Context) {
+// 	var err error
+// 	var result string
+// 	defer func() {
+// 		if r := recover(); r != nil {
+// 			log.Println("Recovered in f", r)
+// 			c.JSON(500, "error")
+// 		}
+// 		if err != nil {
+// 			log.Println("错误")
+// 			log.Println(err)
+// 			c.JSON(500, "error")
+// 		} else {
+// 			c.JSON(200, result)
+// 		}
+// 	}()
+// 	json := make(map[string]interface{})
+// 	c.BindJSON(&json)
+// 	//id := getString(json["id"])
+// 	id := getString(json["id"])
+// 	language := getString(json["language"])
+
+// 	if len(id) == 0 {
+// 		panic("id is null")
+// 	}
+// 	if len(language) == 0 {
+// 		language = "eng"
+// 	}
+
+// 	path, err := os.Getwd()
+// 	if err != nil {
+// 		log.Println(err)
+// 	}
+// 	log.Println(path)
+
+// 	r, _ := dao.GetSubtitle_BySeedIdAndLanguage(id, language) //返回srt路径
+// 	fileName := r[0]["path"].(string)
+// 	//filePath := path + "/" + filePath_prefix + r
+// 	filePath := filepath.Join(path, filePath_prefix, fileName)
+
+// 	result = utils.ReadFile(filePath)
+// }
 
 func GetSubtitleInfo(c *gin.Context) {
 	var err error
@@ -385,18 +386,22 @@ func GetSubtitleInfo(c *gin.Context) {
 	//id := getString(json["id"])
 	id := c.Query("id")
 	language := c.Query("lang")
+	subtitleId := c.Query("titleSubaId")
+	seedUuid := c.Query("uuid")
 
-	if len(id) == 0 {
-		panic("id is null")
-	}
-	// if len(language) == 0 {
-	// 	panic("lang is null")
-	// }
+	//id+language
+	//uuid+language
+	//subtitleId
+	//以上三种情形，必须满足一种
 
-	if err != nil {
-		log.Println(err)
+	if len(id) == 0 && len(subtitleId) == 0 && len(seedUuid) == 0 {
+		c.JSON(400, "error，id is null")
+		return
 	}
-	r, _ := dao.GetSubtitle_BySeedIdAndLanguage(id, language) //返回srt路径
+	if len(language) == 0 {
+		language = "eng"
+	}
+	r, _ := dao.GetSubtitle_BySeedIdAndLanguage(id, seedUuid, subtitleId, language) //返回srt路径
 	result = r
 }
 

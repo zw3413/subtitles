@@ -55,7 +55,7 @@ func main() {
 	r.POST("/want_subtitle", controller.WantSubtitle)
 	r.POST("/check_subtitle", controller.CheckSubtitle)
 	r.GET("/get_subtitle", controller.GetSubtitle1)
-	r.POST("/get_subtitle", controller.GetSubtitle)
+	//r.POST("/get_subtitle", controller.GetSubtitle)
 	r.POST("get_subtitle_info", controller.GetSubtitleInfo)
 	r.POST("/seed_need_process", controller.GetSeedNeedProcess)
 	r.POST("/get_wants_not_process", controller.GetWantsNotProcess)

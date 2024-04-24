@@ -243,7 +243,7 @@ func IncreaseWantTime(id int64) ([]map[string]interface{}, error) {
 	return data, nil
 }
 
-func GetSubtitle_BySeedIdAndLanguage(id, language string) ([]map[string]interface{}, error) {
+func GetSubtitle_BySeedIdAndLanguage(id, uuid, subtitleId, language string) ([]map[string]interface{}, error) {
 
 	var sql string
 	var data []map[string]interface{}
@@ -256,12 +256,39 @@ func GetSubtitle_BySeedIdAndLanguage(id, language string) ([]map[string]interfac
 	}()
 	if len(language) == 0 {
 		sql = `
-			select * from subtitle where create_time in (
-				select max(create_time) over (partition by seed_id, language, format) from subtitle where seed_id = $1)
+			select * 
+			from subtitle 
+			where create_time in (
+				select max(create_time) over (partition by seed_id, language, format) 
+				from subtitle 
+				where seed_id = $1
+			)
 		`
 		data, err = utils.GetAllData(sql, id)
-	} else {
-		sql = "select * from subtitle where seed_id = $1 and language = $2 order by create_time desc limit 1 "
+	} else if len(subtitleId) > 0 {
+		sql = `
+			select * 
+			from subtitle
+			where id = $1
+		`
+		data, err = utils.GetAllData(sql, subtitleId)
+	} else if len(uuid) > 0 && len(language) > 0 {
+		sql = `
+			select * 
+			from subtitle 
+			where seed_id = (
+				select id from seed where uuid = $1
+			) and language = $2
+			order by create_time desc limit 1 
+		`
+		data, err = utils.GetAllData(sql, id, language)
+	} else if len(id) > 0 && len(language) > 0 {
+		sql = `
+			select * 
+			from subtitle 
+			where seed_id = $1 and language = $2
+			order by create_time desc limit 1 
+		`
 		data, err = utils.GetAllData(sql, id, language)
 	}
 
