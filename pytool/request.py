@@ -3,9 +3,9 @@ import json
 import os
 from utils import *
 
-#serverIp = "http://127.0.0.1:12801"
+serverIp = "http://127.0.0.1:12801"
 #serverIp = "https://api.subtitlex.xyz"
-serverIp = "http://192.168.2.201:12801"
+#serverIp = "http://192.168.2.201:12801"
 
 def remote_call(f, pl):  
     headers = {  
@@ -49,18 +49,29 @@ def PushSubtitleToServer(tgt_path, file_name):
     upload_file(file_path, upload_url)
 
 
-def PullSrtFromServer(seed, LocalPathPrefix):
+def PullSrtFromServer(seed, LocalPathPrefix, subtitleId = ''):
     id = str(seed["id"])
     video_language = seed["video_language"]
     src_lang = language_codes[video_language]
     srt_path = seed["srt_path"]
     tgt_path = LocalPathPrefix+srt_path
     if not os.path.exists(tgt_path):
-        url = serverIp + "/get_subtitle?id="+id+"&language="+src_lang
+        url = serverIp + "/get_subtitle?id="+id+"&language="+src_lang+"&titleSubaId="+ subtitleId
         r= requests.get(url)
         tgt_file = open(tgt_path, "w", encoding='utf-8')
         tgt_file.write(r.text)
-    
+
+def PullSrtFromServerBySubtitleId(subtitleId,src_path, LocalPathPrefix):
+    url = serverIp + "/get_subtitle?titleSubaId="+ subtitleId
+    r= requests.get(url)
+    tgt_path = LocalPathPrefix + src_path
+    if os.path.exists(tgt_path):
+        os.remove(tgt_path)
+    if not os.path.exists(tgt_path):
+        os.makedirs(tgt_path)
+    tgt_file = open(tgt_path, "w", encoding='utf-8')
+    tgt_file.write(r.text)   
+    return tgt_path 
 
 def GetNextNeedProcessSeed(type):
     try:
@@ -106,9 +117,9 @@ def SaveSubtitle(subtitle):
         print(e)
         return 
 
-def GetSubtitleInfo(id,lang):
+def GetSubtitleInfo(id,lang='',subtitleId= ''):
     try:
-        url = serverIp+"/get_subtitle_info?id="+str(id)+"&lang="+lang
+        url = serverIp+"/get_subtitle_info?id="+str(id)+"&lang="+lang+"&titleSubaId="+ subtitleId
         #print("GetSubtitle:"+str(id)+", Lang:"+lang)
         r = requests.post(url, timeout=60)
         jData =json.loads(r.text)

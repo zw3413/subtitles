@@ -2,10 +2,13 @@ import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
 import re
+import os
 # import undetected_chromedriver as uc
 
+print(os.getcwd())
 import sys
-sys.path.append(r'C:\\Developer\\Subtitles\\pytool\\')
+#sys.path.append(r'C:\\Developer\\Subtitles\\pytool\\')
+sys.path.append(os.getcwd())
 import request
 
 url_pattern = r'^/dm\d+/en/.+$'

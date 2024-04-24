@@ -206,7 +206,7 @@ def translate_func():
         subtitle["path"] = tgt_filename
         subtitle["seed_id"] = seed["id"]
         subtitle["format"] = extension
-        
+        subtitle['source'] = '2'
         request.PushSubtitleToServer(tgt_path,tgt_filename)
         
         request.SaveSubtitle(subtitle)  

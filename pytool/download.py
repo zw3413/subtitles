@@ -36,11 +36,16 @@ te1 = open(current_directory+"/../file/log/subtitle_download.log",'a', encoding=
 sys.stdout=Unbuffered(sys.stdout)
 
 #命令行的方式使用streamlink下载视频
-def downloadFlv(url,  quality = 'worst', origin = ''):
+def downloadFlv(url,  quality = 'worst', origin = '', uuid = None):
     threads = '8'
     quality = quality # "worst"
     afterfix = FLV_afterfix
-    fileName =  hashlib.md5(url.encode()).hexdigest() +afterfix
+    fileName = ''
+    if uuid:
+        fileName = uuid + afterfix
+    else:
+        fileName =  hashlib.md5(url.encode()).hexdigest() +afterfix
+
     match = re.search(r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}", url)
     if match != None:
         fileName = match.group(0)+afterfix
@@ -84,7 +89,7 @@ def download_func():
         else:
             origin = ''
         #origin = 'https://missav.com'
-        output, flvPath = downloadFlv(video_m3u8_url,quality,origin)
+        output, flvPath = downloadFlv(video_m3u8_url,quality,origin,seed['uuid'])
         if output != 0:
             print(cmd,"下载失败")
             seed["process_status"] = "1e"

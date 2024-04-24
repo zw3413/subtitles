@@ -129,6 +129,7 @@ def transcribe_func() :
         subtitle["path"] = srtPath.replace(filePath_prefix,"")
         subtitle["seed_id"] = seed["id"]
         subtitle["format"] = SRT_afterfix
+        subtitle["source"] = '1'
         request.SaveSubtitle(subtitle)
         
     except Exception as e:
