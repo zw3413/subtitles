@@ -286,9 +286,7 @@ func GetSubtitle1(c *gin.Context) {
 			c.JSON(500, "error")
 		}
 		if err != nil {
-			log.Println("错误")
-			log.Println(err)
-			c.JSON(500, "error")
+			c.JSON(500, err)
 		} else {
 			c.String(200, result)
 		}
@@ -321,7 +319,7 @@ func GetSubtitle1(c *gin.Context) {
 	fileName := r[0]["path"].(string)
 	filePath := filepath.Join(path, filePath_prefix, fileName)
 
-	result = utils.ReadFile(filePath)
+	result, err = utils.ReadFile(filePath)
 
 }
 

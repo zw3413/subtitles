@@ -1,8 +1,8 @@
 package utils
 
 import (
+	"errors"
 	"io/ioutil"
-	"log"
 )
 
 // https://www.cnblogs.com/jrzh/p/15439361.html
@@ -33,11 +33,11 @@ import (
 // 	return string(b), nil
 // }
 
-func ReadFile(filePath string) string {
+func ReadFile(filePath string) (string, error) {
 	content, error := ioutil.ReadFile(filePath)
 	if error != nil {
-		log.Println(error)
+		return "", errors.New("err38291, not found")
 	}
 	str := string(content)
-	return str
+	return str, nil
 }
