@@ -302,6 +302,35 @@ func GetSubtitle_BySeedIdAndLanguage(id, uuid, subtitleId, language string) ([]m
 	return data, nil
 }
 
+func GetSubtitle_ByUuid(id string) ([]map[string]interface{}, error) {
+
+	var sql string
+	var data []map[string]interface{}
+	var err error
+	defer func() {
+		if r := recover(); r != nil {
+			log.Println("Recovered from ", r)
+			return
+		}
+	}()
+
+	sql = `
+		select * 
+		from subtitle 
+		where  uuid = $1
+	`
+	data, err = utils.GetAllData(sql, id)
+
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	// if len(data) == 0 {
+	// 	return nil, nil
+	// }
+	return data, nil
+}
+
 func GetWantsNotProcess(seed_id string) ([]map[string]interface{}, error) {
 	sql := `
 		select distinct want_lang from want where seed_id = $1

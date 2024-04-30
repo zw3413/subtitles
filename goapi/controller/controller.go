@@ -323,6 +323,40 @@ func GetSubtitle1(c *gin.Context) {
 
 }
 
+func GetSubtitle2(c *gin.Context) {
+	var err error
+	var result string
+	defer func() {
+		if r := recover(); r != nil {
+			log.Println("Recovered in f", r)
+			c.JSON(500, "error")
+		}
+		if err != nil {
+			c.JSON(400, err)
+		} else {
+			c.String(200, result)
+		}
+	}()
+	uuid := c.Query("id")
+
+	if len(uuid) == 0 {
+		c.JSON(400, "error")
+		return
+	}
+	r, _ := dao.GetSubtitle_ByUuid(uuid) //返回srt路径
+
+	path, err := os.Getwd()
+	if err != nil {
+		log.Println(err)
+	}
+
+	fileName := r[0]["path"].(string)
+	filePath := filepath.Join(path, filePath_prefix, fileName)
+
+	result, err = utils.ReadFile(filePath)
+
+}
+
 // func GetSubtitle(c *gin.Context) {
 // 	var err error
 // 	var result string

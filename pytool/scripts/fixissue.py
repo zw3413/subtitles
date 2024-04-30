@@ -9,11 +9,10 @@ def get_text_files_in_folder(folder_path):
         if filename.lower().endswith(".srt"):
             text_files.append(os.path.join(folder_path, filename))
     return text_files
-
+def process_text_files_1(folder_path, regex_pattern):
+    text_files = get_text_files_in_folder(folder_path)
+    pass
 def process_text_files(folder_path, regex_pattern):
-    """
-    Reads each text file in the folder and processes lines matching the regex pattern.
-    """
     text_files = get_text_files_in_folder(folder_path)
     for file_path in text_files:
         try:
@@ -51,4 +50,7 @@ def modify_lines_in_file(file_path, regex_pattern):
 # Example usage:
 folder_path = r"C:\Developer\Subtitles\file\subtitle"
 regex_pattern = r"^\d{2}:\d{2}:\d{2},\d{3} --> \d{2}:\d{2}:\d{2},\d{3}.+$"
-process_text_files(folder_path, regex_pattern)
+#process_text_files(folder_path, regex_pattern)
+
+regex_pattern_1 = r"^\d{2}:\d{2}:\d{2},\d{3} --> \d{2}:\d{2}:\d{2},\d{3}$"
+process_text_files_1(folder_path, regex_pattern_1)
