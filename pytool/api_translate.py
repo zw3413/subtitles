@@ -142,7 +142,7 @@ def translate(src_path, tgt_path, src_lang, tgt_lang) :
         elapsed_time = end_time - start_time
         print(f"完成耗时 {elapsed_time:.6f} seconds")
 
-translate('file\\字幕包\\骑兵字幕\\Z开头\\ZUKO\\ZUKO-059 和我们家的4个辣妹姐妹1天中出40次 涼風ことの 上城りおな AIKA 澄川ロア.srt','file\\字幕包\\骑兵字幕\\Z开头\\ZUKO\\ZUKO-059 和我们家的4个辣妹姐妹1天中出40次 涼風ことの 上城りおな AIKA 澄川ロア_eng.srt','cmn','eng')
+#translate('file\\字幕包\\骑兵字幕\\Z开头\\ZUKO\\ZUKO-059 和我们家的4个辣妹姐妹1天中出40次 涼風ことの 上城りおな AIKA 澄川ロア.srt','file\\字幕包\\骑兵字幕\\Z开头\\ZUKO\\ZUKO-059 和我们家的4个辣妹姐妹1天中出40次 涼風ことの 上城りおな AIKA 澄川ロア_eng.srt','cmn','eng')
 
 # if(__name__=='__main__'):
 #     enText="<a>Hello, my dear.</a>"

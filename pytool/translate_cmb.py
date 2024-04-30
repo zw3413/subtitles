@@ -54,12 +54,13 @@ r = redis.Redis(host='192.168.2.203', port=6379, db=0,decode_responses=True)
 zmb_dealed_subtitle_id = 'zmb_pending_subtitle_id'
 
 def translate_func():
-    #subtitle_id = r.rpop(zmb_dealed_subtitle_id)
-    subtitle_id = '48133'
+    subtitle_id = r.rpop(zmb_dealed_subtitle_id)
+    #subtitle_id = '18428'
     subtitle_array = request.GetSubtitleInfo('','',subtitle_id)  #获取源语言
     if subtitle_array is None or len(subtitle_array) == 0:
         return
     origin_subtitle = subtitle_array[0]
+    seed_id = origin_subtitle["seed_id"]
     try:
         LocalPathPrefix = './file/'
         #从服务端拉取原始语言的字幕到本地
@@ -68,15 +69,18 @@ def translate_func():
         src_path = LocalPathPrefix + srt_path
         video_language = origin_subtitle["language"]
         src_lang = video_language
-        tgt_langs = ['cmn_Hant','eng','spa','por','swe','deu','arb','rus','fra']
+        #tgt_langs = ['cmn_Hant','eng','spa','por','swe','deu','arb','rus','fra','kor','ita']
+        tgt_langs = ['cmn_Hant','eng']
         for tgt_lang in tgt_langs:
             if tgt_lang == src_lang:
                 continue
             print(f"开始subtitle_id:{subtitle_id} {tgt_lang}")
             tgt_path, extension, tgt_filename = generate_new_filepath(src_path, tgt_lang)
+            src_lang = 'auto'
             out_put = translate(src_path, tgt_path, src_lang, tgt_lang) 
             if len(out_put) > 0:
-                msg = f"翻译失败，接口输出报错{out_put}"
+                msg = f"翻译失败，subtitle_id = {subtitle_id}，接口输出报错{out_put}"
+                r.lpush('zmb_error_list', subtitle_id)
                 print(msg)
                 return msg
             subtitle = {}
@@ -89,9 +93,11 @@ def translate_func():
             subtitle['origin_id'] = str(subtitle_id)
             request.PushSubtitleToServer(tgt_path,file_path)            
             request.SaveSubtitle(subtitle)  
+        #将seed状态更新为5.1 已翻译eng，cmn_Hant
+        request.UpdateSeedStatus(str(seed_id), '5.1')
     except Exception as e:
         print(f"翻译异常{subtitle_id} "+str(e))
-
+        r.lpush(zmb_dealed_subtitle_id,subtitle_id)
 def doTranslate():
     while True :
         try:

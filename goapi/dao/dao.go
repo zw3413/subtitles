@@ -129,8 +129,8 @@ func SelectSeed(h string) ([]map[string]interface{}, error) {
 		println(sql)
 		data, err = utils.GetAllData(sql, hint, hint, hint, hint, hint, hint, hint, hint)
 	} else {
-		sql = `select * from seed`
-		data, err = utils.GetAllData(sql)
+		// sql = `select * from seed`
+		// data, err = utils.GetAllData(sql)
 	}
 	if err != nil {
 		log.Println(err)
