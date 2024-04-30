@@ -20,12 +20,21 @@ language_codes = {
     "es": "spa",
     "pt": "por",
     "sv": "swe",
-    "de":"deu",
-    "ar":"arb",
-    "ru":"rus",
-    "fr":"fra",
-    "ja":"jpn"
+    "de": "deu",
+    "ar": "arb",
+    "ru": "rus",
+    "fr": "fra",
+    "ja": "jpn",
+    "ko": "kor",
+    "it": "ita",
+    "auto":"auto"
 }
+
+def check_if_valid_lang_code3(code):
+    for key, value in language_codes.items():
+        if value == code:
+            return True
+    return False
 
 def detect_encoding(file_path): 
     with open(file_path, 'rb') as file: 

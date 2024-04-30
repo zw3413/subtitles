@@ -50,8 +50,9 @@ func main() {
 	// })
 	r.Use(CrosHandler())
 	r.POST("/save_seed", controller.SaveSeed)
-	r.POST("/save_subtitle", controller.SaveSubtitle)
 	r.POST("/get_seed", controller.GetSeed)
+
+	r.POST("/save_subtitle", controller.SaveSubtitle)
 	r.POST("/want_subtitle", controller.WantSubtitle)
 	r.POST("/check_subtitle", controller.CheckSubtitle)
 	r.GET("/get_subtitle", controller.GetSubtitle1)

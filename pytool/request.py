@@ -31,6 +31,14 @@ def remote_call(f, pl):
         print(f"Call failed: {e}")  
         return None
 
+def UpdateSeedStatus(seed_id, status):
+    pl = [seed_id, status]
+    return remote_call("p_update_seed_status", pl)
+
+def UpdateSubtitleLang(subtitle_id, lang):
+    pl = [subtitle_id, lang]
+    return remote_call("p_update_subtitle_lang", pl)
+
 def upload_file(file_path, url):
     with open(file_path, 'rb') as file:
         files = {'file': file}
