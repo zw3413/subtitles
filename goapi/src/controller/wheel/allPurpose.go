@@ -3,8 +3,8 @@ package wheel
 import (
 	"encoding/json"
 	"fmt"
-	"goapi/utils"
-	"io/ioutil"
+	"goapi/src/utils"
+	"io"
 	"net/http"
 	"strconv"
 	"time"
@@ -48,7 +48,7 @@ func AllPurpose(c *gin.Context) {
 	startTimeStr := startTime.Format("20060102150405")
 
 	//讀取傳參
-	reqBody, reqErr := ioutil.ReadAll(c.Request.Body)
+	reqBody, reqErr := io.ReadAll(c.Request.Body)
 
 	//日誌記錄及異常處理
 	defer func() {
@@ -57,17 +57,15 @@ func AllPurpose(c *gin.Context) {
 		if err := recover(); err != nil {
 			executeFlag = "N"
 			errLog := fmt.Sprintf("[wheel.AllPurpose] defer error:%v", err)
-			log.LOGGER("NEWSFC").Error(errLog)
+			log.LOGGER("SUBX").Error(errLog)
 			responseInfo.Rc = "999"
 			responseInfo.Rm = "系統異常，" + errLog
 		}
-		// jsonStr, _ := json.Marshal(responseInfo)
-		// if executeFlag == "N" || influxdb.Iswriteinfluxdb() == "Y" {
-		// 	go influxdb.InfluxLogDataNew("wheel.AllPurpose", strconv.FormatInt(costtime, 10), "/sfc_api/common/allPurpose",
-		// 		requestInfo.Function, requestInfo.RequestID, executeFlag, reqBody, jsonStr, requestInfo.DeviceIp, "", startTimeStr)
-		// }
-		print(startTimeStr)
-		print(executeFlag)
+		jsonStr, _ := json.Marshal(responseInfo)
+		if executeFlag == "N" || utils.Iswritetsdb() == "Y" {
+			go utils.InfluxLogDataNew("wheel.AllPurpose", "", strconv.FormatInt(costtime, 10), c.Request.RequestURI,
+				requestInfo.Function, requestInfo.RequestID, executeFlag, string(reqBody), string(jsonStr), c.RemoteIP(), "", "", startTimeStr, "", false, false)
+		}
 		c.JSON(http.StatusOK, responseInfo)
 	}()
 

@@ -1,10 +1,10 @@
 package main
 
 import (
-	"goapi/controller"
-	"goapi/controller/wheel"
-	"goapi/dao"
-	"goapi/library/response"
+	"goapi/src/controller"
+	"goapi/src/controller/wheel"
+	"goapi/src/dao"
+	"goapi/src/library/response"
 	"log"
 	"net/http"
 	"os/exec"
@@ -56,7 +56,7 @@ func main() {
 	r.POST("/want_subtitle", controller.WantSubtitle)
 	r.POST("/check_subtitle", controller.CheckSubtitle)
 	r.GET("/get_subtitle", controller.GetSubtitle1)
-	r.GET("/subtitle", controller.GetSubtitle2)
+	r.POST("/subtitle", controller.GetSubtitleWithUUID)
 	//r.POST("/get_subtitle", controller.GetSubtitle)
 	r.POST("get_subtitle_info", controller.GetSubtitleInfo)
 	r.POST("/seed_need_process", controller.GetSeedNeedProcess)
@@ -64,11 +64,8 @@ func main() {
 	r.POST("/get_want_seed", controller.WantSeed)
 	r.POST("/check_if_wanted", controller.CheckIfWanted)
 	r.POST("/update_want_fullfilled", controller.WantFullfilled)
-
-	r.POST("/check_save_get_seed", controller.CheckSaveGetSeed)
-
+	//r.POST("/check_save_get_seed", controller.CheckSaveGetSeed)
 	r.POST("/common/allPurpose", wheel.AllPurpose) //數據庫函數調用通用接口
-
 	r.POST("/pushSrtFile", func(c *gin.Context) {
 		// 单文件
 		file, _ := c.FormFile("file")
@@ -85,7 +82,6 @@ func main() {
 		c.SaveUploadedFile(file, dst)
 		c.JSON(http.StatusOK, response.JsonSuccessData(dst))
 	})
-
 	r.POST("/upload-files", func(c *gin.Context) {
 		// 单文件
 		file, _ := c.FormFile("file")
@@ -103,15 +99,12 @@ func main() {
 		c.SaveUploadedFile(file, dst)
 		c.JSON(http.StatusOK, response.JsonSuccessData(dst))
 	})
-
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"message": "pong",
 		})
 	})
-
 	r.Run(":12801")
-
 }
 
 func startPyTool() {
