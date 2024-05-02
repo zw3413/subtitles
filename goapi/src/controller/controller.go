@@ -89,7 +89,7 @@ func SaveSubtitle(c *gin.Context) {
 		}
 		c.JSON(http.StatusOK, responseInfo)
 	}()
-
+	err = json.Unmarshal(requestBody, &requestObj)
 	c.BindJSON(&requestObj)
 	seed_id = getString(requestObj["seed_id"])
 	path := getString(requestObj["path"])
@@ -146,7 +146,7 @@ func SaveSeed(c *gin.Context) {
 		c.JSON(http.StatusOK, responseInfo)
 	}()
 
-	c.BindJSON(&requestObj)
+	err = json.Unmarshal(requestBody, &requestObj)
 	id = getString(requestObj["id"])
 	video_no = getString(requestObj["video_no"])
 	video_name := getString(requestObj["video_name"])

@@ -1,4 +1,8 @@
 import os
+import sys
+print(os.getcwd())
+sys.path.append(os.getcwd())
+from utils import *
 
 def get_text_files_in_folder(folder_path):
     text_files = []
@@ -12,7 +16,7 @@ def process_text_files_1(folder_path):
     text_files = get_text_files_in_folder(folder_path)
     for file_path in text_files:
         try:
-            addLineNumber(file_path,regex_pattern_timestamp)
+            addLineNumber(file_path)
             pass
         except Exception as e:
             print(file_path)
@@ -58,27 +62,30 @@ def addLineNumber(file_path):
     modified_lines = []
     pre_line = ""
     line_count = 0
-    with open(file_path, "r",encoding='utf-8') as file:
+    changedFlag = False
+    encoding = detect_encoding(file_path)
+    with open(file_path, "r",encoding=encoding) as file:
         for line in file:
             match_current = re.match(regex_pattern_timestamp, line.strip())
             match_previou = re.match(regex_pattern_number,pre_line.strip())
             if match_current and not match_previou:
-                print(file_path)
-                print(line)
+                changedFlag = True
                 line_count += 1
                 addedLine = str(line_count)
-                modified_lines.append(addedLine)
-                print(addedLine)
-            else:
-                modified_lines.append(line)
-    
+                modified_lines.append(addedLine+'\n')
+                # print(file_path)
+                # print(addedLine)
+                # print(line)
+            modified_lines.append(line)
             if len(line.strip())>0 :
                 pre_line = line
 
-    # Write the modified lines back to the file
-    with open(file_path, "w+", encoding='utf-8') as file:
-        file.writelines(modified_lines)
-    pass
+    if changedFlag:
+        print(file_path)
+        # Write the modified lines back to the file
+        with open(file_path, "w+", encoding='utf-8') as file:
+            file.writelines(modified_lines)
+    
 
 # Example usage:
 folder_path = r"C:\Developer\Subtitles\file\subtitle"

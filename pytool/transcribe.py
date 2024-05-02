@@ -97,13 +97,12 @@ def transcribe_func() :
             os.remove(srtPath)
         f = open(srtPath, "w", encoding='utf-8')
         #print(cmd,srtPath)
-        lineCount = 1
+        lineCount = 0
         t_start = datetime.now()
         pt = ''
         for segment in segments :
-            #print("write linecount")
-            #f.write(str(lineCount)+"\n")
-            #print(str(lineCount))
+            lineCount += 1
+            f.write(str(lineCount)+"\n")
             s = utils.secondsToStr(segment.start)
             e = utils.secondsToStr(segment.end)
             f.write( s + ' --> ' + e +"\n")
