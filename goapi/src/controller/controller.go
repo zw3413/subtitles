@@ -8,6 +8,7 @@ import (
 	"goapi/src/model"
 	"goapi/src/utils"
 	"io"
+	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -51,28 +52,51 @@ func getInt(value interface{}) int {
 }
 func SaveSubtitle(c *gin.Context) {
 	var err error
+	var errLog string
+	executeFlag := "Y"
+	var responseInfo model.ResponseInfo
+	requestObj := make(map[string]interface{})
+	startTime := time.Now()
+	startTimeStr := startTime.Format("20060102150405")
+	requestBody, err := io.ReadAll(c.Request.Body)
+	var seed_id string
 	defer func() {
-		if r := recover(); r != nil {
-			log.LOGGER("SUBX").Error(r)
-			c.JSON(500, "error")
-			return
-		}
-		if err != nil {
-			log.LOGGER("SUBX").Error(err)
-			c.JSON(500, "error")
-		} else {
-			c.JSON(200, "success")
-		}
-	}()
-	json := make(map[string]interface{})
-	c.BindJSON(&json)
+		costtime := (time.Now().UnixNano() - startTime.UnixNano()) / 1000000
+		responseInfo.CostTime = strconv.FormatInt(costtime, 10)
 
-	seed_id := getString(json["seed_id"])
-	path := getString(json["path"])
-	language := getString(json["language"])
-	format := getString(json["format"])
-	source := getString(json["source"])
-	origin_id := getString(json["origin_id"])
+		responseInfo.Rc = "000"
+		responseInfo.Rm = "OK"
+
+		if err != nil {
+			executeFlag = "N"
+			errLog = fmt.Sprintf("[SaveSubtitle] defer error:%v", err)
+			log.LOGGER("SUBX").Error(errLog)
+			responseInfo.Rc = "998"
+			responseInfo.Rm = "系統異常，" + errLog
+		}
+
+		if err := recover(); err != nil {
+			executeFlag = "N"
+			errLog = fmt.Sprintf("[SaveSubtitle] defer error:%v", err)
+			log.LOGGER("SUBX").Error(errLog)
+			responseInfo.Rc = "999"
+			responseInfo.Rm = "系統異常，" + errLog
+		}
+		jsonStr, _ := json.Marshal(responseInfo)
+		if executeFlag == "N" || utils.Iswritetsdb() == "Y" {
+			go utils.InfluxLogDataNew("SaveSubtitle", seed_id, strconv.FormatInt(costtime, 10), c.Request.RequestURI,
+				"", "", executeFlag, string(requestBody), string(jsonStr), c.RemoteIP(), "", errLog, startTimeStr, "", false, false)
+		}
+		c.JSON(http.StatusOK, responseInfo)
+	}()
+
+	c.BindJSON(&requestObj)
+	seed_id = getString(requestObj["seed_id"])
+	path := getString(requestObj["path"])
+	language := getString(requestObj["language"])
+	format := getString(requestObj["format"])
+	source := getString(requestObj["source"])
+	origin_id := getString(requestObj["origin_id"])
 
 	_, err = dao.InsertSubtitle(seed_id, path, language, format, source, origin_id)
 }
@@ -80,38 +104,67 @@ func SaveSubtitle(c *gin.Context) {
 // 新增一个新的seed
 func SaveSeed(c *gin.Context) {
 	var err error
+	var errLog string
+	executeFlag := "Y"
+	var responseInfo model.ResponseInfo
+	requestObj := make(map[string]interface{})
+	startTime := time.Now()
+	startTimeStr := startTime.Format("20060102150405")
+	requestBody, err := io.ReadAll(c.Request.Body)
+	var (
+		id       string
+		video_no string
+	)
+	//日誌記錄及異常處理
 	defer func() {
-		if r := recover(); r != nil {
-			log.LOGGER("SUBX").Error(r)
-			c.JSON(500, "error")
-			return
-		}
+		costtime := (time.Now().UnixNano() - startTime.UnixNano()) / 1000000
+		responseInfo.CostTime = strconv.FormatInt(costtime, 10)
+
+		responseInfo.Rc = "000"
+		responseInfo.Rm = "OK"
+
 		if err != nil {
-			log.LOGGER("SUBX").Error(err)
-			c.JSON(500, "error")
-		} else {
-			c.JSON(200, "success")
+			executeFlag = "N"
+			errLog = fmt.Sprintf("[SaveSeed] defer error:%v", err)
+			log.LOGGER("SUBX").Error(errLog)
+			responseInfo.Rc = "998"
+			responseInfo.Rm = "系統異常，" + errLog
 		}
+
+		if err := recover(); err != nil {
+			executeFlag = "N"
+			errLog = fmt.Sprintf("[SaveSeed] defer error:%v", err)
+			log.LOGGER("SUBX").Error(errLog)
+			responseInfo.Rc = "999"
+			responseInfo.Rm = "系統異常，" + errLog
+		}
+		jsonStr, _ := json.Marshal(responseInfo)
+		if executeFlag == "N" || utils.Iswritetsdb() == "Y" {
+			go utils.InfluxLogDataNew("SaveSeed", id, strconv.FormatInt(costtime, 10), c.Request.RequestURI,
+				"", "", executeFlag, string(requestBody), string(jsonStr), c.RemoteIP(), "", errLog, startTimeStr, "", false, false)
+		}
+		c.JSON(http.StatusOK, responseInfo)
 	}()
-	json := make(map[string]interface{})
-	c.BindJSON(&json)
-	id := getString(json["id"])
-	video_no := getString(json["video_no"])
-	video_name := getString(json["video_name"])
-	video_page_url := getString(json["video_page_url"])
-	video_m3u8_url := getString(json["video_m3u8_url"])
-	mp3_path := getString(json["mp3_path"])
-	srt_path := getString(json["srt_path"])
-	video_language := getString(json["video_language"])
-	video_desc := getString(json["video_desc"])
-	process_status := getString(json["process_status"])
-	err_msg := getString(json["err_msg"])
+
+	c.BindJSON(&requestObj)
+	id = getString(requestObj["id"])
+	video_no = getString(requestObj["video_no"])
+	video_name := getString(requestObj["video_name"])
+	video_page_url := getString(requestObj["video_page_url"])
+	video_m3u8_url := getString(requestObj["video_m3u8_url"])
+	mp3_path := getString(requestObj["mp3_path"])
+	srt_path := getString(requestObj["srt_path"])
+	video_language := getString(requestObj["video_language"])
+	video_desc := getString(requestObj["video_desc"])
+	process_status := getString(requestObj["process_status"])
+	err_msg := getString(requestObj["err_msg"])
 
 	if id != "" {
 		_, err = dao.UpdateSeed(id, video_no, video_name, video_page_url, video_m3u8_url, mp3_path, srt_path, video_language, video_desc, process_status, err_msg)
 	} else {
 		_, err = dao.InsertSeed(video_no, video_name, video_page_url, video_m3u8_url, mp3_path, srt_path, video_language, video_desc)
 	}
+
 }
 func GetSeed(c *gin.Context) {
 	var err error
