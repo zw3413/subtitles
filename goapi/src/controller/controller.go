@@ -90,7 +90,6 @@ func SaveSubtitle(c *gin.Context) {
 		c.JSON(http.StatusOK, responseInfo)
 	}()
 	err = json.Unmarshal(requestBody, &requestObj)
-	c.BindJSON(&requestObj)
 	seed_id = getString(requestObj["seed_id"])
 	path := getString(requestObj["path"])
 	language := getString(requestObj["language"])

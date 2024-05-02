@@ -24,18 +24,10 @@ import (
 var Db *sql.DB
 
 func InsertSubtitle(seed_id, path, language, format, source, origin_id string) ([]map[string]interface{}, error) {
-	defer func() {
-		if r := recover(); r != nil {
-			log.Println("Recovered from ", r)
-			return
-		}
-	}()
-
 	sql := `
 	insert into subtitle (seed_id, path, language, format, source, origin_id)
 	values ($1,$2,$3,$4,$5,$6)
 	`
-
 	result, err := utils.GetAllData(sql, seed_id, path, language, format, source, origin_id)
 	if err != nil {
 		return nil, err

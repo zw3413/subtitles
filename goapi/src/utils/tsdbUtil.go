@@ -159,7 +159,7 @@ func TsWrite(tablename string, tsData TsEntityObj) {
 			if err != nil {
 				log.LOGGER("SUBX").Error(fmt.Sprintf("bath insert error:%v", err))
 			} else {
-				log.LOGGER("SUBX").Info(fmt.Sprintf("bath insert %v ok", currSliceLen))
+				//log.LOGGER("SUBX").Info(fmt.Sprintf("bath insert %v ok", currSliceLen))
 			}
 			// 关闭
 			br.Close()

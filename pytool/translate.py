@@ -211,7 +211,10 @@ def translate_func():
         
         request.SaveSubtitle(subtitle)  
         request.PostWantFullfilled(seed["want_id"],'Y') 
-        seed["process_status"] = "3" 
+        if seed["process_status"] == "8" or seed["process_status"] == "9" :
+            seed["process_status"] = "9" 
+        else :
+            seed["process_status"] = "3"    
         seed["err_msg"]= ""
         request.SaveSeed(seed)
     except Exception as e:
