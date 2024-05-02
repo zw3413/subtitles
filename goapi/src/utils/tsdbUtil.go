@@ -61,7 +61,7 @@ func InfluxLogDataNew(tablename string, keycode string, cstime string, path stri
 	defer func() {
 		if err := recover(); err != nil {
 			errLog := fmt.Sprintf("send2Influx  panic: %v", err)
-			log.LOGGER("NEWSFC").Error(errLog)
+			log.LOGGER("SUBX").Error(errLog)
 		}
 	}()
 	ts_model := TsEntityObj{}
@@ -87,8 +87,18 @@ func InfluxLogDataNew(tablename string, keycode string, cstime string, path stri
 	ts_model.Returnmessage = responseMsg
 	ts_model.Executeflag = executeFlag
 	ts_model.Usereamil = useremail
-	ts_model.subscribed = subscribed
-	ts_model.inlimit = inlimit
+
+	if subscribed {
+		ts_model.subscribed = "Y"
+	} else {
+		ts_model.subscribed = "N"
+	}
+
+	if inlimit {
+		ts_model.inlimit = "Y"
+	} else {
+		ts_model.inlimit = "N"
+	}
 
 	// 同时写入 timescaledb
 	//HACK:: 请求的时间和返回的时间 处理存在问题
@@ -147,9 +157,9 @@ func TsWrite(tablename string, tsData TsEntityObj) {
 			// 执行
 			_, err := br.Exec()
 			if err != nil {
-				log.LOGGER("NEWSFC").Error(fmt.Sprintf("bath insert error:%v", err))
+				log.LOGGER("SUBX").Error(fmt.Sprintf("bath insert error:%v", err))
 			} else {
-				log.LOGGER("NEWSFC").Info(fmt.Sprintf("bath insert %v ok", currSliceLen))
+				log.LOGGER("SUBX").Info(fmt.Sprintf("bath insert %v ok", currSliceLen))
 			}
 			// 关闭
 			br.Close()
@@ -197,8 +207,8 @@ func createTableIfNotExists(tablename string) (bool, error) {
   "executeflag" text COLLATE "pg_catalog"."default",
   "hashcode" text COLLATE "pg_catalog"."default",
   "useremail" text COLLATE "pg_catalog"."default",
-  "subscribed" bool COLLATE "pg_catalog"."default",
-  "inlimit" bool COLLATE "pg_catalog"."default"
+  "subscribed" text COLLATE "pg_catalog"."default",
+  "inlimit" text COLLATE "pg_catalog"."default"
   )
   ;
   COMMENT ON COLUMN "timescale_hypertable_template"."time" IS '超表需要的time';
@@ -209,7 +219,6 @@ func createTableIfNotExists(tablename string) (bool, error) {
   COMMENT ON COLUMN "timescale_hypertable_template"."requestid" IS '请求的requestid';
   COMMENT ON COLUMN "timescale_hypertable_template"."requestparam" IS '请求的参数';
   COMMENT ON COLUMN "timescale_hypertable_template"."clientip" IS '客户端的ip';
-  COMMENT ON COLUMN "timescale_hypertable_template"."equipmentip" IS '服务器ip';
   COMMENT ON COLUMN "timescale_hypertable_template"."responsedate" IS '处理完成时间';
   COMMENT ON COLUMN "timescale_hypertable_template"."costtime" IS '处理执行的实际';
   COMMENT ON COLUMN "timescale_hypertable_template"."responseparam" IS '返回的参数';
@@ -231,13 +240,13 @@ func createTableIfNotExists(tablename string) (bool, error) {
 	//select count(*) from pg_tables where  tablename='tcuser';
 	err := ts_dbPool.QueryRow(context.Background(), "select count(*) from pg_tables where  tablename = $1", tablename).Scan(&i_tablecount)
 	if err != nil {
-		log.LOGGER("NEWSFC").Error(fmt.Sprintf("query table %s error:%v", tablename, err))
+		log.LOGGER("SUBX").Error(fmt.Sprintf("query table %s error:%v", tablename, err))
 		return false, err
 	}
 	if i_tablecount <= 0 {
 		_, err = ts_dbPool.Exec(context.Background(), queryCreateTableIfNotExists)
 		if err != nil {
-			log.LOGGER("NEWSFC").Error(fmt.Sprintf("create hypertable table %s error:%v", tablename, err))
+			log.LOGGER("SUBX").Error(fmt.Sprintf("create hypertable table %s error:%v", tablename, err))
 			return false, err
 		}
 
@@ -245,7 +254,7 @@ func createTableIfNotExists(tablename string) (bool, error) {
 		//新建表后建保留策略 默認保留 7天
 		err = ts_dbPool.QueryRow(context.Background(), "select count(*) from timescaledb_information.jobs where hypertable_name=$1", tablename).Scan(&i_jobcount)
 		if err != nil {
-			log.LOGGER("NEWSFC").Error(fmt.Sprintf("query jobs table %s error:%v", tablename, err))
+			log.LOGGER("SUBX").Error(fmt.Sprintf("query jobs table %s error:%v", tablename, err))
 			return false, err
 		}
 		if i_jobcount <= 0 {
@@ -255,7 +264,7 @@ func createTableIfNotExists(tablename string) (bool, error) {
 			add_policy := "SELECT add_retention_policy('" + tablename + "', INTERVAL '" + strconv.Itoa(ts_policyHour) + " hours');"
 			_, err = ts_dbPool.Exec(context.Background(), add_policy)
 			if err != nil {
-				log.LOGGER("NEWSFC").Error(fmt.Sprintf("add_retention_policy table %s error:%v", tablename, err))
+				log.LOGGER("SUBX").Error(fmt.Sprintf("add_retention_policy table %s error:%v", tablename, err))
 				return false, err
 			}
 
@@ -275,7 +284,7 @@ func UseTimeScaleDbPool() {
 	ts_username = iniConfig.Read("timescaledb", "ts_username")
 	ts_passwd = iniConfig.Read("timescaledb", "ts_passwd")
 	ts_connInfo := fmt.Sprintf("postgres://%s:%s@%s:%d/%s", ts_username, ts_passwd, ts_dbhost, ts_dbport, ts_dbname)
-	log.LOGGER("NEWSFC").Info(ts_connInfo)
+	log.LOGGER("SUBX").Info(ts_connInfo)
 	ts_databasePool, err := pgxpool.Connect(context.Background(), ts_connInfo)
 	//database.SetConnMaxLifetime(10 * time.Second)
 	ts_maxopenconn, _ = strconv.Atoi(iniConfig.Read("timescaledb", "ts_maxopenconn"))
@@ -308,6 +317,6 @@ type TsEntityObj struct {
 	Executeflag   string
 	Hashcode      string
 	Usereamil     string
-	subscribed    bool
-	inlimit       bool
+	subscribed    string
+	inlimit       string
 }

@@ -128,7 +128,7 @@ func AllPurpose(c *gin.Context) {
 		errInfo := fmt.Sprintf("[wheel.AllPurpose] Func SQL execute error:%v", err)
 		responseInfo.Rc = "5001"
 		responseInfo.Rm = errInfo
-		log.LOGGER("NEWSFC").Error(errInfo)
+		log.LOGGER("SUBX").Error(errInfo)
 		return
 	}
 	responseInfo.Rc = "000"

@@ -1,11 +1,12 @@
 package main
 
 import (
+	"fmt"
+	"goapi/src/configs"
 	"goapi/src/controller"
 	"goapi/src/controller/wheel"
 	"goapi/src/dao"
 	"goapi/src/library/response"
-	"log"
 	"net/http"
 	"os/exec"
 	"runtime"
@@ -13,17 +14,26 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	log "github.com/jeanphorn/log4go"
 )
 
-func init() {
+var iniConfig *configs.Config
 
+func init() {
+	iniConfig = new(configs.Config)
+	path := configs.GetProjectPath()
+	log.LoadConfiguration(path + "/logconf.json")
+	iniConfig.InitConfig()
+
+	log.LOGGER("SUBX").Info("Server Start")
 }
 
 func main() {
 
 	defer func() {
-		if r := recover(); r != nil {
-			log.Println("Recovered in f", r)
+		if err := recover(); err != nil {
+			errLog := fmt.Sprintf("[SaveSubtitle] defer error:%v", err)
+			log.LOGGER("SUBX").Error(errLog)
 		}
 		if dao.Db != nil {
 			dao.Db.Close()
@@ -112,10 +122,10 @@ func startPyTool() {
 		for {
 			out, err := exec.Command("python3", "../pytool/main.py", "download").Output()
 			if err != nil {
-				log.Println("PyTool error and exit.")
-				log.Println(err)
+				log.LOGGER("SUBX").Error("PyTool error and exit.")
+				log.LOGGER("SUBX").Error(err)
 			}
-			log.Println(string(out))
+			log.LOGGER("SUBX").Info(string(out))
 			//go routione sleep for 1 second
 			time.Sleep(5 * time.Second)
 		}
@@ -125,17 +135,13 @@ func startPyTool() {
 		for {
 			out, err := exec.Command("python3", "../pytool/main.py", "transcribe").Output()
 			if err != nil {
-				log.Println("PyTool error and exit.")
-				log.Println(err)
+				log.LOGGER("SUBX").Error("PyTool error and exit.")
+				log.LOGGER("SUBX").Error(err)
 			}
-			log.Println(string(out))
+			log.LOGGER("SUBX").Info(string(out))
 			//go routione sleep for 1 second
 			time.Sleep(5 * time.Second)
 		}
-	}()
-
-	go func() {
-
 	}()
 
 }

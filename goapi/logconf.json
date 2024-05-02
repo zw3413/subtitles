@@ -1,7 +1,9 @@
 {
     "console": {
+        "category": "SUBX",
         "enable": true,		
-        "level": "INFO"
+        "level": "INFO",
+        "pattern": "[%D %T] [%C] [%L] (%S) %M"
     },  
     "files": [{ 
         "enable": true,
