@@ -199,7 +199,7 @@ def translate_func():
         out_put = translate(src_path, tgt_path, src_lang, tgt_lang) 
         if len(out_put) > 0:
             request.PostWantFullfilled(seed["want_id"],out_put)
-            #print(out_put)
+            print(out_put)
             return
         subtitle = {}
         subtitle["language"] = tgt_lang

@@ -127,9 +127,10 @@ def translate(src_path, tgt_path, src_lang, tgt_lang) :
                 tgt_file.write('\n')
             tgt_file.write(line)
             tgt_file.write('\n')
-        
         tgt_file.close()
         tgt_file_tmp.close()
+        if count <= 3 :
+            return "line count less than 3"
        #os.remove(tgt_path_tmp)
 
         return ""    

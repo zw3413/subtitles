@@ -85,12 +85,30 @@ def addLineNumber(file_path):
         # Write the modified lines back to the file
         with open(file_path, "w+", encoding='utf-8') as file:
             file.writelines(modified_lines)
-    
 
+def file_line_count_greater_2(file_path):
+    line_count = 0 
+    encoding = detect_encoding(file_path)
+    with open(file_path, "r",encoding=encoding) as file:
+        for line in file:
+            if line_count >=2 :
+                return True
+            line_count+=1
+
+ 
+def find_possible_issue_1(file_path):
+    text_files = get_text_files_in_folder(folder_path)
+    for file_path in text_files:
+        try:
+            if(not file_line_count_greater_2(file_path)):
+                print(file_path)
+        except Exception as e:
+            print(file_path)
+            print(e)
+            pass
 # Example usage:
 folder_path = r"C:\Developer\Subtitles\file\subtitle"
 regex_pattern = r"^\d{2}:\d{2}:\d{2},\d{3} --> \d{2}:\d{2}:\d{2},\d{3}.+$"
-#process_text_files(folder_path, regex_pattern)
-
-
-process_text_files_1(folder_path)
+#process_text_files(folder_path, regex_pattern) #打断时间戳与内容连起来的情况
+#process_text_files_1(folder_path)  #添加数字行号，但是一些小语种例如rus等 格式还是有好多混乱
+find_possible_issue_1(folder_path)
