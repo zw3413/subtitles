@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"goapi/src/utils"
 	"log"
+	"sync"
 	"time"
 )
 
@@ -343,16 +344,11 @@ func GetWantsNotProcess(seed_id string) ([]map[string]interface{}, error) {
 	return data, nil
 }
 
+var mutex sync.Mutex
+
 func WantSeed() ([]map[string]interface{}, error) {
-	// sql := `
-	// 	select t1.id as "want_id", split_part(t1.want_lang,'&&',1)  as "want_lang" , t2.*
-	// 	from want t1
-	// 	join seed t2 on t1.seed_id = t2.id::text
-	// 	where t1.fullfilled = 'N' and t2.process_status in ('2','3')
-	// 	order by t1.create_time
-	// 	limit 1
-	// `
 	defer func() {
+		mutex.Unlock()
 		if r := recover(); r != nil {
 			log.Println("Recovered from ", r)
 			return
@@ -365,7 +361,9 @@ func WantSeed() ([]map[string]interface{}, error) {
 	o_mp3_path as "mp3_path", o_video_no as "video_no", o_video_desc as "video_desc"
 	from p_get_want()
 	`
+	mutex.Lock()
 	data, err := utils.GetAllData(sql)
+
 	if err != nil {
 		log.Println(err)
 		return nil, err
@@ -476,6 +474,30 @@ func UpdateSeedProcessstatus(seedId int64, processStatus string) {
 		update seed set process_status = $1 where seed_id = $2
 	`
 	utils.GetAllData(sql, processStatus, seedId)
+}
+
+func CheckClientUUID(userUUID string) (bool, error) {
+	var data []map[string]interface{}
+	var err error
+	if userUUID == "" {
+		return false, nil
+	}
+	sql := `
+		select count(1) 
+		from client_uuid
+		where client_uuid = $1
+		and status = 'Y';
+	`
+	data, err = utils.GetAllData(sql, userUUID)
+	if err != nil {
+		return false, err
+	}
+	if len(data) > 0 {
+		return true, nil
+	} else {
+		return false, nil
+	}
+
 }
 
 func GetTodayVisitedSubtitlesByUser(email, userUUID string) []string {

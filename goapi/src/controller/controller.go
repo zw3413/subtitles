@@ -417,7 +417,15 @@ func GetSubtitleWithUUID(c *gin.Context) {
 		return
 	}
 
-	inLimit = user.CheckIfInLimit(request.User, uuid)
+	inLimit, err = user.CheckIfInLimit(request.User, uuid)
+	if err != nil {
+		executeFlag = "N"
+		errMsg = err.Error()
+		log.LOGGER("SUBX").Error(err)
+		respCode = 500
+		response = "error"
+		return
+	}
 	path, err := os.Getwd()
 	if err != nil {
 		executeFlag = "N"
@@ -548,6 +556,7 @@ func GetWantsNotProcess(c *gin.Context) {
 	seed_id := c.Query("seed_id")
 	data, err = dao.GetWantsNotProcess(seed_id)
 }
+
 func WantSeed(c *gin.Context) {
 	var err error
 	var data []map[string]interface{}
