@@ -85,7 +85,7 @@ func SaveSubtitle(c *gin.Context) {
 		jsonStr, _ := json.Marshal(responseInfo)
 		if executeFlag == "N" || utils.Iswritetsdb() == "Y" {
 			go utils.InfluxLogDataNew("SaveSubtitle", seed_id, strconv.FormatInt(costtime, 10), c.Request.RequestURI,
-				"", "", executeFlag, string(requestBody), string(jsonStr), c.RemoteIP(), "", errLog, startTimeStr, "", false, false)
+				"", "", executeFlag, string(requestBody), string(jsonStr), c.ClientIP(), "", errLog, startTimeStr, "", false, false)
 		}
 		c.JSON(http.StatusOK, responseInfo)
 	}()
@@ -140,7 +140,7 @@ func SaveSeed(c *gin.Context) {
 		jsonStr, _ := json.Marshal(responseInfo)
 		if executeFlag == "N" || utils.Iswritetsdb() == "Y" {
 			go utils.InfluxLogDataNew("SaveSeed", id, strconv.FormatInt(costtime, 10), c.Request.RequestURI,
-				"", "", executeFlag, string(requestBody), string(jsonStr), c.RemoteIP(), "", errLog, startTimeStr, "", false, false)
+				"", "", executeFlag, string(requestBody), string(jsonStr), c.ClientIp(), "", errLog, startTimeStr, "", false, false)
 		}
 		c.JSON(http.StatusOK, responseInfo)
 	}()
@@ -384,7 +384,7 @@ func GetSubtitleWithUUID(c *gin.Context) {
 		//tsdb日志记录
 		if executeFlag == "N" || utils.Iswritetsdb() == "Y" {
 			go utils.InfluxLogDataNew("subtitlex", uuid, strconv.FormatInt(costtime, 10), c.Request.RequestURI,
-				"GetSubtitleWithUUID", request.RequestId, executeFlag, string(reqBody), errMsg, c.RemoteIP(), "", response, startTimeStr, user_email, subscribed, inlimit)
+				"GetSubtitleWithUUID", request.RequestId, executeFlag, string(reqBody), errMsg, c.ClientIP(), "", response, startTimeStr, user_email, subscribed, inlimit)
 		}
 		c.String(respCode, response)
 	}()

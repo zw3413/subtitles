@@ -65,7 +65,7 @@ func AllPurpose(c *gin.Context) {
 		jsonStr, _ := json.Marshal(responseInfo)
 		if executeFlag == "N" || utils.Iswritetsdb() == "Y" {
 			go utils.InfluxLogDataNew("wheel.AllPurpose", "", strconv.FormatInt(costtime, 10), c.Request.RequestURI,
-				requestInfo.Function, requestInfo.RequestID, executeFlag, string(reqBody), string(jsonStr), c.RemoteIP(), "", "", startTimeStr, "", false, false)
+				requestInfo.Function, requestInfo.RequestID, executeFlag, string(reqBody), string(jsonStr), c.ClientIP(), "", "", startTimeStr, "", false, false)
 		}
 		c.JSON(http.StatusOK, responseInfo)
 	}()
@@ -175,7 +175,7 @@ func AllPurpose_external(c *gin.Context) {
 		jsonStr, _ := json.Marshal(responseInfo)
 		if executeFlag == "N" || utils.Iswritetsdb() == "Y" {
 			go utils.InfluxLogDataNew("wheel.AllPurpose_external", "", strconv.FormatInt(costtime, 10), c.Request.RequestURI,
-				function_name, client_uuid, executeFlag, string(reqBody), string(jsonStr), c.RemoteIP(), "", "", startTimeStr, "", false, false)
+				function_name, client_uuid, executeFlag, string(reqBody), string(jsonStr), c.ClientIP(), "", "", startTimeStr, "", false, false)
 		}
 		c.JSON(http.StatusOK, responseInfo)
 	}()
