@@ -140,7 +140,7 @@ func SaveSeed(c *gin.Context) {
 		jsonStr, _ := json.Marshal(responseInfo)
 		if executeFlag == "N" || utils.Iswritetsdb() == "Y" {
 			go utils.InfluxLogDataNew("SaveSeed", id, strconv.FormatInt(costtime, 10), c.Request.RequestURI,
-				"", "", executeFlag, string(requestBody), string(jsonStr), c.ClientIp(), "", errLog, startTimeStr, "", false, false)
+				"", "", executeFlag, string(requestBody), string(jsonStr), c.ClientIP(), "", errLog, startTimeStr, "", false, false)
 		}
 		c.JSON(http.StatusOK, responseInfo)
 	}()
