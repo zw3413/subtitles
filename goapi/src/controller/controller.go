@@ -694,6 +694,7 @@ func Client_UUID(c *gin.Context) {
 	startTimeStr := startTime.Format("20060102150405")
 	requestBody, err := io.ReadAll(c.Request.Body)
 	var seed_id string
+	var uuid string
 	defer func() {
 		costtime := (time.Now().UnixNano() - startTime.UnixNano()) / 1000000
 		responseInfo.CostTime = strconv.FormatInt(costtime, 10)
@@ -718,14 +719,14 @@ func Client_UUID(c *gin.Context) {
 		}
 		jsonStr, _ := json.Marshal(responseInfo)
 		if executeFlag == "N" || utils.Iswritetsdb() == "Y" {
-			go utils.InfluxLogDataNew("Client_UUID", seed_id, strconv.FormatInt(costtime, 10), c.Request.RequestURI,
-				"", "", executeFlag, string(requestBody), string(jsonStr), c.RemoteIP(), "", errLog, startTimeStr, "", false, false)
+			go utils.InfluxLogDataNew("api2", seed_id, strconv.FormatInt(costtime, 10), c.Request.RequestURI,
+				"Client_UUID", uuid, executeFlag, string(requestBody), string(jsonStr), c.ClientIP(), "", errLog, startTimeStr, "", false, false)
 		}
 		c.JSON(http.StatusOK, responseInfo)
 	}()
 	clientIp := c.ClientIP()
 	//去数据库client_uuid表中查其uuid
-	uuid, err := dao.GetUuidByClientIp(clientIp)
+	uuid, err = dao.GetUuidByClientIp(clientIp)
 	if err != nil {
 		executeFlag = "N"
 		errLog = fmt.Sprintf("[Client_UUID] defer error:%v", err)

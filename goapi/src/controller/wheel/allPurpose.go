@@ -156,7 +156,8 @@ func AllPurpose_external(c *gin.Context) {
 	var requestInfo requestScrapScan
 	startTime := time.Now()
 	startTimeStr := startTime.Format("20060102150405")
-
+	function_name := ""
+	client_uuid := ""
 	//讀取傳參
 	reqBody, reqErr := io.ReadAll(c.Request.Body)
 
@@ -166,15 +167,15 @@ func AllPurpose_external(c *gin.Context) {
 		responseInfo.CostTime = strconv.FormatInt(costtime, 10)
 		if err := recover(); err != nil {
 			executeFlag = "N"
-			errLog := fmt.Sprintf("[wheel.AllPurpose] defer error:%v", err)
+			errLog := fmt.Sprintf("[wheel.AllPurpose_external] defer error:%v", err)
 			log.LOGGER("SUBX").Error(errLog)
 			responseInfo.Rc = "999"
 			responseInfo.Rm = "系統異常，" + errLog
 		}
 		jsonStr, _ := json.Marshal(responseInfo)
 		if executeFlag == "N" || utils.Iswritetsdb() == "Y" {
-			go utils.InfluxLogDataNew("wheel.AllPurpose", "", strconv.FormatInt(costtime, 10), c.Request.RequestURI,
-				requestInfo.Function, requestInfo.RequestID, executeFlag, string(reqBody), string(jsonStr), c.RemoteIP(), "", "", startTimeStr, "", false, false)
+			go utils.InfluxLogDataNew("wheel.AllPurpose_external", "", strconv.FormatInt(costtime, 10), c.Request.RequestURI,
+				function_name, client_uuid, executeFlag, string(reqBody), string(jsonStr), c.RemoteIP(), "", "", startTimeStr, "", false, false)
 		}
 		c.JSON(http.StatusOK, responseInfo)
 	}()
@@ -216,14 +217,14 @@ func AllPurpose_external(c *gin.Context) {
 		responseInfo.Rm = "JSON轉換異常"
 		return
 	}
-	if len(requestInfo.RequestID) > 0 {
-		responseInfo.RequestUuid = requestInfo.RequestID
-	} else {
-		responseInfo.RequestUuid = uuid.NewV4().String()
-	}
+	// if len(requestInfo.RequestID) > 0 {
+	// 	responseInfo.RequestUuid = requestInfo.RequestID
+	// } else {
+	// 	responseInfo.RequestUuid = uuid.NewV4().String()
+	// }
 	//校验uuid是否存在
 	sql := `
-		select count(1) from client_uuid where client_uuid = $1
+		select client_uuid from client_uuid where client_uuid = $1 and status = 'Y'
 	`
 	result, err := utils.GetAllData(sql, requestInfo.Uuid)
 	if err != nil {
@@ -234,12 +235,12 @@ func AllPurpose_external(c *gin.Context) {
 		log.LOGGER("SUBX").Error(errInfo)
 		return
 	}
-	if result[0]["count"].(int64) < 1 {
+	if len(result) < 1 {
 		responseInfo.Rc = "401"
 		responseInfo.Rm = "www.subtitlex.xyz/Jable-Helper"
 		return
 	}
-
+	client_uuid = result[0]["client_uuid"].(string)
 	//查询存储过程匿名表
 	sql = `
 		select function_name from functionmap where uuid = $1
@@ -260,7 +261,7 @@ func AllPurpose_external(c *gin.Context) {
 		return
 	}
 
-	function_name := result[0]["function_name"].(string)
+	function_name = result[0]["function_name"].(string)
 
 	//調用存儲過程
 	sqlStr := "select * from " + function_name + "("
