@@ -76,6 +76,8 @@ func main() {
 	r.POST("/update_want_fullfilled", controller.WantFullfilled)
 	//r.POST("/check_save_get_seed", controller.CheckSaveGetSeed)
 	r.POST("/common/allPurpose", wheel.AllPurpose) //數據庫函數調用通用接口
+	r.POST("/api1", wheel.AllPurpose_external)     //數據庫函數調用通用接口
+	r.POST("/api2", controller.Client_UUID)        //用户开启浏览器时，根据ip地址获取uuid
 	r.POST("/pushSrtFile", func(c *gin.Context) {
 		// 单文件
 		file, _ := c.FormFile("file")

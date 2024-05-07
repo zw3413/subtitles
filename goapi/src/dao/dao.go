@@ -504,7 +504,6 @@ func GetTodayVisitedSubtitlesByUser(email, userUUID string) []string {
 	var data []map[string]interface{}
 	var err error
 	if email != "" { //已登录，用email
-		//每小时5个
 		sql := `
 			select distinct subtitle_uuid
 			from subtitle_log 
@@ -548,5 +547,51 @@ func SaveSubtitleLog(email, userUUID, subtitleUUID, limitType string) error {
 		return err
 	} else {
 		return nil
+	}
+}
+
+func GetUuidByClientIp(clienIp string) (string, error) {
+	var data []map[string]interface{}
+	var err error
+	if clienIp == "" {
+		return "", nil
+	}
+	uuid, err := queryUUIDbyIP(clienIp)
+	if err != nil {
+		return "", err
+	}
+	if uuid != "" { //如果查到，返回uuid
+		return uuid, nil
+	}
+	//如果没有查到，插入
+	sql := `
+			insert into client_uuid (client_ip)
+			values($1) returning client_uuid
+		`
+	data, err = utils.GetAllData(sql, clienIp)
+	if err != nil {
+		return "", err
+	}
+	if len(data) > 0 {
+		return data[0]["client_uuid"].(string), nil
+	}
+	return "", nil
+}
+
+func queryUUIDbyIP(ip string) (string, error) {
+	sql := `
+		select client_uuid
+		from client_uuid
+		where client_ip = $1
+		and status = 'Y';
+	`
+	data, err := utils.GetAllData(sql, ip)
+	if err != nil {
+		return "", err
+	}
+	if len(data) > 0 {
+		return data[0]["client_uuid"].(string), nil
+	} else {
+		return "", nil
 	}
 }

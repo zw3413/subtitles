@@ -685,6 +685,71 @@ func CheckSaveGetSeed(c *gin.Context) {
 	//data, err = dao.WantSeed()
 }
 
+func Client_UUID(c *gin.Context) {
+	var err error
+	var errLog string
+	executeFlag := "Y"
+	var responseInfo model.ResponseInfo
+	startTime := time.Now()
+	startTimeStr := startTime.Format("20060102150405")
+	requestBody, err := io.ReadAll(c.Request.Body)
+	var seed_id string
+	defer func() {
+		costtime := (time.Now().UnixNano() - startTime.UnixNano()) / 1000000
+		responseInfo.CostTime = strconv.FormatInt(costtime, 10)
+
+		responseInfo.Rc = "000"
+		responseInfo.Rm = "OK"
+
+		if err != nil {
+			executeFlag = "N"
+			errLog = fmt.Sprintf("[Client_UUID] defer error:%v", err)
+			log.LOGGER("SUBX").Error(errLog)
+			responseInfo.Rc = "998"
+			responseInfo.Rm = "系統異常，" + errLog
+		}
+
+		if err := recover(); err != nil {
+			executeFlag = "N"
+			errLog = fmt.Sprintf("[Client_UUID] defer error:%v", err)
+			log.LOGGER("SUBX").Error(errLog)
+			responseInfo.Rc = "999"
+			responseInfo.Rm = "系統異常，" + errLog
+		}
+		jsonStr, _ := json.Marshal(responseInfo)
+		if executeFlag == "N" || utils.Iswritetsdb() == "Y" {
+			go utils.InfluxLogDataNew("Client_UUID", seed_id, strconv.FormatInt(costtime, 10), c.Request.RequestURI,
+				"", "", executeFlag, string(requestBody), string(jsonStr), c.RemoteIP(), "", errLog, startTimeStr, "", false, false)
+		}
+		c.JSON(http.StatusOK, responseInfo)
+	}()
+	clientIp := c.ClientIP()
+	//去数据库client_uuid表中查其uuid
+	uuid, err := dao.GetUuidByClientIp(clientIp)
+	if err != nil {
+		executeFlag = "N"
+		errLog = fmt.Sprintf("[Client_UUID] defer error:%v", err)
+		log.LOGGER("SUBX").Error(errLog)
+		responseInfo.Rc = "999"
+		responseInfo.Rm = "系統異常，" + errLog
+		return
+	}
+	responseInfo.Rc = "000"
+	responseInfo.Rm = "OK"
+	responseInfo.Data = uuid
+}
+
+// func getClientIpAddr(req *http.Request) string {
+// 	return req.RemoteAddr
+// }
+// func getClientIpAddrNginx(req *http.Request) string {
+// 	clientIp := req.Header.Get("X-FORWARDED-FOR")
+// 	if clientIp != "" {
+// 		return clientIp
+// 	}
+// 	return req.RemoteAddr
+// }
+
 type response struct {
 	rc   string      `json:"rc"`
 	rm   string      `json:"rm"`
