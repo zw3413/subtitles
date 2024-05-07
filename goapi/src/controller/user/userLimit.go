@@ -39,7 +39,7 @@ func CheckIfInLimit(user model.User, subtitleUuid string) (bool, error) { // inL
 	limit_num := 3 //未登录
 
 	if user.Email != "" { //已登录
-		limit_num = 5
+		limit_num = 3
 	} else {
 		if user.HasSub { //有订阅
 			expireDate := user.ExpireDate
