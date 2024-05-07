@@ -500,7 +500,7 @@ func CheckClientUUID(userUUID string) (bool, error) {
 
 }
 
-func GetTodayVisitedSubtitlesByUser(email, userUUID string) []string {
+func GetTodayVisitedSubtitlesByUser(email, userUUID string, hours string) []string {
 	var data []map[string]interface{}
 	var err error
 	if email != "" { //已登录，用email
@@ -509,8 +509,7 @@ func GetTodayVisitedSubtitlesByUser(email, userUUID string) []string {
 			from subtitle_log 
 			where email = $1
 			and type = 'subtitle'
-			and created_at > now() - interval '1 hour'  --之前一个小时内
-		`
+		` + "and created_at > now() - interval '" + hours + "' "
 		data, err = utils.GetAllData(sql, email)
 		if err != nil {
 			log.Println(err)
@@ -521,9 +520,8 @@ func GetTodayVisitedSubtitlesByUser(email, userUUID string) []string {
 			select distinct subtitle_uuid
 			from subtitle_log
 			where user_uuid = $1
-			and type = 'subtitle'
-			and created_at > now() - interval '1 hour'  --之前一个小时内
-		`
+			and type = 'subtitle' 
+		` + "and created_at > now() - interval '" + hours + "' "
 		data, err = utils.GetAllData(sql, userUUID)
 		if err != nil {
 			log.Println(err)
