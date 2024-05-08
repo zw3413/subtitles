@@ -83,6 +83,7 @@ def transcribe_func() :
             video_filePath_prefix+flvPath, 
             beam_size=5, 
             vad_filter=True, 
+            #language="ja",
             #vad_parameters=dict(min_silence_duration_ms=2000,max_speech_duration_s=10, threshold=0.4),
             #vad_parameters=dict(min_silence_duration_ms=2000,threshold=0.4),
             #vad_parameters=dict(min_silence_duration_ms=1000,threshold=0.4),
