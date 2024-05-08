@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"goapi/src/configs"
 	"goapi/src/controller"
+	"goapi/src/controller/user"
 	"goapi/src/controller/wheel"
 	"goapi/src/dao"
 	"goapi/src/library/response"
@@ -78,6 +79,7 @@ func main() {
 	r.POST("/common/allPurpose", wheel.AllPurpose) //數據庫函數調用通用接口
 	r.POST("/api1", wheel.AllPurpose_external)     //數據庫函數調用通用接口
 	r.POST("/api2", controller.Client_UUID)        //用户开启浏览器时，根据ip地址获取uuid
+	r.POST("/api3", user.UserUpload)
 	r.POST("/pushSrtFile", func(c *gin.Context) {
 		// 单文件
 		file, _ := c.FormFile("file")

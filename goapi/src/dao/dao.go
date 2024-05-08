@@ -593,3 +593,26 @@ func queryUUIDbyIP(ip string) (string, error) {
 		return "", nil
 	}
 }
+
+// 保存subtitle表
+func SaveUserUploadSubtitle(language, filepath, format, seed_uuid, source, md5 string) (string, error) {
+	sql := `
+		select count(1) from subtitle where md5 = $1
+	`
+	data, err := utils.GetAllData(sql, md5)
+	if err != nil {
+		return "", err
+	}
+	if data[0]["count"].(int64) > 0 {
+		return "existed", nil
+	}
+	sql = `
+		insert into subtitle (language, path, format, seed_id, source, md5)
+		values($1, $2, $3, (select id from seed where uuid = $4), $5, $6)
+	`
+	_, err = utils.GetAllData(sql, language, filepath, format, seed_uuid, source, md5)
+	if err != nil {
+		return "", err
+	}
+	return "saved", nil
+}
