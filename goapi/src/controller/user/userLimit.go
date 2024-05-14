@@ -25,8 +25,8 @@ func CheckIfInLimit(user model.User, subtitleUuid string) (bool, error) { // inL
 			expireDate := user.ExpireDate
 			//1714460795554  毫秒
 			//1714538617 //微秒
-			currentTime := time.Now().UnixNano()  //纳秒
-			if expireDate*1000000 > currentTime { //订阅有效
+			currentTime := time.Now().UnixNano()     //纳秒
+			if expireDate*1000000000 > currentTime { //订阅有效
 				limit_num = 50
 				hours := "24 hour"
 				subtitleUuids := dao.GetTodayVisitedSubtitlesByUser(user.Email, user.Uuid, hours)

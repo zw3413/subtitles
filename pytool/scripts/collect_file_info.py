@@ -4,7 +4,7 @@ print(os.getcwd())
 sys.path.append(os.getcwd())
 import request
 
-directory_path = './scripts/file/字幕包'  # 替换为你的目录路径  
+directory_path = './scripts/file/字幕包/JavSubsCh'  # 替换为你的目录路径  
 pattern_video_no_1 = re.compile(r'^[@,gachi]?([a-zA-Z\d{6}]+(_hd)?[-_\s]?S?[0-9]+)\s*.*\.([a-zA-Z]+)$')
 file_count = 0 
 unrecognized_count = 0
@@ -26,10 +26,10 @@ def get_all_files(directory):
                 if video_no is None:
                     print("没有识别到video_no，请关注", end=" ")
                     print(path)
-                language = 'cmn'
+                language = 'detect_cmn'
                 ext = match.group(3)
                 filename = name
-                filepath = path
+                filepath = path.replace('./scripts/file/','')
                 params = [video_no, language, ext, filename,filepath]
                 request.remote_call('p_save_zmbsubtitles',params)
             else:

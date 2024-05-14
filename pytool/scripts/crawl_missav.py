@@ -22,7 +22,7 @@ url_pattern = r'^/dm\d+/en/.+$'
 
 options = webdriver.ChromeOptions()
 options.add_argument('blink-settings=imagesEnabled=false')
-options.add_argument('window-size=300,300')
+options.add_argument('window-size=1200,900')
 # options.add_argument('no-startup-window') 
 # # If options.headless = True, the website will not load
 
@@ -56,7 +56,8 @@ def crawl_video_links(url):
         #如果未存在，先抓取seed信息，保存进数据库
         video_no = url.split('/')[len(url.split('/'))-1]
         #根据编号检查是否已经处理过
-        if r.sismember(dealed_video_no_set, video_no.replace('-uncensored-leak','')) > 0:
+        video_no_index = video_no.lower().replace('-chinese-subtitle','').replace('-uncensored-leak','').replace('-','').replace('_','').replace(' ','')
+        if r.sismember(dealed_video_no_set, video_no_index) > 0:
             pass
         else:
             hlsUrl = dr.execute_script('return window.source1280')
@@ -68,7 +69,7 @@ def crawl_video_links(url):
             seed["video_no"]= video_no
             params = [video_no,video_name,hlsUrl,url,'','crawl']
             request.remote_call('p_check_save_seed',params)
-            r.sadd(dealed_video_no_set,video_no.replace('-uncensored-leak',''))
+            r.sadd(dealed_video_no_set,video_no_index)
 
         #然后抓取推荐区的链接，递归
         # Example: Extract video links from <video> tags
@@ -82,7 +83,8 @@ def crawl_video_links(url):
                     if re.match(url_pattern, href):
                         href = "https://missav.com"+href
                         target_video_no = href.split('/')[len(url.split('/'))-1].replace('-uncensored-leak','')
-                        if r.sismember(dealed_video_no_set,target_video_no) == 0 :
+                        target_video_no_index = target_video_no.lower().replace('-chinese-subtitle','').replace('-uncensored-leak','').replace('-','').replace('_','').replace(' ','')
+                        if r.sismember(dealed_video_no_set,target_video_no_index) == 0 :
                             pos = r.lpos(pending_check_url_list,href)
                             if pos is None:
                                 r.rpush(pending_check_url_list, href)
