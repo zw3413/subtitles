@@ -606,13 +606,20 @@ func SaveUserUploadSubtitle(language, filepath, format, seed_uuid, source, md5 s
 	if data[0]["count"].(int64) > 0 {
 		return "existed", nil
 	}
+	// sql = `
+	// 	insert into subtitle (language, path, format, seed_id, source, md5)
+	// 	values($1, $2, $3, (select id from seed where uuid = $4), $5, $6)
+	// `
+
 	sql = `
-		insert into subtitle (language, path, format, seed_id, source, md5)
-		values($1, $2, $3, (select id from seed where uuid = $4), $5, $6)
+		select * from p_save_user_upload_subtitle($1,$2,$3,$4,$5,$6)
 	`
-	_, err = utils.GetAllData(sql, language, filepath, format, seed_uuid, source, md5)
+	result, err := utils.GetAllData(sql, language, filepath, format, seed_uuid, source, md5)
 	if err != nil {
 		return "", err
+	}
+	if result[0]["o_resultcode"].(string) != "000" {
+		return result[0]["o_resultmsg"].(string), nil
 	}
 	return "saved", nil
 }

@@ -60,6 +60,14 @@ func UserUpload(c *gin.Context) {
 	if ostype == "windows" {
 		dst = strings.Replace(dst, "/", "\\", -1)
 	}
+	err := c.SaveUploadedFile(file, dst)
+	if err != nil {
+		executeFlag = "N"
+		errMsg = err.Error()
+		responseInfo.Rc = "997"
+		responseInfo.Rm = "上傳失敗"
+		return
+	}
 	//计算md5
 	md5, err := utils.FileHash(dst)
 	if err != nil {
@@ -80,17 +88,10 @@ func UserUpload(c *gin.Context) {
 	}
 	if saved != "saved" {
 		executeFlag = "N"
-		errMsg = err.Error()
+		errMsg = saved
 		responseInfo.Rc = "000"
 		responseInfo.Rm = "OK_002"
 		return
 	}
-	err = c.SaveUploadedFile(file, dst)
-	if err != nil {
-		executeFlag = "N"
-		errMsg = err.Error()
-		responseInfo.Rc = "997"
-		responseInfo.Rm = "上傳失敗"
-		return
-	}
+
 }
