@@ -6,6 +6,7 @@ import os
 import time
 import sys
 from api_translate import translate
+import hashlib
 
 class Unbuffered:
     def __init__(self, stream):
@@ -51,13 +52,14 @@ def generate_new_filepath(existing_filepath, after_fix):
 import redis  
 # 创建Redis连接对象  
 r = redis.Redis(host='192.168.2.203', port=6379, db=0,decode_responses=True)
-zmb_dealed_subtitle_id = 'zmb_pending_subtitle_id'
+zmb_pending_subtitle_id = 'zmb_pending_subtitle_id'
 
 def translate_func():
-    subtitle_id = r.rpop(zmb_dealed_subtitle_id)
-    #subtitle_id = '18428'
+    subtitle_id = r.rpop(zmb_pending_subtitle_id)
+    #subtitle_id = '40025'
     subtitle_array = request.GetSubtitleInfo('','',subtitle_id)  #获取源语言
     if subtitle_array is None or len(subtitle_array) == 0:
+        print(subtitle_id, " subtitle is None")
         return
     origin_subtitle = subtitle_array[0]
     seed_id = origin_subtitle["seed_id"]
@@ -69,13 +71,16 @@ def translate_func():
         src_path = LocalPathPrefix + srt_path
         video_language = origin_subtitle["language"]
         src_lang = video_language
+        uuid = origin_subtitle["uuid"]
         #tgt_langs = ['cmn_Hant','eng','spa','por','swe','deu','arb','rus','fra','kor','ita']
-        tgt_langs = ['cmn_Hant','eng']
+        tgt_langs = ['cmn_Hant','eng','kor']
         for tgt_lang in tgt_langs:
             if tgt_lang == src_lang:
                 continue
             print(f"开始subtitle_id:{subtitle_id} {tgt_lang}")
             tgt_path, extension, tgt_filename = generate_new_filepath(src_path, tgt_lang)
+            tgt_filename = uuid +"_"+tgt_lang+".srt"
+            tgt_path = LocalPathPrefix + tgt_filename
             src_lang = 'auto'
             out_put = translate(src_path, tgt_path, src_lang, tgt_lang) 
             if len(out_put) > 0:
@@ -97,14 +102,14 @@ def translate_func():
         request.UpdateSeedStatus(str(seed_id), '5.1')
     except Exception as e:
         print(f"翻译异常{subtitle_id} "+str(e))
-        r.lpush(zmb_dealed_subtitle_id,subtitle_id)
+        r.lpush(zmb_pending_subtitle_id,subtitle_id)
 def doTranslate():
     while True :
         try:
             res = translate_func()
             if res is not None:
                 print(res)
-                return
+                #return
         except Exception as e:
             print(str(e))
         finally:
