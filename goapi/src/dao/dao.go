@@ -149,7 +149,7 @@ func SelectSeedNeedProcess(t string) ([]map[string]interface{}, error) {
 	case "download":
 		status = "0"
 		sql = `select * from seed 
-			where process_status = $1 
+			where process_status = $1 and (video_m3u8_url is not null and video_m3u8_url != '') 
 			order by client_ip nulls first , process_status, wanttimes desc, create_time 
 			limit 1`
 	case "transcribe":
