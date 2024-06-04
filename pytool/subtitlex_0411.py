@@ -98,7 +98,6 @@ def downloadFlv(url, filePath, quality = 'worst'):
     # match = re.search(r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}", url)
     # if match != None:
     #     fileName = match.group(0)+FLV_afterfix
-
     #delete the file at filePath if exist
     if os.path.exists(filePath):
         os.remove(filePath)

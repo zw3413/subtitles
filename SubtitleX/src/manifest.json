@@ -1,0 +1,30 @@
+{
+  "name": "SubtitleX",
+  "version": "0.2.1",
+  "description": "Immersive multilingual subtitles for online videos, such as Disney, Netflix, YouTube and many more!",
+  "manifest_version": 3,
+  "background": { "service_worker": "background.bundle.js" },
+  "action": {
+    "default_icon": "subtitlex-128.png"
+  },
+  "icons": {
+    "32": "subtitlex-32.png",
+    "64":"subtitlex-64.png",
+    "128":"subtitlex-128.png"
+  },
+  "permissions": ["storage","cookies","activeTab"],
+  "content_scripts": [
+    {
+      "run_at": "document_end",
+      "matches": ["<all_urls>"],
+      "js": ["contentScript.bundle.js"],
+      "all_frames": true
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["*.png","injectScript.bundle.js", "*.map"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}
