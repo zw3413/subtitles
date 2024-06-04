@@ -1,0 +1,147 @@
+{
+	"name": "subtitlex",
+	"version": "0.1.0",
+	"description": "Immersive multilingual subtitles for online videos, such as Disney, Netflix, YouTube and many more!",
+	"scripts": {
+		"build": "node utils/build.js",
+		"start": "node utils/webserver.js",
+		"prettier": "prettier --write '**/*.{js,jsx,css,html}'"
+	},
+	"dependencies": {
+		"@hot-loader/react-dom": "^17.0.1",
+		"@material-ui/core": "^4.11.3",
+		"@material-ui/icons": "^4.11.2",
+		"@material-ui/lab": "*",
+		"@material-ui/system": "^4.11.3",
+		"@types/chrome": "0.0.132",
+		"@types/react": "^17.0.2",
+		"@types/react-dom": "^17.0.1",
+		"detect-file-encoding-and-language": "^2.0.8",
+		"fontsource-roboto": "^4.0.0",
+		"react": "^17.0.1",
+		"react-dom": "^17.0.1",
+		"react-draggable": "^4.4.3",
+		"react-hot-loader": "^4.13.0",
+		"styled-components": "^5.2.3"
+	},
+	"devDependencies": {
+		"@babel/core": "^7.12.17",
+		"@babel/plugin-proposal-class-properties": "^7.12.13",
+		"@babel/preset-env": "^7.12.17",
+		"@babel/preset-react": "^7.12.13",
+		"@types/material-ui": "^0.21.8",
+		"autoprefixer": "^10.4.19",
+		"babel-eslint": "^10.1.0",
+		"babel-loader": "^8.2.2",
+		"babel-preset-react-app": "^10.0.0",
+		"clean-webpack-plugin": "^3.0.0",
+		"copy-webpack-plugin": "^7.0.0",
+		"css-loader": "^5.0.2",
+		"eslint": "^7.20.0",
+		"eslint-config-react-app": "^6.0.0",
+		"eslint-plugin-flowtype": "^5.2.2",
+		"eslint-plugin-import": "^2.22.1",
+		"eslint-plugin-jsx-a11y": "^6.4.1",
+		"eslint-plugin-react": "^7.22.0",
+		"eslint-plugin-react-hooks": "^4.2.0",
+		"file-loader": "^6.2.0",
+		"fs-extra": "^9.1.0",
+		"html-loader": "^2.1.0",
+		"html-webpack-plugin": "^5.2.0",
+		"node-sass": "^7.0.3",
+		"postcss": "^8.4.38",
+		"postcss-loader": "^8.1.1",
+		"prettier": "^2.2.1",
+		"sass-loader": "^11.0.1",
+		"source-map-loader": "^2.0.1",
+		"style-loader": "^2.0.0",
+		"tailwindcss": "^3.4.3",
+		"terser-webpack-plugin": "^5.1.1",
+		"ts-loader": "^8.0.17",
+		"typescript": "^4.1.5",
+		"webpack": "^5.91.0",
+		"webpack-cli": "^4.5.0",
+		"webpack-dev-server": "^3.11.2"
+	},
+	"Transform": "AWS::Serverless-2016-10-31",
+	"Resources": {
+		"StateMachine": {
+			"Type": "AWS::Serverless::StateMachine",
+			"Properties": {
+				"Definition": {
+					"StartAt": "LambdaTask",
+					"States": {
+						"LambdaTask": {
+							"Type": "Task",
+							"Resource": "arn:aws:states:::lambda:invoke",
+							"Parameters": {
+								"Payload.$": "$",
+								"FunctionName": "${LambdaFunction1}"
+							},
+							"End": true
+						}
+					}
+				},
+				"Logging": {
+					"Level": "ALL",
+					"IncludeExecutionData": true,
+					"Destinations": [
+						{
+							"CloudWatchLogsLogGroup": {
+								"LogGroupArn": {
+									"Fn::GetAtt": [
+										"StateMachineLogGroup",
+										"Arn"
+									]
+								}
+							}
+						}
+					]
+				},
+				"Policies": [
+					"AWSXrayWriteOnlyAccess",
+					{
+						"Statement": [
+							{
+								"Effect": "Allow",
+								"Action": [
+									"logs:CreateLogDelivery",
+									"logs:GetLogDelivery",
+									"logs:UpdateLogDelivery",
+									"logs:DeleteLogDelivery",
+									"logs:ListLogDeliveries",
+									"logs:PutResourcePolicy",
+									"logs:DescribeResourcePolicies",
+									"logs:DescribeLogGroups"
+								],
+								"Resource": "*"
+							}
+						]
+					}
+				],
+				"Tracing": {
+					"Enabled": true
+				},
+				"Type": "STANDARD",
+				"DefinitionSubstitutions": {
+					"LambdaFunction1": {
+						"Ref": "AWS::NoValue"
+					}
+				}
+			}
+		},
+		"StateMachineLogGroup": {
+			"Type": "AWS::Logs::LogGroup",
+			"Properties": {
+				"LogGroupName": {
+					"Fn::Sub": [
+						"/aws/vendedlogs/states/${AWS::StackName}-${ResourceId}-Logs",
+						{
+							"ResourceId": "StateMachine"
+						}
+					]
+				}
+			}
+		}
+	}
+}

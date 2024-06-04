@@ -8,7 +8,9 @@ require (
 	github.com/jackc/pgx/v4 v4.18.3
 	github.com/jeanphorn/log4go v0.0.0-20231225120528-d93eb9001e51
 	github.com/lib/pq v1.10.9
+	github.com/saintfish/chardet v0.0.0-20230101081208-5e3ef4b5456d
 	github.com/satori/go.uuid v1.2.0
+	golang.org/x/text v0.14.0
 )
 
 require (
@@ -42,7 +44,6 @@ require (
 	golang.org/x/crypto v0.20.0 // indirect
 	golang.org/x/net v0.21.0 // indirect
 	golang.org/x/sys v0.17.0 // indirect
-	golang.org/x/text v0.14.0 // indirect
 	google.golang.org/protobuf v1.30.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
