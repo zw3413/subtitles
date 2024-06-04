@@ -10,3 +10,7 @@ goapi/goapi.exe
 file
 __pycache__
 *.out
+go.mod
+go.sum
+goapi/log/
+.vscode
