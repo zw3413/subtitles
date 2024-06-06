@@ -32,14 +32,14 @@ func UserUpload(c *gin.Context) {
 		responseInfo.CostTime = strconv.FormatInt(costtime, 10)
 		if err := recover(); err != nil {
 			executeFlag = "N"
-			errLog := fmt.Sprintf("[wheel.AllPurpose_external] defer error:%v", err)
+			errLog := fmt.Sprintf("[api3] defer error:%v", err)
 			log.LOGGER("SUBX").Error(errLog)
 			responseInfo.Rc = "996"
 			responseInfo.Rm = "系統異常，" + errLog
 		}
 		jsonStr, _ := json.Marshal(responseInfo)
 		if executeFlag == "N" || utils.Iswritetsdb() == "Y" {
-			go utils.InfluxLogDataNew("wheel.AllPurpose_external", "", strconv.FormatInt(costtime, 10), c.Request.RequestURI,
+			go utils.InfluxLogDataNew("api3", "", strconv.FormatInt(costtime, 10), c.Request.RequestURI,
 				function_name, client_uuid, executeFlag, "", string(jsonStr), c.ClientIP(), "", errMsg, startTimeStr, "", false, false)
 		}
 		c.JSON(http.StatusOK, responseInfo)
@@ -78,7 +78,7 @@ func UserUpload(c *gin.Context) {
 		return
 	}
 	//存入数据库
-	saved, err := dao.SaveUserUploadSubtitle(language, filepath, format, seed_uuid, source, md5)
+	msg, err := dao.SaveUserUploadSubtitle(language, filepath, format, seed_uuid, source, md5)
 	if err != nil {
 		executeFlag = "N"
 		errMsg = err.Error()
@@ -86,12 +86,8 @@ func UserUpload(c *gin.Context) {
 		responseInfo.Rm = "上傳失敗"
 		return
 	}
-	if saved != "saved" {
-		executeFlag = "N"
-		errMsg = saved
-		responseInfo.Rc = "000"
-		responseInfo.Rm = "OK_002"
-		return
-	}
-
+	executeFlag = "Y"
+	errMsg = msg
+	responseInfo.Rc = "000"
+	responseInfo.Rm = msg
 }
