@@ -12,7 +12,7 @@ export default function processSubtitles(content, subsRef, setSubs) {
 
   // Determine the subtitle format to choose the appropriate method for reading them!
   for (let i = 50; i < 60; i++) {
-    if(content.length >= 60){
+    if (content.length >= 60) {
       const line = content[i].trim();
       if (/{.*}{.*}/.test(line)) {
         curlyBraces++;
@@ -67,7 +67,7 @@ export default function processSubtitles(content, subsRef, setSubs) {
   } else {
     newSubs.push({ text: '' });
     for (let i = 0; i < content.length; i++) {
-      const line = content[i].trim().replace(/\n/g, '');
+      const line = content[i].trim().replace(/\n/g, '');//.replace('kill','***');
 
       if (type === 'time') {
         if (count >= newSubs.length) break;
@@ -82,7 +82,6 @@ export default function processSubtitles(content, subsRef, setSubs) {
         // Updating the object
         newSubs[count].start = Number(start);
         newSubs[count].end = Number(end);
-
       } else if (type === 'text') {
         // If the next line is empty, set the type for the next i to null!
         if (i + 1 < content.length) {

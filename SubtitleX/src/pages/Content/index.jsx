@@ -4,6 +4,7 @@ import Content from './Content';
 import videoPlayerDetector from './videoPlayerDetector/videoPlayerDetector';
 
 if (!document.querySelector('#subtitlex_injectScript')) {
+  console.log("subx inject script to detect seed info ")
   var s = document.createElement('script');
   s.src = chrome.runtime.getURL('injectScript.bundle.js');
   s.id = 'subtitlex_injectScript';
@@ -51,7 +52,7 @@ window.addEventListener('load', () => {
     const container = videoPlayerDetector('container');
     const iconWrapper = videoPlayerDetector('iconWrapper');
 
-    if (video && container) {
+    if (video && container && iconWrapper) {
       //检测missav.com和jable.tv的seed
       window.postMessage({
         from: 'subtitlex_contentScript',
@@ -68,7 +69,7 @@ window.addEventListener('load', () => {
         if (storage.sitesWithSubtitles) {
           sitesWithSubtitles = storage.sitesWithSubtitles;
         }
-        const thisSite = tab.url.replace(/^.*\/\//, '').replace(/\/.*/, '');
+        const thisSite =window.location.href.replace(/^.*\/\//, '').replace(/\/.*/, '');
         sitesWithSubtitles.push(thisSite);
         chrome.storage.sync.set({
           sitesWithSubtitles: sitesWithSubtitles,

@@ -1,5 +1,5 @@
 import React from 'react';
-import { styled } from '@material-ui/core/styles';
+import { styled } from '@mui/material/styles';
 import openPage from './openPage';
 
 const Title = styled('h1')({
@@ -12,7 +12,7 @@ const Title = styled('h1')({
 
 const Icon = styled('img')({
   display: 'block !important',
-  margin: '30px auto 40px auto !important',
+  margin: '5px auto 20px auto !important',
   cursor: 'pointer',
 });
 
@@ -20,16 +20,16 @@ const Header = ({ popup }) => {
   return (
     <>
       <Title>SubtitleX</Title>
-      <Icon
-        src={chrome.runtime.getURL('subtitlex-128.png')}
-        alt="Logo"
+      {/* <Icon
+        src={chrome.runtime.getURL('/subtitlex-128.png')}
+        alt="SubtitleX"
         onClick={() =>
           openPage(
             popup,
             'https://github.com/gignupg/Movie-Subtitles-Chrome-Extension'
           )
         }
-      ></Icon>
+      ></Icon> */}
     </>
   );
 };

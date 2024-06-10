@@ -1,17 +1,16 @@
 import React, { useState } from 'react';
-import FormControl from '@material-ui/core/FormControl';
-import FormGroup from '@material-ui/core/FormGroup';
-import Switch from '@material-ui/core/Switch';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
+import FormControl from '@mui/material/FormControl';
+import FormGroup from '@mui/material/FormGroup';
+import Switch from '@mui/material/Switch';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
 import MenuHeading from '../MenuHeading';
-import Container from '@material-ui/core/Container';
-import Slider from '@material-ui/core/Slider';
-import Input from '@material-ui/core/Input';
-import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import SyncIcon from '@material-ui/icons/Sync';
-import Box from '@material-ui/core/Box';
+import Container from '@mui/material/Container';
+import Slider from '@mui/material/Slider';
+import Input from '@mui/material/Input';
+import makeStyles from '@mui/styles/makeStyles';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
 
 
 const Sync = ({ popup }) => {

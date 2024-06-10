@@ -1,10 +1,10 @@
 import React, { useState,useEffect } from 'react';
-import { styled } from '@material-ui/core/styles';
-import PublishIcon from '@material-ui/icons/Publish';
-import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
-import Container from '@material-ui/core/Container';
+import { styled } from '@mui/material/styles';
+import PublishIcon from '@mui/icons-material/Publish';
+import Button from '@mui/material/Button';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
 import { getSeed } from './SubtitleX'
 import { uploadSubtitleFile } from '../Common'
 
@@ -13,7 +13,7 @@ const InvisibleInput = styled('input')({
   display: 'none',
 });
 
-const Upload = ({ popup, setMenu }) => {
+const Upload = ({ popup, setMenu, setHide }) => {
   const [listening, setListening] = useState(false);
   const [uploadFile, setUploadFile] = useState(null);
 
@@ -29,6 +29,7 @@ const Upload = ({ popup, setMenu }) => {
     if(uploadFile && uploadFile.name){
       const seed = getSeed()
       uploadSubtitleFile(seed, uploadFile)
+      setHide(false)
     }
   }, [uploadFile])
 
@@ -61,7 +62,7 @@ const Upload = ({ popup, setMenu }) => {
       />
       <Button
 
-        style={{ width: "100%", height: "56px" }}
+        style={{ width: "100%", height: "56px", backgroundColor:"#20e4ff" }}
         onClick={uploadButtonHandler}
         variant="contained"
         color="secondary"

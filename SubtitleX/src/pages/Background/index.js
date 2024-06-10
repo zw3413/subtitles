@@ -1,10 +1,11 @@
 const subtitleXserverApi = 'https://api.subtitlex.xyz';
 const subtitleXserverWeb = 'https://www.subtitlex.xyz';
+const subtitlexDomain = 'www.subtitlex.xyz';
 
 const checkCookie = async () => {
   try {
-    const subtitlexDomain = 'www.subtitlex.xyz';
     const cookies = await chrome.cookies.getAll({ domain: subtitlexDomain });
+
     let session_token;
     for (var i = 0; i < cookies.length; i++) {
       if (cookies[i].name == '__Secure-next-auth.session-token') {
@@ -21,6 +22,7 @@ const checkCookie = async () => {
       },
     });
     const session_info = await response.json();
+    console.log(session_info);
     const user_email = session_info?.user?.email;
     if (user_email) {
       console.log('get user email :' + user_email);
@@ -41,6 +43,7 @@ const UUID = async () => {
         'Content-Type': 'application/json',
       },
     });
+    console.log(response);
     if (response.status == '200') {
       const result = await response.json();
       if (result.rc == '000') {
@@ -70,19 +73,20 @@ const UUID = async () => {
         response({ success: 'received' });
       }
     );
+    chrome.runtime.onMessage.addListener(function (request) {
+      if (request.link) {
+        chrome.tabs.create({
+          active: true,
+          url: request.link,
+        });
+      } else if (request.action === 'checkCookie') {
+        checkCookie();
+      }
+    });
   } catch (e) {
     console.log(e);
   }
 })();
-
-chrome.runtime.onMessage.addListener(function (request) {
-  if (request.link) {
-    chrome.tabs.create({
-      active: true,
-      url: request.link,
-    });
-  }
-});
 
 // chrome.runtime.onInstalled.addListener(()=>{
 //   chrome.action.setBadgeText({

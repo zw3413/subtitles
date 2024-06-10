@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Popup from '../Popup/Popup';
-import { styled } from '@material-ui/core/styles';
+import { styled } from '@mui/material/styles';
+import { Hidden } from '@mui/material';
 
 const Wrapper = styled('div')({
   position: 'absolute',
@@ -13,11 +14,13 @@ const Wrapper = styled('div')({
   zIndex: 2147483647,
 });
 
+
+
 const PopupWrapper = ({ popup, display, setMenu }) => {
   const thisSite = window.location.hostname;
 
   return (
-    <Wrapper id="movie-subtitles-scroll-anchor" style={{ display: display }}>
+    <Wrapper id="movie-subtitles-scroll-anchor" style={{ display: display, overflowX: 'Hidden' }} className='subx-overflow-x-hidden' >
       <Popup setMenu={setMenu} popup={popup} thisSite={thisSite} />
     </Wrapper>
   );

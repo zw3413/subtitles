@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { createTheme, ThemeProvider } from '@material-ui/core/styles';
+import { createTheme, ThemeProvider, StyledEngineProvider, adaptV4Theme } from '@mui/material/styles';
 import Header from './Header';
 import SubtitleSettings from './SubtitleSettings/index';
 import GeneralSection from './GeneralSection';
 import Shortcuts from './Shortcuts';
 import NoVideoDetected from './NoVideoDetected';
 import "./index.css"
-import { fontSize } from '@material-ui/system';
+import { fontSize } from '@mui/system';
 // For consistency across websites with different global styles
 const msTheme = createTheme({
   palette: {
@@ -20,46 +20,95 @@ const msTheme = createTheme({
       main:'rgb(32 228 255)'
     },
   },
-  overrides: {
+  components: {
+    MuiCssBaseline:{
+      styleOverrides: {
+        body: {
+          fontSize: "3rem",
+          color: "purple"
+        }
+      }
+    },
     MuiButton: {
+      styleOverrides: {
       root: {
         fontSize: '14px !important',
       },
       containedPrimary: {
         backgroundColor: '#ba000d !important',
       },
+    }
     },
     MuiButtonBase: {
+      styleOverrides: {
       root: {
         color: '#000000',
-      },
+      },}
     },
     MuiInputBase: {
+      styleOverrides: {
       input: {
         fontSize: '16px',
         border: 'none !important',
-      },
+      },}
     },
     MuiContainer: {
+      styleOverrides: {
       root: {
         paddingLeft: '16px !important',
         paddingRight: '16px !important',
-      },
+      },}
     },
     MuiSvgIcon: {
+      styleOverrides: {
       root: {
         fontSize: '24px !important',
-      },
+      },}
     },
     MuiTypography: {
-      body1: {
-        fontSize: '16px !important',
-      },
+  
+      styleOverrides:{
+        body1: {
+          fontSize: '16px !important',
+        }
+      }
+
     },
     MuiSwitch: {
+      styleOverrides: {
       input: {
         position: 'absolute !important',
-      },
+      },}
+    },
+    MuiFormControlLabel: {
+      styleOverrides: {
+      label: {
+        fontSize: '16px !important',
+      },}
+    },
+    MuiFormLabel: {
+      styleOverrides: {
+      root: {
+        fontSize: '16px !important',
+      },}
+    },
+    MuiSelect: {
+      styleOverrides: {
+      select: {
+        fontSize: '16px !important',
+      },}
+    },
+    MuiMenuItem: {
+      styleOverrides: {
+      root: {
+        fontSize: '16px !important',
+      },}
+    },
+    MuiInputLabel: {
+      styleOverrides: {
+      root: {
+        fontSize: '16px !important',
+      },}
     },
   },
 });
@@ -114,28 +163,30 @@ const Popup = ({
   }
 
   return (
-    <ThemeProvider theme={msTheme} >
-      <div className='subx-w-[280px]' style={{fontSize:"16px"}}>
-      {displayShortcuts ? (
-        <Shortcuts
-          setDisplayShortcuts={setDisplayShortcuts}
-          thisSite={thisSite}
-        />
-      ) : (
-        <>
-          {/* <Header popup={popup} /> */}
-          {popup && !videoDetected ? (
-            <NoVideoDetected />
-          ) : (
-            <SubtitleSettings  popup={popup} setMenu={setMenu} />
-          )}
-          <GeneralSection
+    <StyledEngineProvider injectFirst>
+      <ThemeProvider theme={msTheme} >
+        <div className='subx-w-[280px] subx-overflow-x-hidden'>
+        {displayShortcuts ? (
+          <Shortcuts
             setDisplayShortcuts={setDisplayShortcuts}
-            popup={popup}
+            thisSite={thisSite}
           />
-        </>
-      )}</div>
-    </ThemeProvider>
+        ) : (
+          <>
+             <Header popup={popup} /> 
+            {popup && !videoDetected ? (
+              <NoVideoDetected />
+            ) : (
+              <SubtitleSettings  popup={popup} setMenu={setMenu} />
+            )}
+            <GeneralSection
+              setDisplayShortcuts={setDisplayShortcuts}
+              popup={popup}
+            />
+          </>
+        )}</div>
+      </ThemeProvider>
+    </StyledEngineProvider>
   );
 };
 

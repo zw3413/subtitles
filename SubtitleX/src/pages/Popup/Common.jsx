@@ -151,7 +151,7 @@ export const fetchTextFromURL = async (subtitleId) => {
     return text;
   } catch (error) {
     console.log(
-      "jav-helper: fetch subtitle failed, contact administrator." + error
+      " fetch subtitle failed, contact administrator." + error
     );
   }
 };

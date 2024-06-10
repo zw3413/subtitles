@@ -10,6 +10,7 @@ const sites = {
   missav:'missav.com',
   jable:'jable.tv',
   twitter :"x.com",
+  topjav:"topjav.tv",
   default: 'default',
 };
 

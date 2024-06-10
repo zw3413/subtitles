@@ -1,24 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import IconButton from '@material-ui/core/IconButton';
-import AddCircleIcon from '@material-ui/icons/AddCircle';
-import RemoveCircleIcon from '@material-ui/icons/RemoveCircle';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import IconButton from '@mui/material/IconButton';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
+import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import MenuHeading from '../MenuHeading';
-import Box from '@material-ui/core/Box';
-import Container from '@material-ui/core/Container';
-import PaletteIcon from '@material-ui/icons/Palette';
-import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
-import VisibilityIcon from '@material-ui/icons/Visibility';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-const Display = ({ popup }) => {
+import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
+import PaletteIcon from '@mui/icons-material/Palette';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+const Display = ({ popup, hide, setHide }) => {
   const [listening, setListening] = useState(false);
   const [direction, setDirection] = useState(false);
   const [syncValue, setSyncValue] = useState(0);
-  const [hide, setHide] = useState(false);
+
   const colors = ["grey", "blue", "yellow"]
   const [color, setColor] = useState('grey');
   const possible =["subx-bg-grey-200","subx-bg-blue-200","subx-bg-yellow-200" ]
@@ -95,112 +95,111 @@ const Display = ({ popup }) => {
     }
   }, [hide])
   
-  return (
-    <>
-      {/* <MenuHeading heading="Display:" /> */}
-      <Container className="subx-my-4">
-        <List component="nav" aria-label="main mailbox folders">
-          <ListItem button>
-            <ListItemText style={{ color: 'black' }} primary="Font Size" />
-            <ListItemSecondaryAction>
-              <IconButton
-                onClick={() => displaySettingsHandler('font-smaller')}
-                edge="end"
-                aria-label="font-smaller"
-              >
-                <RemoveCircleIcon />
-              </IconButton>
-              <IconButton
-                onClick={() => displaySettingsHandler('font-bigger')}
-                edge="end"
-                aria-label="font-bigger"
-              >
-                <AddCircleIcon />
-              </IconButton>
-            </ListItemSecondaryAction>
-          </ListItem>
-          <ListItem button>
-            <ListItemText style={{ color: 'black' }} primary="Background" />
-            <ListItemSecondaryAction>
+  return <>
+    {/* <MenuHeading heading="Display:" /> */}
+    <Container className="subx-my-4 subx-text-[16px]">
+      <List component="nav" aria-label="main mailbox folders">
+      <ListItem button>
+          <ListItemText style={{ color: 'black' }} >
+            Sync {syncValue}s</ListItemText>
+          <ListItemSecondaryAction>
 
-              <IconButton
-                onClick={() => displaySettingsHandler('opacity-minus')}
-                edge="end"
-                aria-label="opacity-minus"
-              >
-                <RemoveCircleIcon />
-              </IconButton>
-              <IconButton
-                onClick={() => displaySettingsHandler('opacity-plus')}
-                edge="end"
-                aria-label="opacity-plus"
-              >
-                <AddCircleIcon />
-              </IconButton>
-            </ListItemSecondaryAction>
-          </ListItem>
+            <IconButton
+              onClick={() => { setSyncValue(syncValue - 1) }}
+              edge="end"
+              aria-label="opacity-plus"
+              size="large">
+              <RemoveCircleIcon />
+            </IconButton>
+            <IconButton
+              onClick={() => { setSyncValue(syncValue + 1) }}
+              edge="end"
+              aria-label="opacity-plus"
+              size="large">      <AddCircleIcon /></IconButton>
 
-          <ListItem button>
-            <ListItemText style={{ color: 'black' }} >
-              Sync {syncValue}s</ListItemText>
-            <ListItemSecondaryAction>
+          </ListItemSecondaryAction>
 
-              <IconButton
-                onClick={() => { setSyncValue(syncValue - 1) }}
-                edge="end"
-                aria-label="opacity-plus"
-              >
-                <RemoveCircleIcon />
-              </IconButton>
-              <IconButton
-                onClick={() => { setSyncValue(syncValue + 1) }}
-                edge="end"
-                aria-label="opacity-plus"
-              >      <AddCircleIcon /></IconButton>
+        </ListItem>
+        <ListItem button>
+          <ListItemText style={{ color: 'black' }} primary="Font Size" />
+          <ListItemSecondaryAction>
+            <IconButton
+              onClick={(event) => {displaySettingsHandler('font-smaller');event.preventDefault();event.stopPropagation()}}
+              edge="end"
+              aria-label="font-smaller"
+              size="large">
+              <RemoveCircleIcon />
+            </IconButton>
+            <IconButton
+              onClick={() => displaySettingsHandler('font-bigger')}
+              edge="end"
+              aria-label="font-bigger"
+              size="large">
+              <AddCircleIcon />
+            </IconButton>
+          </ListItemSecondaryAction>
+        </ListItem>
+        <ListItem button>
+          <ListItemText style={{ color: 'black' }} primary="Background" />
+          <ListItemSecondaryAction>
 
-            </ListItemSecondaryAction>
+            <IconButton
+              onClick={() => displaySettingsHandler('opacity-minus')}
+              edge="end"
+              aria-label="opacity-minus"
+              size="large">
+              <RemoveCircleIcon />
+            </IconButton>
+            <IconButton
+              onClick={() => displaySettingsHandler('opacity-plus')}
+              edge="end"
+              aria-label="opacity-plus"
+              size="large">
+              <AddCircleIcon />
+            </IconButton>
+          </ListItemSecondaryAction>
+        </ListItem>
 
-          </ListItem>
+       
 
-          {/* <ListItem button>
-            <ListItemText style={{ color: 'black' }} >
-              Color </ListItemText>
-            <ListItemSecondaryAction>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                value={color}
-                className={`subx-bg-${color}-200 subx-min-w-[80px] subx-text-center`}
-               onChange={e => {setColor(e.target.value)}}
-              >
-                {
-                  colors.map((color) => {
-                    return <MenuItem className={`subx-min-w-[80px] subx-text-center`} value={color}>{color}</MenuItem>
-                  })
-                }
-              </Select>
-            </ListItemSecondaryAction>
-          </ListItem> */}
+        {/* <ListItem button>
+          <ListItemText style={{ color: 'black' }} >
+            Color </ListItemText>
+          <ListItemSecondaryAction>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={color}
+              className={`subx-bg-${color}-200 subx-min-w-[80px] subx-text-center`}
+             onChange={e => {setColor(e.target.value)}}
+            >
+              {
+                colors.map((color) => {
+                  return <MenuItem className={`subx-min-w-[80px] subx-text-center`} value={color}>{color}</MenuItem>
+                })
+              }
+            </Select>
+          </ListItemSecondaryAction>
+        </ListItem> */}
 
 
-          <ListItem button>
-            <ListItemText style={{ color: 'black' }} >
-              Hide Subtitle </ListItemText>
-            <ListItemSecondaryAction>
-              <IconButton
-                onClick={() => { setHide(!hide) }}
-                edge="end"
-                aria-label="opacity-plus"
-              >
-                {hide ? <VisibilityOffIcon /> : <VisibilityIcon />}
-              </IconButton>
-            </ListItemSecondaryAction>
+        <ListItem button>
+          <ListItemText style={{ color: 'black' }} >
+            Hide Subtitle </ListItemText>
+          <ListItemSecondaryAction>
+            <IconButton
+              onClick={() => { setHide(!hide) }}
+              edge="end"
+              aria-label="opacity-plus"
+              size="large">
+              {hide ? <VisibilityOffIcon /> : <VisibilityIcon />}
+            </IconButton>
+          </ListItemSecondaryAction>
 
-          </ListItem>
-        </List>
-      </Container>
-    </>
-  );
+        </ListItem>
+      </List>
+    </Container>
+  </>;
 };
 
 export default Display;

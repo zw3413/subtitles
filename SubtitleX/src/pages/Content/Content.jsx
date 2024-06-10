@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { render } from 'react-dom';
 import Subtitles from './subtitles/Subtitles';
 import PopupWrapper from './PopupWrapper';
-import { styled } from '@material-ui/core/styles';
+import { styled } from '@mui/material/styles';
 
 const BlurredBackground = styled('div')({
   position: 'absolute',
@@ -45,6 +45,8 @@ export default function Content({ video, iconWrapper }) {
       );
     }
 
+    chrome.runtime.sendMessage({action:"checkCookie"})
+
     // Shortcuts
     document.addEventListener(
       'keydown',
@@ -52,7 +54,10 @@ export default function Content({ video, iconWrapper }) {
         const focusedElement = event.target.nodeName;
         const elementId = event.target.id;
 
-        if (focusedElement !== 'INPUT' && elementId !== 'contenteditable-root') {
+        if (
+          focusedElement !== 'INPUT' &&
+          elementId !== 'contenteditable-root'
+        ) {
           // Disabling shortcuts when user is typing in search box or writing comments on YouTube
           const key = event.key.toLowerCase();
 
@@ -121,13 +126,17 @@ export default function Content({ video, iconWrapper }) {
             event.stopPropagation();
           } else if (key === 'g') {
             // Sync subtitles (display them 1 second earlier)
-            const syncNow = new CustomEvent('syncNow', { detail: { syncValue: 1, syncLater: false } });
+            const syncNow = new CustomEvent('syncNow', {
+              detail: { syncValue: 1, syncLater: false },
+            });
             document.dispatchEvent(syncNow);
             event.preventDefault();
             event.stopPropagation();
           } else if (key === 'h') {
             // Sync subtitles (display them 1 second later)
-            const syncNow = new CustomEvent('syncNow', { detail: { syncValue: 1, syncLater: true } });
+            const syncNow = new CustomEvent('syncNow', {
+              detail: { syncValue: 1, syncLater: true },
+            });
             document.dispatchEvent(syncNow);
             event.preventDefault();
             event.stopPropagation();
@@ -142,13 +151,14 @@ export default function Content({ video, iconWrapper }) {
   return (
     <>
       {menu && <BlurredBackground onClick={() => setMenu(false)} />}
-        <Subtitles
-          video={video}
-          subsEnabled={subsEnabled}
-          speedDisplay={speedDisplay}
-          netflix={netflix}
-          editRef={editRef}
-        />
+
+      <Subtitles
+        video={video}
+        subsEnabled={subsEnabled}
+        speedDisplay={speedDisplay}
+        netflix={netflix}
+        editRef={editRef}
+      />
 
       <PopupWrapper
         popup={false}

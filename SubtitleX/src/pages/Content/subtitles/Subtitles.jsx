@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { styled, makeStyles } from '@material-ui/core/styles';
+import { styled } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import Draggable from 'react-draggable';
 import languageEncoding from 'detect-file-encoding-and-language';
 import processSubtitles from './processSubtitles';
 import timeUpdate from './timeUpdate';
 import synchronize from './synchronize';
-import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
+import Button from '@mui/material/Button';
+import Grid from '@mui/material/Grid';
 
 const subtitles = {
   color: {

@@ -8,11 +8,12 @@
 		"prettier": "prettier --write '**/*.{js,jsx,css,html}'"
 	},
 	"dependencies": {
+		"@emotion/react": "^11.11.4",
+		"@emotion/styled": "^11.11.5",
 		"@hot-loader/react-dom": "^17.0.1",
-		"@material-ui/core": "^4.11.3",
-		"@material-ui/icons": "^4.11.2",
-		"@material-ui/lab": "*",
-		"@material-ui/system": "^4.11.3",
+		"@mui/icons-material": "^5.15.19",
+		"@mui/material": "^5.15.19",
+		"@mui/styles": "^5.15.19",
 		"@types/chrome": "0.0.132",
 		"@types/react": "^17.0.2",
 		"@types/react-dom": "^17.0.1",
@@ -21,8 +22,7 @@
 		"react": "^17.0.1",
 		"react-dom": "^17.0.1",
 		"react-draggable": "^4.4.3",
-		"react-hot-loader": "^4.13.0",
-		"styled-components": "^5.2.3"
+		"react-hot-loader": "^4.13.0"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.12.17",

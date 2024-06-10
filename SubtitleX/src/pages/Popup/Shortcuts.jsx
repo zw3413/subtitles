@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { styled } from '@material-ui/core/styles';
-import KeyboardBackspaceIcon from '@material-ui/icons/KeyboardBackspace';
-import { makeStyles } from '@material-ui/core/styles';
-import Divider from '@material-ui/core/Divider';
+import { styled } from '@mui/material/styles';
+import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
+import makeStyles from '@mui/styles/makeStyles';
+import Divider from '@mui/material/Divider';
 
 const Container = styled('div')({
   display: 'flex',
