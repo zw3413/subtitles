@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef } from 'react';
 import Container from '@mui/material/Container';
 import makeStyles from '@mui/styles/makeStyles';
 import FormControl from '@mui/material/FormControl';
-
 import {
   getWantLangFromUserLang,
   remoteCall,
@@ -29,17 +28,20 @@ export function getSeed() {
   return seed;
 }
 
-const SubtitleX = ({hide, setHide, setMenu}) => {
-  const defaultSubtitleId = "0"
-  const defaultChooseASubtitle = 'Choose a subtitle'
-  const NoneSubtitleCollected = 'None subtitle collected'
+const SubtitleX = ({ hide, setHide, setMenu }) => {
+  const defaultSubtitleId = '0';
+  const defaultChooseASubtitle = 'Choose a subtitle';
+  const NoneSubtitleCollected = 'None subtitle collected';
   const classes = useStyles();
   //const [seed, setSeed] = useState({})
   const [subtitleId, setSubtitleId] = useState(defaultSubtitleId);
   const [subtitleArray, setSubtitleArray] = useState([]);
   const [listening, setListening] = useState(false);
-  const [chooseASubtitle, setChooseASubtitle] = useState(defaultChooseASubtitle)
-
+  const [chooseASubtitle, setChooseASubtitle] = useState(
+    defaultChooseASubtitle
+  );
+  const [subtitle, setSubtitle] = useState('');
+  const tip = "Subscribe to www.subtitlex.xyz/Member please"
   const handleSelectChange = (event) => {
     setSubtitleId(event.target.value);
   };
@@ -68,6 +70,12 @@ const SubtitleX = ({hide, setHide, setMenu}) => {
     //从server获取到文件
     if (subtitleId && subtitleId.length > 0) {
       const sub_text = await fetchTextFromURL(subtitleId);
+      setSubtitle(sub_text);
+      const tip = 'Subscribe to www.subtitlex.xyz/Member please';
+      setHide(true)
+      if (sub_text.includes(tip)) {
+        return;
+      }
       const sub_blob = new Blob([sub_text], { type: 'text/plain' });
       const sub_file = new File([sub_blob], 'subtitle.srt', {
         type: 'text/plain',
@@ -90,7 +98,7 @@ const SubtitleX = ({hide, setHide, setMenu}) => {
         event.data.type === 'seed_detected'
       ) {
         console.log('subx subtitlex  received seed_detected message ');
-        console.log(event.data)
+        console.log(event.data);
         const pageUrl = event.data.seed.pageUrl;
         const s = await saveAndCheckStatusOfSeed(event.data.seed); //到后端获取seed信息
         if (s) {
@@ -110,7 +118,7 @@ const SubtitleX = ({hide, setHide, setMenu}) => {
   }
   useEffect(() => {
     if (subtitleArray && subtitleArray.length > 0) {
-      setChooseASubtitle(defaultChooseASubtitle)
+      setChooseASubtitle(defaultChooseASubtitle);
       //自动选择用户浏览器语言
       const userLanguage = navigator.language || navigator.userLanguage;
       const userLangCode = getWantLangFromUserLang(userLanguage);
@@ -123,8 +131,8 @@ const SubtitleX = ({hide, setHide, setMenu}) => {
           break;
         }
       }
-    }else{
-      setChooseASubtitle(NoneSubtitleCollected)
+    } else {
+      setChooseASubtitle(NoneSubtitleCollected);
     }
   }, [subtitleArray]);
   useEffect(() => {
@@ -148,10 +156,25 @@ const SubtitleX = ({hide, setHide, setMenu}) => {
         >
           SubtitleX
         </label> */}
+        <div>
+          {subtitle.includes(tip) ? (
+            <div className=" text-red-400 subx-leading-tight">
+              <a
+                href="https://www.subtitlex.xyz/Member"
+                target="_blank"
+                className="subx-underline subx-text-[#20e4ff] subx-text-xl subx-font-sans subx-mx-1"
+              >
+                Subscribe
+              </a>
+              to unlock the limit up to 100 subtitles per day.
+            </div>
+          ) : (
+            <></>
+          )}
+        </div>
         <select
-        value={subtitleId}
-
-        onChange={handleSelectChange}
+          value={subtitleId}
+          onChange={handleSelectChange}
           id="subtitlex-language-select"
           className="subx-bg-gray-50 subx-border subx-text-[16px] subx-border-gray-300 subx-text-gray-900 subx-rounded-lg focus:subx-ring-blue-500 focus:subx-border-blue-500 subx-block subx-w-full subx-p-2.5 "
         >

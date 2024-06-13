@@ -83,6 +83,11 @@ const elementPosition: VideoPlayer = {
     container: { selector: 'video', index: 0 },
     iconWrapper: { selector: '.jw-button-container', index: 0, spacing: '0 10px' },
   },
+  [s.xvideo]: {
+    video: { selector: 'video', index: 0 },
+    container: { selector: 'video', index: 0 },
+    iconWrapper: { selector: '.buttons-bar.right', index: 0, spacing: '0 10px' },
+  },
   [s.default]: {
     video: { selector: 'video', index: 0 },
     container: { selector: 'video', index: 0 },

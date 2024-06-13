@@ -11,6 +11,7 @@ const sites = {
   jable:'jable.tv',
   twitter :"x.com",
   topjav:"topjav.tv",
+  xvideo:"xvideos.com",
   default: 'default',
 };
 
