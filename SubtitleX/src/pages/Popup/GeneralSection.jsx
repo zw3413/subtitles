@@ -11,6 +11,7 @@ import IconButton from '@mui/material/IconButton';
 import openPage from './openPage';
 import {findUser} from './Common';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
+import Link from '@mui/material/Link'
 
 const GeneralSection = ({ setDisplayShortcuts, popup }) => {
   const [userName, setUsername] = useState('')
@@ -28,6 +29,9 @@ const GeneralSection = ({ setDisplayShortcuts, popup }) => {
   return <>
     {/* <MenuHeading heading="General:" /> */}
     <List component="nav" aria-label="main mailbox folders">
+      <ListItem className='subx-text-black subx-bg-[#20e4ff] subx-text-lg'>
+        This tool is still new and may not work as expected. We would appreciate your feedback in our community.
+      </ListItem>
       {/* <ListItem button>
         <ListItemText
           onClick={() => setDisplayShortcuts(true)}
@@ -63,7 +67,7 @@ const GeneralSection = ({ setDisplayShortcuts, popup }) => {
         onClick={() =>
           openPage(
             popup,
-            'https://www.subtitlex.xyz/Extension'
+            'https://www.subtitlex.xyz/Extension#feedback'
           )
         }
       >
@@ -90,6 +94,14 @@ const GeneralSection = ({ setDisplayShortcuts, popup }) => {
           </IconButton>
         </ListItemSecondaryAction>
       </ListItem> */}
+      <ListItem className='subx-ml-auto subx-text-black'>
+        <ListItemText></ListItemText>
+        <ListItemSecondaryAction className='subx-text-black'>
+          Made with ❤️ by SubtitleX
+
+        </ListItemSecondaryAction>
+
+      </ListItem>
     </List>
   </>;
 };

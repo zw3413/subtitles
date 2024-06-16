@@ -101,7 +101,7 @@ const Display = ({ popup, hide, setHide }) => {
       <List component="nav" aria-label="main mailbox folders">
       <ListItem button>
           <ListItemText style={{ color: 'black' }} >
-            Sync {syncValue}s</ListItemText>
+            Synchronize {syncValue}s</ListItemText>
           <ListItemSecondaryAction>
 
             <IconButton

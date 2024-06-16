@@ -19,7 +19,7 @@ const Icon = styled('img')({
 const Header = ({ popup }) => {
   return (
     <>
-      <Title>SubtitleX</Title>
+      {/* <Title>SubtitleX</Title> */}
       {/* <Icon
         src={chrome.runtime.getURL('/subtitlex-128.png')}
         alt="SubtitleX"
