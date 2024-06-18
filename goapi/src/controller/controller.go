@@ -308,7 +308,7 @@ func CheckSubtitle(c *gin.Context) {
 }
 func GetSubtitle1(c *gin.Context) {
 	var err error
-	var result string
+	var result, fileName string
 	defer func() {
 		if r := recover(); r != nil {
 			log.LOGGER("SUBX").Error(r)
@@ -320,34 +320,36 @@ func GetSubtitle1(c *gin.Context) {
 			c.String(200, result)
 		}
 	}()
-	//id := getString(json["id"])
-	id := c.Query("id")
-	language := c.Query("language")
-	subtitleId := c.Query("titleSubaId")
-	seedUuid := c.Query("uuid")
-
-	//id+language
-	//uuid+language
-	//subtitleId
-	//以上三种情形，必须满足一种
-
-	if len(id) == 0 && len(subtitleId) == 0 && len(seedUuid) == 0 {
-		c.JSON(400, "error，id is null")
-		return
-	}
-	if len(language) == 0 {
-		language = "eng"
-	}
-	r, _ := dao.GetSubtitle_BySeedIdAndLanguage(id, seedUuid, subtitleId, language) //返回srt路径
-
 	path, err := os.Getwd()
 	if err != nil {
 		log.LOGGER("SUBX").Error(err)
 	}
+	srt_path := c.Query("srt_path")
+	if len(srt_path) > 0 {
+		fileName = srt_path
+	} else {
+		//id := getString(json["id"])
+		id := c.Query("id")
+		language := c.Query("language")
+		subtitleId := c.Query("titleSubaId")
+		seedUuid := c.Query("uuid")
 
-	fileName := r[0]["path"].(string)
+		//id+language
+		//uuid+language
+		//subtitleId
+		//以上三种情形，必须满足一种
+
+		if len(id) == 0 && len(subtitleId) == 0 && len(seedUuid) == 0 {
+			c.JSON(400, "error，id is null")
+			return
+		}
+		if len(language) == 0 {
+			language = "eng"
+		}
+		r, _ := dao.GetSubtitle_BySeedIdAndLanguage(id, seedUuid, subtitleId, language) //返回srt路径
+		fileName = r[0]["path"].(string)
+	}
 	filePath := filepath.Join(path, filePath_prefix, fileName)
-
 	result, err = utils.ReadFile(filePath)
 }
 func GetSubtitleWithUUID(c *gin.Context) {
