@@ -7,6 +7,7 @@ import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import { getSeed } from './SubtitleX'
 import { uploadSubtitleFile } from '../Common'
+import { Link } from '@mui/material';
 
 
 const InvisibleInput = styled('input')({
@@ -61,8 +62,7 @@ const Upload = ({ popup, setMenu, setHide }) => {
         id="movie-subtitles-file-upload"
       />
       <Button
-
-        style={{ width: "100%", height: "56px", backgroundColor:"#20e4ff" }}
+        style={{ width: "100%", height: "56px", backgroundColor:"#20e4ff", marginBottom:"6px" }}
         onClick={uploadButtonHandler}
         variant="contained"
         color="secondary"
@@ -70,6 +70,7 @@ const Upload = ({ popup, setMenu, setHide }) => {
       >
         Load Subtitles
       </Button>
+      <Link href='http://www.subtitlex.xyz/Extension#websites' style={{fontSize:'12px', float:'right'}} target='_blank'>search subtitles online</Link>
     </Container>
 
     // <Box mb={4} mt={2}>

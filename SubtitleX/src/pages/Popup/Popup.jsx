@@ -1,114 +1,141 @@
 import React, { useState } from 'react';
-import { createTheme, ThemeProvider, StyledEngineProvider, adaptV4Theme } from '@mui/material/styles';
+import {
+  createTheme,
+  ThemeProvider,
+  StyledEngineProvider,
+  adaptV4Theme,
+} from '@mui/material/styles';
 import Header from './Header';
 import SubtitleSettings from './SubtitleSettings/index';
 import GeneralSection from './GeneralSection';
 import Shortcuts from './Shortcuts';
 import NoVideoDetected from './NoVideoDetected';
-import "./index.css"
+import './index.css';
 import { fontSize } from '@mui/system';
 // For consistency across websites with different global styles
 const msTheme = createTheme({
   palette: {
     primary: {
       //main: '#ba000d',
-      main:'rgb(127 189 231)'
+      main: 'rgb(127 189 231)',
     },
     secondary: {
       //main: '#ff5722',
-  
-      main:'rgb(32 228 255)'
+
+      main: 'rgb(32 228 255)',
     },
   },
   components: {
-    MuiCssBaseline:{
+    MuiCssBaseline: {
       styleOverrides: {
         body: {
-          fontSize: "3rem",
-          color: "purple"
-        }
-      }
+          fontSize: '3rem',
+          color: 'purple',
+        },
+      },
     },
     MuiButton: {
       styleOverrides: {
-      root: {
-        fontSize: '14px !important',
+        root: {
+          fontSize: '14px !important',
+        },
+        containedPrimary: {
+          backgroundColor: '#ba000d !important',
+        },
       },
-      containedPrimary: {
-        backgroundColor: '#ba000d !important',
-      },
-    }
     },
     MuiButtonBase: {
       styleOverrides: {
-      root: {
-        color: '#000000',
-      },}
+        root: {
+          color: '#000000',
+        },
+      },
     },
     MuiInputBase: {
       styleOverrides: {
-      input: {
-        fontSize: '16px',
-        border: 'none !important',
-      },}
+        input: {
+          fontSize: '16px',
+          border: 'none !important',
+        },
+      },
     },
     MuiContainer: {
       styleOverrides: {
-      root: {
-        paddingLeft: '16px !important',
-        paddingRight: '16px !important',
-      },}
+        root: {
+          paddingLeft: '16px !important',
+          paddingRight: '16px !important',
+        },
+      },
     },
     MuiSvgIcon: {
       styleOverrides: {
-      root: {
-        fontSize: '24px !important',
-      },}
+        root: {
+          fontSize: '24px !important',
+        },
+      },
     },
     MuiTypography: {
-  
-      styleOverrides:{
+      styleOverrides: {
         body1: {
           fontSize: '16px !important',
-        }
-      }
-
+        },
+      },
     },
     MuiSwitch: {
       styleOverrides: {
-      input: {
-        position: 'absolute !important',
-      },}
+        input: {
+          position: 'absolute !important',
+        },
+      },
     },
     MuiFormControlLabel: {
       styleOverrides: {
-      label: {
-        fontSize: '16px !important',
-      },}
+        label: {
+          fontSize: '16px !important',
+        },
+      },
     },
     MuiFormLabel: {
       styleOverrides: {
-      root: {
-        fontSize: '16px !important',
-      },}
+        root: {
+          fontSize: '16px !important',
+        },
+      },
     },
     MuiSelect: {
       styleOverrides: {
-      select: {
-        fontSize: '16px !important',
-      },}
+        select: {
+          fontSize: '16px !important',
+        },
+      },
     },
     MuiMenuItem: {
       styleOverrides: {
-      root: {
-        fontSize: '16px !important',
-      },}
+        root: {
+          fontSize: '16px !important',
+        },
+      },
     },
     MuiInputLabel: {
       styleOverrides: {
-      root: {
-        fontSize: '16px !important',
-      },}
+        root: {
+          fontSize: '16px !important',
+        },
+      },
+    },
+    MuiLink: {
+      styleOverrides: {
+        root: {
+          textDecoration: 'none',
+          backgroundColor: 'transparent',
+          color: 'black !important',
+          ':hover': {
+            textDecoration: 'underline',
+            backgroundColor:'transparent',
+            color: 'black !important',
+          },
+        },
+      },
     },
   },
 });
@@ -135,14 +162,16 @@ const Popup = ({
           { activation: true },
           function (response) {
             // Display an error if no video can be detected
-            console.log('popup received the response from contentscript ' + response)
+            console.log(
+              'popup received the response from contentscript ' + response
+            );
             if (response && !videoDetected) {
               setVideoDetected(true);
 
               const thisSite = tab[0].url
                 .replace(/^.*\/\//, '')
                 .replace(/\/.*/, '');
- 
+
               sitesWithSubtitles.push(thisSite);
 
               chrome.storage.sync.set(
@@ -164,27 +193,28 @@ const Popup = ({
 
   return (
     <StyledEngineProvider injectFirst>
-      <ThemeProvider theme={msTheme} >
-        <div className='subx-w-[280px] subx-overflow-x-hidden'>
-        {displayShortcuts ? (
-          <Shortcuts
-            setDisplayShortcuts={setDisplayShortcuts}
-            thisSite={thisSite}
-          />
-        ) : (
-          <>
-             <Header popup={popup} /> 
-            {popup && !videoDetected ? (
-              <NoVideoDetected />
-            ) : (
-              <SubtitleSettings  popup={popup} setMenu={setMenu} />
-            )}
-            <GeneralSection
+      <ThemeProvider theme={msTheme}>
+        <div className="subx-w-[280px] subx-overflow-x-hidden">
+          {displayShortcuts ? (
+            <Shortcuts
               setDisplayShortcuts={setDisplayShortcuts}
-              popup={popup}
+              thisSite={thisSite}
             />
-          </>
-        )}</div>
+          ) : (
+            <>
+              {/* <Header popup={popup} />  */}
+              {popup && !videoDetected ? (
+                <NoVideoDetected />
+              ) : (
+                <SubtitleSettings popup={popup} setMenu={setMenu} />
+              )}
+              <GeneralSection
+                setDisplayShortcuts={setDisplayShortcuts}
+                popup={popup}
+              />
+            </>
+          )}
+        </div>
       </ThemeProvider>
     </StyledEngineProvider>
   );

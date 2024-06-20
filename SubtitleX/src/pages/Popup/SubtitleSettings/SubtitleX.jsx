@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import Container from '@mui/material/Container';
 import makeStyles from '@mui/styles/makeStyles';
 import FormControl from '@mui/material/FormControl';
+import { Link } from '@mui/material';
 import {
   getWantLangFromUserLang,
   remoteCall,
@@ -41,7 +42,7 @@ const SubtitleX = ({ hide, setHide, setMenu }) => {
     defaultChooseASubtitle
   );
   const [subtitle, setSubtitle] = useState('');
-  const tip = "Subscribe to www.subtitlex.xyz/Member please"
+  const tip = 'Subscribe to www.subtitlex.xyz/Member please';
   const handleSelectChange = (event) => {
     setSubtitleId(event.target.value);
   };
@@ -72,7 +73,7 @@ const SubtitleX = ({ hide, setHide, setMenu }) => {
       const sub_text = await fetchTextFromURL(subtitleId);
       setSubtitle(sub_text);
       const tip = 'Subscribe to www.subtitlex.xyz/Member please';
-      setHide(true)
+      setHide(true);
       if (sub_text.includes(tip)) {
         return;
       }
@@ -148,7 +149,7 @@ const SubtitleX = ({ hide, setHide, setMenu }) => {
     setAge(event.target.value);
   };
   return (
-    <Container className="subx-my-4">
+    <Container className="subx-my-4 subx-mt-8">
       <FormControl variant="outlined" className={classes.formControl}>
         {/* <label
           for="subtitlex-language-select"
@@ -162,11 +163,11 @@ const SubtitleX = ({ hide, setHide, setMenu }) => {
               <a
                 href="https://www.subtitlex.xyz/Member"
                 target="_blank"
-                className="subx-underline subx-text-[#20e4ff] subx-text-xl subx-font-sans subx-mx-1"
+                className="subx-underline subx-text-[#20e4ff] "
               >
-                Subscribe
+                You've reached your free limit. Upgrade to enjoy up to 100
+                subtitles daily!
               </a>
-              to unlock the limit up to 100 subtitles per day.
             </div>
           ) : (
             <></>
@@ -189,6 +190,8 @@ const SubtitleX = ({ hide, setHide, setMenu }) => {
             );
           })}
         </select>
+        <Link href='http://www.subtitlex.xyz' style={{fontSize:'12px', textAlign:'right', marginTop:'6px'}} target='_blank'>check or download from library</Link>
+
       </FormControl>
     </Container>
   );

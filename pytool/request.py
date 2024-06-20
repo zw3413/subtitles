@@ -58,16 +58,27 @@ def PushSubtitleToServer(tgt_path, file_name):
 
 
 def PullSrtFromServer(seed, LocalPathPrefix, subtitleId = ''):
-    id = str(seed["id"])
-    video_language = seed["video_language"]
-    src_lang = language_codes[video_language]
-    srt_path = seed["srt_path"]
-    tgt_path = LocalPathPrefix+srt_path
-    if not os.path.exists(tgt_path):
-        url = serverIp + "/get_subtitle?id="+id+"&language="+src_lang+"&titleSubaId="+ subtitleId
-        r= requests.get(url)
-        tgt_file = open(tgt_path, "w", encoding='utf-8')
-        tgt_file.write(r.text)
+    try:
+        id = str(seed["id"])
+        video_language = seed["video_language"]
+        srt_path = seed["srt_path"]
+        if video_language is not None and len(video_language)>0:
+            src_lang = language_codes[video_language]
+            url = serverIp + "/get_subtitle?id="+id+"&language="+src_lang+"&titleSubaId="+ subtitleId
+        elif srt_path is not None:
+            url = serverIp + "/get_subtitle?srt_path="+srt_path
+        else:
+            raise Exception("No srt file path provided")
+
+        tgt_path = LocalPathPrefix+srt_path
+        if not os.path.exists(tgt_path):
+            r= requests.get(url)
+            tgt_file = open(tgt_path, "w", encoding='utf-8')
+            tgt_file.write(r.text)
+            tgt_file.flush()
+        
+    except Exception as e:
+        print(e)
 
 def PullSrtFromServerBySubtitleId(subtitleId,src_path, LocalPathPrefix):
     url = serverIp + "/get_subtitle?titleSubaId="+ subtitleId
@@ -168,8 +179,8 @@ def PostWantFullfilled(want_id, errorMsg):
         return []
 
 
-def main():
-    GetNextNeedProcessSeed()  
+# def main():
+#     GetNextNeedProcessSeed()  
 
-if __name__ == "__main__" :
-    main()
+# if __name__ == "__main__" :
+#     main()

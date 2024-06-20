@@ -4,7 +4,7 @@ import re, chardet
 filePath_prefix = '../file/subtitle/'
 cmd = "translate"
 pattern_num = r'^-?\d+$' #regx pattern of No. 
-pattern_timestamp = re.compile(r'^\d{2}:\d{2}:\d{2},\d{3} --> \d{2}:\d{2}:\d{2},\d{3}$') #regx pattern of timestamp
+pattern_timestamp = re.compile(r'^\d{2}:\d{2}:\d{2}[,\.]\d{3} --> \d{2}:\d{2}:\d{2}[,\.]\d{3}$') #regx pattern of timestamp
 pattern_domain = r'^http[s]://(?:[a-zA-Z]|[0-9]|[$-.@+])+'
 
 

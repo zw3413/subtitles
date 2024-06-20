@@ -91,7 +91,7 @@ const elementPosition: VideoPlayer = {
   [s.default]: {
     video: { selector: 'video', index: 0 },
     container: { selector: 'video', index: 0 },
-    iconWrapper: null,
+    iconWrapper: { selector: '.plyr__menu', index: 0, spacing: '0 10px' },
   },
 };
 

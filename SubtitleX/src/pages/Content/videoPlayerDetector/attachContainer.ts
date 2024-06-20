@@ -1,8 +1,8 @@
 import npmPackageUrl from './npmPackageUrl';
 
 export default function attachContainer(rootElement: HTMLElement, site: string) {
-  const containerId = 'npm-video-player-detector-container';
-
+  //const containerId = 'npm-video-player-detector-container';
+  const containerId = 'www-subtitlex-xyz';
   // Check if the id has already been injected
   if (!document.querySelector('#' + containerId)) {
     const container = document.createElement('div');

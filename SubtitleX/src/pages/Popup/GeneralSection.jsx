@@ -29,7 +29,7 @@ const GeneralSection = ({ setDisplayShortcuts, popup }) => {
   return <>
     {/* <MenuHeading heading="General:" /> */}
     <List component="nav" aria-label="main mailbox folders">
-      <ListItem className='subx-text-black subx-bg-[#20e4ff] subx-text-lg'>
+      <ListItem className='subx-text-black subx-bg-[#20e4ff] subx-text-[12px]'>
         This tool is still new and may not work as expected. We would appreciate your feedback in our community.
       </ListItem>
       {/* <ListItem button>

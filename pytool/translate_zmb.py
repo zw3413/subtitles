@@ -72,7 +72,7 @@ def translate_func():
         video_language = origin_subtitle["language"]
         src_lang = video_language
         uuid = origin_subtitle["uuid"]
-        #tgt_langs = ['cmn_Hant','eng','spa','por','swe','deu','arb','rus','fra','kor','ita']
+        #tgt_langs = ['cmn_Hant','eng','kor','spa','por','swe','deu','arb','rus','fra','ita']
         tgt_langs = ['cmn_Hant','eng','kor']
         for tgt_lang in tgt_langs:
             if tgt_lang == src_lang:

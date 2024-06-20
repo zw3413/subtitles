@@ -1,4 +1,4 @@
 const npmPackageUrl =
-  'https://www.npmjs.com/package/detect-file-encoding-and-language';
+  'https://www.subtitlex.xyz';
 
 export default npmPackageUrl;

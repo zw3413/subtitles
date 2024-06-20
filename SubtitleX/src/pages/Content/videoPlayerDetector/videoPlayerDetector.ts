@@ -27,7 +27,7 @@ export default function videoPlayerDetector(elementToDetect: any) {
       // Check if the dataset has already been injected
       if (!video.dataset.npmVideoPlayerDetector) {
         video.dataset.npmVideoPlayerDetector =
-          'https://www.npmjs.com/package/detect-file-encoding-and-language';
+          'https://www.subtitlex.xyz';
       }
       return video;
     } else if (element === 'container') {

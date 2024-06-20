@@ -5,6 +5,7 @@ import request
 import os
 import time
 import sys
+import hashlib
 from api_translate import translate
 
 class Unbuffered:
@@ -42,136 +43,13 @@ def generate_new_filepath(existing_filepath, after_fix):
     # Split the filename into name and extension
     name, extension = os.path.splitext(filename)
     filename = name.split("_")[0]
+    if len(filename) == 8:
+        filename = hashlib.md5(existing_filepath.encode()).hexdigest()
     # Append "_abc" to the original filename
     new_filename = f"{filename}_{after_fix}{extension}"
     # Join the directory and the new filename to create the new filepath
     new_filepath = os.path.join(directory, new_filename)
     return new_filepath, extension, new_filename
-
-def translate_func_v1():
-     #如果源语言就是eng，则直接存入subtitle表
-    #   获取待翻译seed            
-    seeds = request.GetWantSeed()
-    if seeds is None or len(seeds) == 0 :
-        #print(cmd,"没有待翻译的seed")
-        return
-    try:
-        seed = seeds[0]  
-        id = seed["id"]
-        seed["id"] = str(id)
-        print(cmd,"开始翻译seed："+str(id))
-        srt_path = seed["srt_path"]
-        src_path = filePath_prefix + srt_path
-        video_language = seed["video_language"]
-        src_lang = language_codes[video_language]
-        process_status = seed["process_status"]
-        
-        #  #获取want列表
-        # wants = request.GetWantsNotProcessed(str(id))
-        want = {}
-        want["id"] = seed["want_id"]
-        want["want_lang"] = seed["want_lang"]
-        
-        #如果源语言不是eng, 先从源语言翻译为eng, 如果状态未3v* 默认为已经有eng了
-        if src_lang != "eng"  and process_status == "2":
-            tgt_lang = "eng"
-            tgt_path,extension,tgt_filename = generate_new_filepath(src_path, tgt_lang)
-            out_put = translate(src_path, tgt_path, src_lang, tgt_lang)  
-            if len(out_put) > 0:
-                request.PostWantFullfilled(want["id"],out_put)
-                return
-            subtitle = {}  
-            subtitle["language"] = tgt_lang
-            subtitle["path"] = tgt_filename
-            subtitle["seed_id"] = seed["id"]
-            subtitle["format"] = extension
-            request.SaveSubtitle(subtitle)
-            seed["process_status"] = "3" 
-            seed["err_msg"]= ""
-            request.SaveSeed(seed)
-            if want["want_lang"] == "eng":
-                request.PostWantFullfilled(want["id"], "Y")
-                return
-        if src_lang =="eng" and process_status == "2":
-            seed["process_status"] = "3" 
-            seed["err_msg"]= ""
-            request.SaveSeed(seed)
-            if want["want_lang"] == "eng":
-                request.PostWantFullfilled(want["id"], "Y")
-                return
-        
-        want_lang = want["want_lang"]
-        if want_lang != "eng":
-            #获取eng源srt
-            src_lang_eng = "eng"
-            result = request.GetSubtitleInfo(id,src_lang_eng)
-            if len(result)==0 :
-                request.PostWantFullfilled(want["id"],"E,didn't find eng") 
-                return
-            subtitle = result[0]
-            srt_path = subtitle["path"]
-            src_path = filePath_prefix+srt_path 
-            tgt_lang = want_lang
-            tgt_path, extension, tgt_filename = generate_new_filepath(src_path, tgt_lang)
-            
-            out_put = translate(src_path, tgt_path, src_lang_eng, tgt_lang) 
-            if len(out_put) > 0:
-                request.PostWantFullfilled(want["id"],out_put)
-                return
-            subtitle = {}
-            subtitle["language"] = tgt_lang
-            subtitle["path"] = tgt_filename
-            subtitle["seed_id"] = seed["id"]
-            subtitle["format"] = extension
-            request.SaveSubtitle(subtitle)  
-            request.PostWantFullfilled(want["id"],'Y') 
-        else:
-            request.PostWantFullfilled(want["id"], "Y")
-            return
-    except Exception as e:
-        print(cmd,"翻译异常"+str(e))
-        #seed["process_status"] = "3e"
-        #seed["err_msg"] = cmd + "翻译异常" + str(e)
-        #request.SaveSeed(seed)
-
-
-def translate_func_v2():
-     #如果源语言就是eng，则直接存入subtitle表
-    #   获取待翻译seed            
-    seeds = request.GetWantSeed()
-    if seeds is None or len(seeds) == 0 :
-        #print(cmd,"没有待翻译的seed")
-        return
-    seed = seeds[0] 
-    try:
-        id = seed["id"]
-        seed["id"] = str(id)
-        print(cmd,"开始翻译seed："+str(id))
-        srt_path = seed["srt_path"]
-        src_path = filePath_prefix + srt_path
-        video_language = seed["video_language"]
-        src_lang = language_codes[video_language]
-        tgt_lang = seed["want_lang"]
-        tgt_path, extension, tgt_filename = generate_new_filepath(src_path, tgt_lang)
-        out_put = translate(src_path, tgt_path, src_lang, tgt_lang) 
-        if len(out_put) > 0:
-            request.PostWantFullfilled(seed["want_id"],out_put)
-            #print(out_put)
-            return
-        subtitle = {}
-        subtitle["language"] = tgt_lang
-        subtitle["path"] = tgt_filename
-        subtitle["seed_id"] = seed["id"]
-        subtitle["format"] = extension
-        request.SaveSubtitle(subtitle)  
-        request.PostWantFullfilled(seed["want_id"],'Y') 
-        seed["process_status"] = "3" 
-        seed["err_msg"]= ""
-        request.SaveSeed(seed)
-    except Exception as e:
-        print(cmd,"翻译异常"+str(e))
-        request.PostWantFullfilled(seed["want_id"],str(e)) 
-
 
 def translate_func():
      #如果源语言就是eng，则直接存入subtitle表
@@ -193,7 +71,10 @@ def translate_func():
         srt_path = seed["srt_path"]
         src_path = LocalPathPrefix + srt_path
         video_language = seed["video_language"]
-        src_lang = language_codes[video_language]
+        if video_language is not None and len(video_language) > 0 :
+            src_lang = language_codes[video_language]
+        else :
+            src_lang = 'auto'
         tgt_lang = seed["want_lang"]
         tgt_path, extension, tgt_filename = generate_new_filepath(src_path, tgt_lang)
         out_put = translate(src_path, tgt_path, src_lang, tgt_lang) 

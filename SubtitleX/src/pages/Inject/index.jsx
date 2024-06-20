@@ -5,7 +5,8 @@ export default function detectSeed() {
   let jh_seed = null;
 
   if (typeof hlsUrl != 'undefined' && typeof jh_currentUrl == 'undefined') {
-    let jh_currentUrl = window.location.href;
+    let jh_currentUrl = top.location?.href;
+
     jh_seed = {
       videoNo: jh_currentUrl.split('/')[jh_currentUrl.split('/').length - 2],
       videoName: document.querySelector('.video-info .info-header h4')
@@ -25,13 +26,31 @@ export default function detectSeed() {
     };
   }
 
+  if (
+    document.querySelector('video')?.getAttribute('data-poster')?.split('/')
+      .length >= 8
+  ) {
+    jh_seed = {
+      videoNo: document
+        .querySelector('video')
+        .getAttribute('data-poster')
+        .split('/')[
+        document.querySelector('video').getAttribute('data-poster').split('/')
+          .length - 2
+      ],
+      videoName: '',
+      m3u8Url: '',
+      pageUrl: '',
+    };
+  }
+
   if (!jh_seed) {
     //检测其他网址，构建seed
     jh_seed = {
       videoNo: '',
       videoName: document.title,
       pageUrl: window.location.href,
-      m3u8Url:''
+      m3u8Url: '',
     };
   }
 

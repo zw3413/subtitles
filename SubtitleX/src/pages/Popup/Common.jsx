@@ -1,5 +1,5 @@
-const subtitleXserverApi = "https://api.subtitlex.xyz";
-const subtitleXserverWeb = "https://www.subtitlex.xyz";
+export const subtitleXserverApi = "https://api.subtitlex.xyz";
+export const subtitleXserverWeb = "https://www.subtitlex.xyz";
 
 
 export const getWantLangFromUserLang = (userLanguage) => {

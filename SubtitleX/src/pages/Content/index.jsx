@@ -43,14 +43,26 @@ if (!document.querySelector('#subtitlex_injectScript')) {
 //   }
 // });
 let displayingExtension = false;
-//document.addEventListener('DOMContentLoaded', () => {
-window.addEventListener('load', () => {
+let detectTime = 0;
+const detectAndShowSubtitles =()=>{
   if (!displayingExtension) {
+    
+    detectTime ++
     console.log('start to detect the video player');
     // Try to detect the video and display the subtitles
     const video = videoPlayerDetector('video');
     const container = videoPlayerDetector('container');
     const iconWrapper = videoPlayerDetector('iconWrapper');
+
+    if(!video){
+      console.log("video was not detected")
+    }
+    if(!container){
+      console.log("container was not detected")
+    }
+    if(!iconWrapper){
+      console.log("iconWrapper was not detected")
+    }
 
     if (video && container && iconWrapper) {
       //检测missav.com和jable.tv的seed
@@ -75,6 +87,18 @@ window.addEventListener('load', () => {
           sitesWithSubtitles: sitesWithSubtitles,
         });
       });
+    }else{
+      if(detectTime<1){
+        setTimeout(detectAndShowSubtitles,10000)
+      }
     }
   }
+}
+//document.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('load', () => {
+
+
+  detectAndShowSubtitles();
+
+
 });

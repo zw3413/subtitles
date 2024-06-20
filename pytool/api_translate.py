@@ -121,6 +121,8 @@ def translate(src_path, tgt_path, src_lang, tgt_lang) :
             # if re.match(pattern_num, line) and line != "1":
             #     tgt_file.write('\n')
             if re.match(pattern_timestamp, line):
+                if '.' in line:
+                    line = line.replace('.', ',')
                 tgt_file.write('\n')
                 count += 1
                 tgt_file.write(str(count))
