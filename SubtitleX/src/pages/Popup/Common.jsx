@@ -6,7 +6,7 @@ export const getWantLangFromUserLang = (userLanguage) => {
   let wantLang;
   if (userLanguage.startsWith("en")) {
     wantLang = "eng";
-  } else if (userLanguage.startsWith("zh-Hant")) {
+  } else if (userLanguage.startsWith("zh-Hant") || userLanguage.startsWith("zh-TW")) {
     wantLang = "cmn_Hant";
   } else if (userLanguage.startsWith("zh")) {
     wantLang = "cmn";

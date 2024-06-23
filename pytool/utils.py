@@ -27,6 +27,21 @@ language_codes = {
     "ja": "jpn",
     "ko": "kor",
     "it": "ita",
+    "nl": "nld",
+    "vi":"vie",
+    "pl":"pol",
+    "ro":"ron",
+    "hu":"hun",
+    "cs":"ces",
+    "el":"ell",
+    "he":"heb",
+    "tr":"tur",
+    "uk":"ukr",
+    "th":"tha",
+    "id":"ind",
+    "ms":"msa",
+    "hi":"hin",
+    "fa":"fas",
     "auto":"auto"
 }
 

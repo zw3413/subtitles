@@ -1,19 +1,20 @@
 {
   "name": "SubtitleX",
-  "version": "0.2.8",
-  "key":"MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAjAXNScH2AzM9kP65zjvifyBd/tsQpRv7zSH6Mf37G3kj5/ckg3ZgltmfDrRIeX0WRR2J6+JuMHS3vMA4Mncm1toSS3LQ/SBbPY94IHtpwQb2HAvNq0NUg3e7a+AYWAN4Yk3WapW4/Om7nl1qUFO6Aid8jX9ofGy99q1hbK6d9xSgHRSwSO2E7ReZz4na+tUZVKbU7HgX8+kg7Xw6OzNT1yfovln4zPoaM0PpyhZUPCRsLMxCnQsqR3et4LAd59Ga+WRpGWBKUbOARWkvRXRFrhfTnmW3XdL+n/CZv/B2e9+72O40NuIHbaN1o2CuyVdwh2CsbCP5lLzKTIcRRzPGuwIDAQAB",
+  "version": "0.2.10",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAjAXNScH2AzM9kP65zjvifyBd/tsQpRv7zSH6Mf37G3kj5/ckg3ZgltmfDrRIeX0WRR2J6+JuMHS3vMA4Mncm1toSS3LQ/SBbPY94IHtpwQb2HAvNq0NUg3e7a+AYWAN4Yk3WapW4/Om7nl1qUFO6Aid8jX9ofGy99q1hbK6d9xSgHRSwSO2E7ReZz4na+tUZVKbU7HgX8+kg7Xw6OzNT1yfovln4zPoaM0PpyhZUPCRsLMxCnQsqR3et4LAd59Ga+WRpGWBKUbOARWkvRXRFrhfTnmW3XdL+n/CZv/B2e9+72O40NuIHbaN1o2CuyVdwh2CsbCP5lLzKTIcRRzPGuwIDAQAB",
   "description": "Immersive multilingual subtitles for online videos, such as Disney, Netflix, YouTube and many more!",
   "manifest_version": 3,
+  "default_locale": "en",
   "background": { "service_worker": "background.bundle.js" },
   "action": {
     "default_icon": "subtitlex-128.png"
   },
   "icons": {
     "32": "subtitlex-32.png",
-    "64":"subtitlex-64.png",
-    "128":"subtitlex-128.png"
+    "64": "subtitlex-64.png",
+    "128": "subtitlex-128.png"
   },
-  "permissions": ["storage","cookies"],
+  "permissions": ["storage", "cookies"],
   "host_permissions": ["*://*.subtitlex.xyz/"],
   "content_scripts": [
     {
@@ -25,7 +26,7 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["*.png","injectScript.bundle.js", "*.map"],
+      "resources": ["*.png", "injectScript.bundle.js", "*.map"],
       "matches": ["<all_urls>"]
     }
   ]

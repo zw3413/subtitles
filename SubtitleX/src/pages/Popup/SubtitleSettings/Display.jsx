@@ -101,7 +101,7 @@ const Display = ({ popup, hide, setHide }) => {
       <List component="nav" aria-label="main mailbox folders">
       <ListItem button>
           <ListItemText style={{ color: 'black' }} >
-            Synchronize {syncValue}s</ListItemText>
+            {chrome.i18n.getMessage("synchronize")} {syncValue}{chrome.i18n.getMessage("second")}</ListItemText>
           <ListItemSecondaryAction>
 
             <IconButton
@@ -121,7 +121,7 @@ const Display = ({ popup, hide, setHide }) => {
 
         </ListItem>
         <ListItem button>
-          <ListItemText style={{ color: 'black' }} primary="Font Size" />
+          <ListItemText style={{ color: 'black' }} primary={chrome.i18n.getMessage('fontSize')} />
           <ListItemSecondaryAction>
             <IconButton
               onClick={(event) => {displaySettingsHandler('font-smaller');event.preventDefault();event.stopPropagation()}}
@@ -140,7 +140,7 @@ const Display = ({ popup, hide, setHide }) => {
           </ListItemSecondaryAction>
         </ListItem>
         <ListItem button>
-          <ListItemText style={{ color: 'black' }} primary="Background" />
+          <ListItemText style={{ color: 'black' }} primary={chrome.i18n.getMessage("background")} />
           <ListItemSecondaryAction>
 
             <IconButton
@@ -185,7 +185,7 @@ const Display = ({ popup, hide, setHide }) => {
 
         <ListItem button>
           <ListItemText style={{ color: 'black' }} >
-            Hide Subtitle </ListItemText>
+            {chrome.i18n.getMessage('hideSubtitle')} </ListItemText>
           <ListItemSecondaryAction>
             <IconButton
               onClick={() => { setHide(!hide) }}

@@ -1,0 +1,47 @@
+{
+  "loadSubtitle": {
+    "message": "LOAD SUBTITLE"
+  },
+  "searchSubtitlesOnline":{
+    "message":"search subtitles online"
+  },
+  "reachLimit": {
+    "message": "You've reached your free limit. Upgrade to enjoy up to 100 subtitles daily!"
+  },
+  "checkSubtitlexLibrary":{
+    "message":"check or download from library"
+  },
+  "synchronize":{
+    "message":"Synchronize"
+  },
+  "second":{
+    "message":"S"
+  },
+  "fontSize":{
+    "message":"Font size"
+  },
+  "background":{
+    "message":"Background"
+  },
+  "hideSubtitle":{
+    "message":"Hide Subtitle"
+  },
+  "greeting":{
+    "message":"This tool is still new and may not work as expected. We would appreciate your feedback in our community."
+  },
+  "profile":{
+    "message":"Profile"
+  },
+  "subscribe":{
+    "message":"Subscribe"
+  },
+  "feedback":{
+    "message":"Feedback"
+  },
+  "noneSubtitle":{
+    "message":"None subtitle collected"
+  },
+  "chooseSubtitle":{
+    "message":"Choose a subtitle"
+  }
+}

@@ -122,6 +122,16 @@ var options = {
     }),
     // expose and write the allowed env vars on the compiled bundle
     new webpack.EnvironmentPlugin(['NODE_ENV']),
+
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: '_locales/**',
+          to: path.join(__dirname, 'build',"","[path][name].[ext]")
+        },
+      ],
+    }),
+
     new CopyWebpackPlugin({
       patterns: [
         {

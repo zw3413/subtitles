@@ -88,7 +88,7 @@ const detectAndShowSubtitles =()=>{
         });
       });
     }else{
-      if(detectTime<1){
+      if(detectTime<5){
         setTimeout(detectAndShowSubtitles,10000)
       }
     }

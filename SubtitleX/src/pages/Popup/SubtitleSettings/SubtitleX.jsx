@@ -31,8 +31,8 @@ export function getSeed() {
 
 const SubtitleX = ({ hide, setHide, setMenu }) => {
   const defaultSubtitleId = '0';
-  const defaultChooseASubtitle = 'Choose a subtitle';
-  const NoneSubtitleCollected = 'None subtitle collected';
+  const defaultChooseASubtitle = chrome.i18n.getMessage('chooseSubtitle');
+  const NoneSubtitleCollected = chrome.i18n.getMessage('noneSubtitle');
   const classes = useStyles();
   //const [seed, setSeed] = useState({})
   const [subtitleId, setSubtitleId] = useState(defaultSubtitleId);
@@ -127,7 +127,7 @@ const SubtitleX = ({ hide, setHide, setMenu }) => {
       console.log('subtitlex: userLanguage = ' + userLangCode);
 
       for (var i = 0; i < subtitleArray.length; i++) {
-        if (subtitleArray[i]['language'] == userLangCode) {
+        if (subtitleArray[i]['language'] == userLangCode || subtitleArray[i]['language'] == userLangCode+"_Hant") {
           setSubtitleId(subtitleArray[i]['uuid']);
           break;
         }
@@ -151,12 +151,6 @@ const SubtitleX = ({ hide, setHide, setMenu }) => {
   return (
     <Container className="subx-my-4 subx-mt-8">
       <FormControl variant="outlined" className={classes.formControl}>
-        {/* <label
-          for="subtitlex-language-select"
-          className=" subx-block subx-mb-2 subx-text-[16px] subx-font-medium subx-text-gray-900 "
-        >
-          SubtitleX
-        </label> */}
         <div>
           {subtitle.includes(tip) ? (
             <div className=" text-red-400 subx-leading-tight">
@@ -165,8 +159,7 @@ const SubtitleX = ({ hide, setHide, setMenu }) => {
                 target="_blank"
                 className="subx-underline subx-text-[#20e4ff] "
               >
-                You've reached your free limit. Upgrade to enjoy up to 100
-                subtitles daily!
+                {chrome.i18n.getMessage('reachLimit')}
               </a>
             </div>
           ) : (
@@ -190,8 +183,13 @@ const SubtitleX = ({ hide, setHide, setMenu }) => {
             );
           })}
         </select>
-        <Link href='http://www.subtitlex.xyz' style={{fontSize:'12px', textAlign:'right', marginTop:'6px'}} target='_blank'>check or download from library</Link>
-
+        <Link
+          href="http://www.subtitlex.xyz"
+          style={{ fontSize: '12px', textAlign: 'right', marginTop: '6px' }}
+          target="_blank"
+        >
+          {chrome.i18n.getMessage('checkSubtitlexLibrary')}
+        </Link>
       </FormControl>
     </Container>
   );

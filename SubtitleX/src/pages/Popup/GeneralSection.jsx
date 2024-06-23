@@ -30,7 +30,7 @@ const GeneralSection = ({ setDisplayShortcuts, popup }) => {
     {/* <MenuHeading heading="General:" /> */}
     <List component="nav" aria-label="main mailbox folders">
       <ListItem className='subx-text-black subx-bg-[#20e4ff] subx-text-[12px]'>
-        This tool is still new and may not work as expected. We would appreciate your feedback in our community.
+        {chrome.i18n.getMessage('greeting')}
       </ListItem>
       {/* <ListItem button>
         <ListItemText
@@ -54,7 +54,7 @@ const GeneralSection = ({ setDisplayShortcuts, popup }) => {
         }
       >
         {/* <ListItemText style={{ color: 'black' }}  >{userName.length>0?userName:"Login"}</ListItemText> */}
-        <ListItemText style={{ color: 'black' }}  >{subscribed ? "Profile":"Subscribe"}</ListItemText>
+        <ListItemText style={{ color: 'black' }}  >{subscribed ?  chrome.i18n.getMessage('profile') : chrome.i18n.getMessage('subscribe')}</ListItemText>
         <ListItemSecondaryAction>
           <IconButton edge="end" aria-label="feedback" size="large">
             <AccountBoxIcon />
@@ -71,7 +71,7 @@ const GeneralSection = ({ setDisplayShortcuts, popup }) => {
           )
         }
       >
-        <ListItemText style={{ color: 'black' }} primary="Feedback" />
+        <ListItemText style={{ color: 'black' }} primary={chrome.i18n.getMessage('feedback')} />
         <ListItemSecondaryAction>
           <IconButton edge="end" aria-label="feedback" size="large">
             <FeedbackIcon />

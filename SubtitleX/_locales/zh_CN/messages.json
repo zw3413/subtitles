@@ -1,0 +1,47 @@
+{
+  "loadSubtitle": {
+    "message": "加载本地字幕"
+  },
+  "searchSubtitlesOnline": {
+    "message": "从推荐的字幕网站查找字幕"
+  },
+  "reachLimit": {
+    "message": "过去一个小时您已请求多个字幕，请休息一下，或者订阅解锁限额，谢谢！"
+  },
+  "checkSubtitlexLibrary": {
+    "message": "在SubtitleX的字幕库中查找字幕"
+  },
+  "synchronize": {
+    "message": "时间同步"
+  },
+  "second": {
+    "message": "秒"
+  },
+  "fontSize": {
+    "message": "字体大小"
+  },
+  "background": {
+    "message": "字幕背景"
+  },
+  "hideSubtitle": {
+    "message": "隐藏字幕"
+  },
+  "greeting": {
+    "message": "感谢您使用本工具，如果使用中遇到任何问题或者有任何改进建议，欢迎反馈给开发者，再次感谢！"
+  },
+  "profile": {
+    "message": "用户信息"
+  },
+  "subscribe": {
+    "message": "订阅支持"
+  },
+  "feedback": {
+    "message": "反馈建议"
+  },
+  "noneSubtitle": {
+    "message": "还未收录本影片字幕"
+  },
+  "chooseSubtitle": {
+    "message": "选择字幕"
+  }
+}

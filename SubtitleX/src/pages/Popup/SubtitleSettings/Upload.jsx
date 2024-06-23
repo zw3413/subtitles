@@ -1,14 +1,13 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { styled } from '@mui/material/styles';
 import PublishIcon from '@mui/icons-material/Publish';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
-import { getSeed } from './SubtitleX'
-import { uploadSubtitleFile } from '../Common'
+import { getSeed } from './SubtitleX';
+import { uploadSubtitleFile } from '../Common';
 import { Link } from '@mui/material';
-
 
 const InvisibleInput = styled('input')({
   display: 'none',
@@ -17,22 +16,22 @@ const InvisibleInput = styled('input')({
 const Upload = ({ popup, setMenu, setHide }) => {
   const [listening, setListening] = useState(false);
   const [uploadFile, setUploadFile] = useState(null);
-
+  const MSG_LOAD_SUBTITLE = chrome.i18n.getMessage('loadSubtitle');
   function invisibleUploadHandler(e) {
     const file = e.target.files[0];
     const fileUpload = new CustomEvent('fileUpload', { detail: file });
     document.dispatchEvent(fileUpload);
     setMenu(false);
     //上传subtitle
-    setUploadFile(file)
+    setUploadFile(file);
   }
   useEffect(() => {
-    if(uploadFile && uploadFile.name){
-      const seed = getSeed()
-      uploadSubtitleFile(seed, uploadFile)
-      setHide(false)
+    if (uploadFile && uploadFile.name) {
+      const seed = getSeed();
+      uploadSubtitleFile(seed, uploadFile);
+      setHide(false);
     }
-  }, [uploadFile])
+  }, [uploadFile]);
 
   function uploadButtonHandler() {
     if (popup) {
@@ -55,22 +54,33 @@ const Upload = ({ popup, setMenu, setHide }) => {
   }
 
   return (
-    <Container className='subx-my-4'>
+    <Container className="subx-my-4">
       <InvisibleInput
         onChange={invisibleUploadHandler}
         type="file"
         id="movie-subtitles-file-upload"
       />
       <Button
-        style={{ width: "100%", height: "56px", backgroundColor:"#20e4ff", marginBottom:"6px" }}
+        style={{
+          width: '100%',
+          height: '56px',
+          backgroundColor: '#20e4ff',
+          marginBottom: '6px',
+        }}
         onClick={uploadButtonHandler}
         variant="contained"
         color="secondary"
         endIcon={<PublishIcon />}
       >
-        Load Subtitles
+        {chrome.i18n.getMessage('loadSubtitle')}
       </Button>
-      <Link href='http://www.subtitlex.xyz/Extension#websites' style={{fontSize:'12px', float:'right'}} target='_blank'>search subtitles online</Link>
+      <Link
+        href="http://www.subtitlex.xyz/Extension#websites"
+        style={{ fontSize: '12px', float: 'right' }}
+        target="_blank"
+      >
+        {chrome.i18n.getMessage('searchSubtitlesOnline')}
+      </Link>
     </Container>
 
     // <Box mb={4} mt={2}>
