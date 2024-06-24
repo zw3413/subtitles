@@ -446,6 +446,8 @@ func GetSubtitleWithUUID(c *gin.Context) {
 			executeFlag = "N"
 			errMsg = err.Error()
 			log.LOGGER("SUBX").Error(err)
+			log.LOGGER("SUBX").Error(fileName)
+			log.LOGGER("SUBX").Error(filePath)
 			respCode = 500
 			response = "error"
 			return
@@ -475,6 +477,8 @@ func GetSubtitleWithUUID(c *gin.Context) {
 			executeFlag = "N"
 			errMsg = err.Error()
 			log.LOGGER("SUBX").Error(err)
+			log.LOGGER("SUBX").Error(fileName)
+			log.LOGGER("SUBX").Error(filePath)
 			respCode = 500
 			response = "error"
 			return
