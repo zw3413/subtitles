@@ -89,8 +89,21 @@ def transcribe_func() :
             #vad_parameters=dict(min_silence_duration_ms=1000,threshold=0.4),
             task = "transcribe"
             )
+        
+        print(cmd,"Detected language '%s' with probability %f" % (info.language, info.language_probability))
+        if info.language_probability < 0.9: #如果语言预测的可能性小于0.9，强制使用ja
+            segments, info = model.transcribe(
+                video_filePath_prefix+flvPath, 
+                beam_size=5, 
+                vad_filter=True, 
+                language="ja",
+                #vad_parameters=dict(min_silence_duration_ms=2000,max_speech_duration_s=10, threshold=0.4),
+                #vad_parameters=dict(min_silence_duration_ms=2000,threshold=0.4),
+                #vad_parameters=dict(min_silence_duration_ms=1000,threshold=0.4),
+                task = "transcribe"
+            )
+            print(cmd,"Detected language '%s' with probability %f" % (info.language, info.language_probability))
         language = info.language
-        #print(cmd,"Detected language '%s' with probability %f" % (language, info.language_probability))
         #srtPath = filePath.split('.')[0]+ info.language + '.srt'
         srtPath = filePath_prefix + flvPath.replace(MP3_afterfix,SRT_afterfix).replace(FLV_afterfix, SRT_afterfix).replace('_worst','').replace('_best','')
             #delete the file at filePath if exist
