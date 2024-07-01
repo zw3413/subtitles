@@ -1,0 +1,48 @@
+{
+    "loadSubtitle": {
+      "message": "تحميل الترجمة"
+    },
+    "searchSubtitlesOnline": {
+      "message": "البحث عن الترجمات عبر الإنترنت"
+    },
+    "reachLimit": {
+      "message": "لقد وصلت إلى الحد المجاني الخاص بك. قم بالترقية للاستمتاع بما يصل إلى 100 ترجمة يوميًا!"
+    },
+    "checkSubtitlexLibrary": {
+      "message": "تحقق أو قم بالتنزيل من المكتبة"
+    },
+    "synchronize": {
+      "message": "مزامنة"
+    },
+    "second": {
+      "message": "ثانية"
+    },
+    "fontSize": {
+      "message": "حجم الخط"
+    },
+    "background": {
+      "message": "الخلفية"
+    },
+    "hideSubtitle": {
+      "message": "إخفاء الترجمة"
+    },
+    "greeting": {
+      "message": "هذه الأداة جديدة ولا تزال قيد التطوير. نقدر ملاحظاتك في مجتمعنا."
+    },
+    "profile": {
+      "message": "الملف الشخصي"
+    },
+    "subscribe": {
+      "message": "اشترك"
+    },
+    "feedback": {
+      "message": "ملاحظات"
+    },
+    "noneSubtitle": {
+      "message": "لم يتم جمع أي ترجمة"
+    },
+    "chooseSubtitle": {
+      "message": "اختر ترجمة"
+    }
+  }
+  

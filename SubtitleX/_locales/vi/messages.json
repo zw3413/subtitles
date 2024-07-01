@@ -1,0 +1,48 @@
+{
+    "loadSubtitle": {
+      "message": "Tải phụ đề"
+    },
+    "searchSubtitlesOnline": {
+      "message": "tìm kiếm phụ đề trực tuyến"
+    },
+    "reachLimit": {
+      "message": "Bạn đã đạt đến giới hạn miễn phí. Nâng cấp để tận hưởng tới 100 phụ đề hàng ngày!"
+    },
+    "checkSubtitlexLibrary": {
+      "message": "kiểm tra hoặc tải xuống từ thư viện"
+    },
+    "synchronize": {
+      "message": "Đồng bộ hóa"
+    },
+    "second": {
+      "message": "giây"
+    },
+    "fontSize": {
+      "message": "Kích thước phông chữ"
+    },
+    "background": {
+      "message": "Nền"
+    },
+    "hideSubtitle": {
+      "message": "Ẩn phụ đề"
+    },
+    "greeting": {
+      "message": "Công cụ này vẫn còn mới và có thể không hoạt động như mong đợi. Chúng tôi rất cảm kích phản hồi của bạn trong cộng đồng của chúng tôi."
+    },
+    "profile": {
+      "message": "Hồ sơ"
+    },
+    "subscribe": {
+      "message": "Đăng ký"
+    },
+    "feedback": {
+      "message": "Phản hồi"
+    },
+    "noneSubtitle": {
+      "message": "Không có phụ đề được thu thập"
+    },
+    "chooseSubtitle": {
+      "message": "Chọn phụ đề"
+    }
+  }
+  

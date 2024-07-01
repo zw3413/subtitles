@@ -1,0 +1,48 @@
+{
+    "loadSubtitle": {
+      "message": "字幕を読み込む"
+    },
+    "searchSubtitlesOnline": {
+      "message": "オンラインで字幕を検索"
+    },
+    "reachLimit": {
+      "message": "無料の制限に達しました。アップグレードして毎日最大100の字幕をお楽しみください！"
+    },
+    "checkSubtitlexLibrary": {
+      "message": "ライブラリから確認またはダウンロード"
+    },
+    "synchronize": {
+      "message": "同期する"
+    },
+    "second": {
+      "message": "秒"
+    },
+    "fontSize": {
+      "message": "フォントサイズ"
+    },
+    "background": {
+      "message": "背景"
+    },
+    "hideSubtitle": {
+      "message": "字幕を非表示にする"
+    },
+    "greeting": {
+      "message": "このツールはまだ新しいもので、期待通りに動作しない場合があります。コミュニティでのフィードバックをお願いします。"
+    },
+    "profile": {
+      "message": "プロフィール"
+    },
+    "subscribe": {
+      "message": "購読する"
+    },
+    "feedback": {
+      "message": "フィードバック"
+    },
+    "noneSubtitle": {
+      "message": "収集された字幕はありません"
+    },
+    "chooseSubtitle": {
+      "message": "字幕を選択"
+    }
+  }
+  

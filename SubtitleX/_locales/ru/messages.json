@@ -1,0 +1,48 @@
+{
+    "loadSubtitle": {
+      "message": "Загрузить субтитры"
+    },
+    "searchSubtitlesOnline": {
+      "message": "искать субтитры онлайн"
+    },
+    "reachLimit": {
+      "message": "Вы достигли своего бесплатного лимита. Обновитесь, чтобы наслаждаться до 100 субтитров в день!"
+    },
+    "checkSubtitlexLibrary": {
+      "message": "проверьте или скачайте из библиотеки"
+    },
+    "synchronize": {
+      "message": "Синхронизировать"
+    },
+    "second": {
+      "message": "с"
+    },
+    "fontSize": {
+      "message": "Размер шрифта"
+    },
+    "background": {
+      "message": "Фон"
+    },
+    "hideSubtitle": {
+      "message": "Скрыть субтитры"
+    },
+    "greeting": {
+      "message": "Этот инструмент еще новый и может работать не так, как ожидалось. Мы будем признательны за ваш отзыв в нашем сообществе."
+    },
+    "profile": {
+      "message": "Профиль"
+    },
+    "subscribe": {
+      "message": "Подписаться"
+    },
+    "feedback": {
+      "message": "Обратная связь"
+    },
+    "noneSubtitle": {
+      "message": "Субтитры не собраны"
+    },
+    "chooseSubtitle": {
+      "message": "Выбрать субтитры"
+    }
+  }
+  

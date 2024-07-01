@@ -1,0 +1,48 @@
+{
+    "loadSubtitle": {
+      "message": "Carregar legenda"
+    },
+    "searchSubtitlesOnline": {
+      "message": "pesquisar legendas online"
+    },
+    "reachLimit": {
+      "message": "Você atingiu seu limite gratuito. Atualize para desfrutar de até 100 legendas diárias!"
+    },
+    "checkSubtitlexLibrary": {
+      "message": "verificar ou baixar da biblioteca"
+    },
+    "synchronize": {
+      "message": "Sincronizar"
+    },
+    "second": {
+      "message": "s"
+    },
+    "fontSize": {
+      "message": "Tamanho da fonte"
+    },
+    "background": {
+      "message": "Fundo"
+    },
+    "hideSubtitle": {
+      "message": "Ocultar legenda"
+    },
+    "greeting": {
+      "message": "Esta ferramenta ainda é nova e pode não funcionar como esperado. Agradecemos seu feedback em nossa comunidade."
+    },
+    "profile": {
+      "message": "Perfil"
+    },
+    "subscribe": {
+      "message": "Assinar"
+    },
+    "feedback": {
+      "message": "Feedback"
+    },
+    "noneSubtitle": {
+      "message": "Nenhuma legenda coletada"
+    },
+    "chooseSubtitle": {
+      "message": "Escolha uma legenda"
+    }
+  }
+  

@@ -1,0 +1,48 @@
+{
+    "loadSubtitle": {
+      "message": "Untertitel laden"
+    },
+    "searchSubtitlesOnline": {
+      "message": "Untertitel online suchen"
+    },
+    "reachLimit": {
+      "message": "Sie haben Ihr kostenloses Limit erreicht. Aktualisieren Sie, um bis zu 100 Untertitel täglich zu genießen!"
+    },
+    "checkSubtitlexLibrary": {
+      "message": "überprüfen oder aus der Bibliothek herunterladen"
+    },
+    "synchronize": {
+      "message": "Synchronisieren"
+    },
+    "second": {
+      "message": "s"
+    },
+    "fontSize": {
+      "message": "Schriftgröße"
+    },
+    "background": {
+      "message": "Hintergrund"
+    },
+    "hideSubtitle": {
+      "message": "Untertitel ausblenden"
+    },
+    "greeting": {
+      "message": "Dieses Werkzeug ist noch neu und funktioniert möglicherweise nicht wie erwartet. Wir würden uns über Ihr Feedback in unserer Community freuen."
+    },
+    "profile": {
+      "message": "Profil"
+    },
+    "subscribe": {
+      "message": "Abonnieren"
+    },
+    "feedback": {
+      "message": "Feedback"
+    },
+    "noneSubtitle": {
+      "message": "Keine Untertitel gesammelt"
+    },
+    "chooseSubtitle": {
+      "message": "Untertitel auswählen"
+    }
+  }
+  
