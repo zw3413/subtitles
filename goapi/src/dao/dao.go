@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"goapi/src/utils"
 	"log"
+	"strings"
 	"sync"
 	"time"
 )
@@ -568,6 +569,12 @@ func GetUuidByClientIp(clienIp string) (string, error) {
 		`
 	data, err = utils.GetAllData(sql, clienIp)
 	if err != nil {
+		if strings.Contains(err.Error(), "violates unique") {
+			uuid, err = queryUUIDbyIP(clienIp)
+			if err == nil {
+				return uuid, nil
+			}
+		}
 		return "", err
 	}
 	if len(data) > 0 {
