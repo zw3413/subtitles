@@ -11,7 +11,7 @@ import sys
 sys.path.append(os.getcwd())
 import request
 
-url_pattern = r'^/dm\d+/en/.+$'
+url_pattern = re.compile(r'^.+/dm\d+/en/.+$')
 
 #from selenium.webdriver.chrome.options import Options
 # define custom options for the Selenium driver
@@ -43,72 +43,131 @@ options.add_argument('window-size=1200,900')
 # dr = uc.Chrome(options=chrome_options)
 
 import redis  
+import threading
 # 创建Redis连接对象  
 r = redis.Redis(host='192.168.2.203', port=6379, db=0,decode_responses=True)  
 pending_check_url_list = "pending_check_url_list_newhot"
 dealed_video_no_set = "dealed_video_no_set"
 
-def crawl_video_links(url):
-    dr = webdriver.Chrome(options=options)
-    try:
-        dr.get(url)
-        bs = BeautifulSoup(dr.page_source, "html.parser")
-        #如果未存在，先抓取seed信息，保存进数据库
-        video_no = url.split('/')[len(url.split('/'))-1]
-        #根据编号检查是否已经处理过
-        video_no_index = video_no.lower().replace('-chinese-subtitle','').replace('-uncensored-leak','').replace('-','').replace('_','').replace(' ','')
-        if r.sismember(dealed_video_no_set, video_no_index) > 0:
-            pass
-        else:
-            hlsUrl = dr.execute_script('return window.source1280')
-            video_name = bs.find('title').text
-            seed = {}
-            seed["video_page_url"] = url
-            seed["video_m3u8_url"] = hlsUrl
-            seed["video_name"] = video_name
-            seed["video_no"]= video_no
-            params = [video_no,video_name,hlsUrl,url,'','crawl']
-            request.remote_call('p_check_save_seed',params)
-            r.sadd(dealed_video_no_set,video_no_index)
-
-    except Exception as e:
-        print(f"Error: {e}")
-        r.rpush(pending_check_url_list,url)
-    finally:
+def crawl_video_contents():
+    while True:
         try:
-            dr.quit()
-        except:
-            pass
+            url = r.lpop(pending_check_url_list)
+            if url is None :
+                print("pending_check_url_list队列已处理完")
+                break
+            dr = webdriver.Chrome(options=options)
+            try:
+                dr.get(url)
+                bs = BeautifulSoup(dr.page_source, "html.parser")
+                #如果未存在，先抓取seed信息，保存进数据库
+                video_no = url.split('/')[len(url.split('/'))-1]
+                #根据编号检查是否已经处理过
+                video_no_index = video_no.lower().replace('-chinese-subtitle','').replace('-uncensored-leak','').replace('-','').replace('_','').replace(' ','')
+                if r.sismember(dealed_video_no_set, video_no_index) > 0:
+                    pass
+                else:
+                    hlsUrl = dr.execute_script('return window.source1280')
+                    video_name = bs.find('title').text
+                    seed = {}
+                    seed["video_page_url"] = url
+                    seed["video_m3u8_url"] = hlsUrl
+                    seed["video_name"] = video_name
+                    seed["video_no"]= video_no
+                    params = [video_no,video_name,hlsUrl,url,'','crawl']
+                    request.remote_call('p_check_save_seed',params)
+                    r.sadd(dealed_video_no_set,video_no_index)
+            except Exception as e:
+                print(f"Error: {e}")
+                r.rpush(pending_check_url_list,url)
+            finally:
+                try:
+                    dr.quit()
+                except:
+                    pass
+
+        except Exception as e:
+            print(f"Error: {e}")
+            r.rpush(pending_check_url_list, url)
 
 
-url_template = "https://missav.com/dm206/en/monthly-hot?page=%s"
-#先爬取所有的url，放进pending列表中
-for page in range(10):
-    url = url_template % page
-    dr = webdriver.Chrome(options=options)
-    dr.get(url)
-    bs = BeautifulSoup(dr.page_source, "html.parser")
-    a_all = bs.body.find_all('a')
-    
-    for a in a_all:
-        if a is not None and a.get("class") is not None and a.get('class').count("text-secondary")>0:
-            if a is not None and a.get("href") is not None:
-                href = a.get('href')
-                if href.count("#") > 0 :
-                    href = href.split('#')[0]
-                if re.match(url_pattern, href):
-                    href = "https://missav.com"+href
-                    target_video_no = href.split('/')[len(url.split('/'))-1].replace('-uncensored-leak','')
-                    target_video_no_index = target_video_no.lower().replace('-chinese-subtitle','').replace('-uncensored-leak','').replace('-','').replace('_','').replace(' ','')
-                    if r.sismember(dealed_video_no_set,target_video_no_index) == 0 :
-                        pos = r.lpos(pending_check_url_list,href)
-                        if pos is None:
-                            r.rpush(pending_check_url_list, href)
+import threading
+import queue
 
-#爬取前10页的url后，逐个url进行爬取                      
-while True:
-    url = r.lpop(pending_check_url_list)
-    if url is None :
-        print("队列已处理完毕")
-        break
-    crawl_video_links(url)
+# Use a queue to manage URLs
+url_queue = queue.Queue()
+
+# Create a thread pool
+thread_pool = []
+MAX_THREADS = 10
+
+def crawl_video_links():
+    while True:
+        try:
+            url = url_queue.get(timeout=1)
+        except queue.Empty:
+            print("队列已处理完毕")
+            break
+
+        #先爬取所有的url，放进pending列表中
+        try:
+            dr = webdriver.Chrome(options=options)
+            dr.get(url)
+            bs = BeautifulSoup(dr.page_source, "html.parser")
+            a_all = bs.body.find_all('a')
+            
+            for a in a_all:
+                if a is not None and a.get("class") is not None and a.get('class').count("text-secondary")>0:
+                    if a is not None and a.get("href") is not None:
+                        href = a.get('href')
+                        if href.count("#") > 0 :
+                            href = href.split('#')[0]
+                        if re.match(url_pattern, href):
+                            #href = "https://missav.com"+href
+                            target_video_no = href.split('/')[len(url.split('/'))-1].replace('-uncensored-leak','')
+                            target_video_no_index = target_video_no.lower().replace('-chinese-subtitle','').replace('-uncensored-leak','').replace('-','').replace('_','').replace(' ','')
+                            if r.sismember(dealed_video_no_set,target_video_no_index) == 0 :
+                                pos = r.lpos(pending_check_url_list,href)
+                                if pos is None:
+                                    r.rpush(pending_check_url_list, href)
+        except Exception as e:
+            print(f"Error: {e}")
+            r.rpush(pending_check_url_list,url)
+        finally:
+            try:
+                dr.quit()
+            except:
+                pass
+        
+        url_queue.task_done()
+
+#Populate the URL queue
+for p in range(2000):
+    url = f"https://missav.com/dm206/en/monthly-hot?page={p}"
+    url_queue.put(url)
+
+#Create and start the worker threads
+for _ in range(MAX_THREADS):
+    worker = threading.Thread(target=crawl_video_links)
+    thread_pool.append(worker)
+    worker.start()
+
+#Wait for all tasks to complete
+url_queue.join()
+
+#Wait for all threads to complete
+for worker in thread_pool:
+    worker.join()
+
+print("collect links completed.")
+
+
+for _ in range(MAX_THREADS):
+    worker = threading.Thread(target=crawl_video_contents)
+    thread_pool.append(worker)
+    worker.start()
+
+for worker in thread_pool:
+    worker.join()
+
+print("crawling contents complete")
