@@ -4,6 +4,7 @@ print(os.getcwd())
 sys.path.append(os.getcwd())
 from utils import *
 
+#获取文件夹下所有txt文件
 def get_text_files_in_folder(folder_path):
     text_files = []
     for filename in os.listdir(folder_path):
@@ -36,6 +37,7 @@ def process_text_files(folder_path, regex_pattern):
 
 import re
 
+#时间戳行后加换行
 def modify_lines_in_file(file_path, regex_pattern):
     modified_lines = []
     with open(file_path, "r",encoding='utf-8') as file:
@@ -86,6 +88,7 @@ def addLineNumber(file_path):
         with open(file_path, "w+", encoding='utf-8') as file:
             file.writelines(modified_lines)
 
+#判断文件行数是否大于2
 def file_line_count_greater_2(file_path):
     line_count = 0 
     encoding = detect_encoding(file_path)
@@ -95,7 +98,7 @@ def file_line_count_greater_2(file_path):
                 return True
             line_count+=1
 
- 
+#查找行数小于2的srt文件
 def find_possible_issue_1(file_path):
     text_files = get_text_files_in_folder(folder_path)
     for file_path in text_files:
@@ -107,7 +110,8 @@ def find_possible_issue_1(file_path):
             print(e)
             pass
 # Example usage:
-folder_path = r"C:\Developer\Subtitles\file\subtitle"
+#folder_path = r"C:\Developer\Subtitles\file\subtitle"
+folder_path = r"/home/elvin/subtitlex/file/subtitle"
 regex_pattern = r"^\d{2}:\d{2}:\d{2},\d{3} --> \d{2}:\d{2}:\d{2},\d{3}.+$"
 #process_text_files(folder_path, regex_pattern) #打断时间戳与内容连起来的情况
 #process_text_files_1(folder_path)  #添加数字行号，但是一些小语种例如rus等 格式还是有好多混乱
