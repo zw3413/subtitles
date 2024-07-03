@@ -146,6 +146,7 @@ export const fetchTextFromURL = async (subtitleId) => {
     });
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);
+      return ''
     }
     const text = await response.text();
     return text;
@@ -153,6 +154,7 @@ export const fetchTextFromURL = async (subtitleId) => {
     console.log(
       " fetch subtitle failed, contact administrator." + error
     );
+    return ''
   }
 };
 const readFile = async (file) => {

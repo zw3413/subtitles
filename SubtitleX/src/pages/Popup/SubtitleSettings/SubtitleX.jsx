@@ -71,10 +71,13 @@ const SubtitleX = ({ hide, setHide, setMenu }) => {
     //从server获取到文件
     if (subtitleId && subtitleId.length > 0) {
       const sub_text = await fetchTextFromURL(subtitleId);
+      if(!sub_text || sub_text.length == 0){
+        return
+      }
       setSubtitle(sub_text);
       const tip = 'Subscribe to www.subtitlex.xyz/Member please';
       setHide(true);
-      if (sub_text.includes(tip)) {
+      if ( sub_text.includes(tip)) {
         return;
       }
       const sub_blob = new Blob([sub_text], { type: 'text/plain' });
