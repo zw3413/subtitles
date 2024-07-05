@@ -101,7 +101,7 @@ def transcribe_func() :
                 #vad_parameters=dict(min_silence_duration_ms=2000,threshold=0.4),
                 #vad_parameters=dict(min_silence_duration_ms=1000,threshold=0.4),
                 task = "transcribe"
-            )
+                )
             print(cmd,"Detected language '%s' with probability %f" % (info.language, info.language_probability))
         language = info.language
         #srtPath = filePath.split('.')[0]+ info.language + '.srt'

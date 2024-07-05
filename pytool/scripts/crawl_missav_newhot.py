@@ -99,7 +99,7 @@ url_queue = queue.Queue()
 
 # Create a thread pool
 thread_pool = []
-MAX_THREADS = 10
+
 
 def crawl_video_links():
     while True:
@@ -145,6 +145,8 @@ def crawl_video_links():
 for p in range(2000):
     url = f"https://missav.com/dm206/en/monthly-hot?page={p}"
     url_queue.put(url)
+
+MAX_THREADS = 12
 
 #Create and start the worker threads
 for _ in range(MAX_THREADS):
