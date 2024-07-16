@@ -72,9 +72,9 @@ def translate_func():
         video_language = origin_subtitle["language"]
         src_lang = video_language
         uuid = origin_subtitle["uuid"]
-        #tgt_langs = ['cmn_Hant','eng','kor','vie','arb','spa','por','swe','deu','rus','fra','ita']
-        tgt_langs = ['cmn_Hant','eng','kor']
-        #tgt_langs = ['vie','arb','spa','por']
+        #tgt_langs = ['cmn_Hant','eng','kor','vie','arb','spa','por','swe','deu','rus','fra','ita','tha']
+        #tgt_langs = ['cmn_Hant','eng','kor']
+        tgt_langs = ['vie','arb','spa','por','swe','deu','rus','fra','ita','tha']
         for tgt_lang in tgt_langs:
             if tgt_lang == src_lang:
                 continue
@@ -100,7 +100,7 @@ def translate_func():
             request.PushSubtitleToServer(tgt_path,file_path)            
             request.SaveSubtitle(subtitle)  
         #将seed状态更新为5.1 已翻译eng，cmn_Hant
-        request.UpdateSeedStatus(str(seed_id), '5.1')
+        request.UpdateSeedStatus(str(seed_id), '5.2')
     except Exception as e:
         print(f"翻译异常{subtitle_id} "+str(e))
         r.lpush(zmb_pending_subtitle_id,subtitle_id)

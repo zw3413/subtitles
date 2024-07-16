@@ -12,7 +12,7 @@ from datetime import timedelta, datetime
 
 class Unbuffered:
     def __init__(self, stream):
-       self.stream = stream
+        self.stream = stream
 
     def write(self, data):
         try:        
@@ -39,10 +39,15 @@ current_directory = os.path.dirname(os.path.abspath(__file__))
 te2 = open(current_directory+"/../file/log/subtitle_transcribe.log",'a', encoding='utf-8')  # File where you need to keep the logs
 sys.stdout=Unbuffered(sys.stdout)
 
+
+
 device = "cuda" if torch.cuda.is_available() else "cpu"
 print(device)
 compute_type = "float16" if torch.cuda.is_available() else "int8"
-model_size = 'large-v3' # "base" # 
+#model_size = 'large-v3' # "base" # 
+model_size = 'large-v2'
+#model_size = 'distil-large-v2'
+#model_size = 'zh-plus/faster-whisper-large-v2-japanese-5k-steps' #https://huggingface.co/zh-plus/faster-whisper-large-v2-japanese-5k-steps
 #model_size = 'base'
 print("start to init WhisperModel")
 t1 = time.time()
@@ -51,6 +56,7 @@ model = WhisperModel(
     device = device , 
     compute_type= compute_type, 
     local_files_only = False,
+    #flash_attention=True
 )
 print("finished init WhisperModel")
 t2 = time.time()
@@ -78,28 +84,30 @@ def transcribe_func() :
             return
         #flvPath = filePath_prefix +"d131749d-18e2-42fe-ad5e-382131f5cf4b.flv"
         #fast-whisper
-       
+
+        #prompt = "Japanese adult video subtitles: Capture nuances, emotions accurately. Use appropriate language, tone. Consider: 1. Contextual understanding. 2. Emotional tone. 3. Cultural sensitivity. 4. Clarity, readability, synchronization. Example: casual conversation, intimate dialogue."
+        prompt_e = "Generate subtitle for this Japanese adult video: Capture nuances, emotions, and context accurately with appropriate language and tone,  synchronization with audio."
+        prompt_j = "この日本のアダルト ビデオの字幕を生成します。適切な言語とトーン、オーディオとの同期で、ニュアンス、感情、コンテキストを正確に捉えます。"
+        vad = dict(threshold = 0.4, min_speech_duration_ms=300, max_speech_duration_s=30, min_silence_duration_ms=200, speech_pad_ms=150 )
+
         segments, info = model.transcribe(
             video_filePath_prefix+flvPath, 
             beam_size=5, 
             vad_filter=True, 
-            #language="ja",
-            #vad_parameters=dict(min_silence_duration_ms=2000,max_speech_duration_s=10, threshold=0.4),
-            #vad_parameters=dict(min_silence_duration_ms=2000,threshold=0.4),
-            #vad_parameters=dict(min_silence_duration_ms=1000,threshold=0.4),
+            #vad_parameters= vad,
+            initial_prompt = prompt_j,
             task = "transcribe"
             )
         
         print(cmd,"Detected language '%s' with probability %f" % (info.language, info.language_probability))
-        if info.language_probability < 0.9: #如果语言预测的可能性小于0.9，强制使用ja
+        if info.language_probability < 0.8 and info.language != 'ja': #如果语言预测的可能性小于0.9，强制使用ja
             segments, info = model.transcribe(
                 video_filePath_prefix+flvPath, 
                 beam_size=5, 
                 vad_filter=True, 
+                #vad_parameters=vad,
                 language="ja",
-                #vad_parameters=dict(min_silence_duration_ms=2000,max_speech_duration_s=10, threshold=0.4),
-                #vad_parameters=dict(min_silence_duration_ms=2000,threshold=0.4),
-                #vad_parameters=dict(min_silence_duration_ms=1000,threshold=0.4),
+                initial_prompt = prompt_j,
                 task = "transcribe"
                 )
             print(cmd,"Detected language '%s' with probability %f" % (info.language, info.language_probability))
@@ -132,7 +140,9 @@ def transcribe_func() :
             lineCount = lineCount + 1
         f.flush()
         f.close()
-        seed["srt_path"] = srtPath.replace(filePath_prefix,"")
+        file_name =  srtPath.replace(filePath_prefix,"")
+        request.PushSubtitleToServer(srtPath, file_name)
+        seed["srt_path"] =file_name
         seed["video_language"] = language
         seed["process_status"] = "2"
         seed["err_msg"]= ""

@@ -8,7 +8,7 @@ import sys
 
 class Unbuffered:
     def __init__(self, stream):
-       self.stream = stream
+        self.stream = stream
 
     def write(self, data):
         try:        
@@ -66,12 +66,12 @@ def downloadFlv(url,  quality = 'worst', origin = '', uuid = None):
 
 def download_func():
     cmd ="download"
-    seeds = request.GetNextNeedProcessSeed("download")
+    #seeds = request.GetNextNeedProcessSeed("download")
+    seed = request.getSeedNeedProcess("download")
     # if the json array seeds length is zero, then stop the precess
-    if seeds is None or len(seeds) == 0 :
+    if seed is None  :
         #print(cmd,"没有待下载的seed")
         return
-    seed = seeds[0]  
     try:
         id = seed["id"]
         seed["id"] = str(id)
@@ -89,13 +89,42 @@ def download_func():
         else:
             origin = ''
         #origin = 'https://missav.com'
+
+        # 第一次下载使用变换过的url
+        original_video_m3u8_url = ""
+        if (
+            "720p" in video_m3u8_url
+            or "1280x720" in video_m3u8_url
+            or "1080p" in video_m3u8_url
+            or "720x1280" in video_m3u8_url
+        ):
+            original_video_m3u8_url = video_m3u8_url
+            video_m3u8_url = (
+                video_m3u8_url.replace("720p", "480p")
+                .replace("1080p", "480p")
+                .replace("1280x720", "842x480")
+                .replace("720x1280", "842x480")
+            )
+            print(f"modify m3u8 url from %s, to %s" %( original_video_m3u8_url, video_m3u8_url) )
         output, flvPath = downloadFlv(video_m3u8_url,quality,origin,seed['uuid'])
         if output != 0:
-            print(cmd,"下载失败")
-            seed["process_status"] = "1e"
-            seed["err_msg"] = cmd + "下载失败"+str(output)
-            request.SaveSeed(seed)
-            return
+            # 如果第一次下载失败，使用原始url再尝试一次
+            if original_video_m3u8_url != "":
+                print(f"use original url try again %s" % original_video_m3u8_url)
+                video_m3u8_url = original_video_m3u8_url
+                output = downloadFlv(video_m3u8_url, quality)
+                if output != 0:
+                    print(cmd,"下载失败")
+                    seed["process_status"] = "1e"
+                    seed["err_msg"] = cmd + "下载失败"+str(output)
+                    request.SaveSeed(seed)
+                    return
+            else:
+                print(cmd,"下载失败")
+                seed["process_status"] = "1e"
+                seed["err_msg"] = cmd + "下载失败"+str(output)
+                request.SaveSeed(seed)
+                return
         seed["mp3_path"] = flvPath
         seed["process_status"] = "1"
         seed["err_msg"]= ""

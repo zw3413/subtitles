@@ -277,16 +277,19 @@ def executeDownload(q):
                     print(f"use original url try again %s" % original_video_m3u8_url)
                     video_m3u8_url = original_video_m3u8_url
                     output = downloadFlv(video_m3u8_url, filePath, quality)
-
-                output = downloadFlv(video_m3u8_url, filePath, quality)
-                if output != 0:
+                    if output != 0:
+                        logger.info("下载失败" + str(output))
+                        seed["process_status"] = "8e"
+                        seed["err_msg"] = "下载失败" + str(output)
+                        SaveSeed(seed)
+                    else:
+                        q.put((seed, flvPath))  # 放入队列
+                        logger.info("下载完成 " + str(seed["id"]))
+                else:
                     logger.info("下载失败" + str(output))
                     seed["process_status"] = "8e"
                     seed["err_msg"] = "下载失败" + str(output)
                     SaveSeed(seed)
-                else:
-                    q.put((seed, flvPath))  # 放入队列
-                    logger.info("下载完成 " + str(seed["id"]))
             else:
                 q.put((seed, flvPath))  # 放入队列
                 logger.info("下载完成 " + str(seed["id"]))

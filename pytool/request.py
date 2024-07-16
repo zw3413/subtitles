@@ -31,6 +31,16 @@ def remote_call(f, pl):
         print(f"Call failed: {e}")  
         return None
 
+def getSeedNeedProcess(type):
+    pl = [type]
+    print("remote_call p_get_need_process")
+    result = remote_call("p_get_need_process", pl)
+    print(result)
+    if result["rc"] == "000":
+        return json.loads(result["data"])
+    else:
+        return None
+
 def UpdateSeedStatus(seed_id, status):
     pl = [seed_id, status]
     return remote_call("p_update_seed_status", pl)

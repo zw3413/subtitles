@@ -52,7 +52,7 @@ def generate_new_filepath(existing_filepath, after_fix):
     return new_filepath, extension, new_filename
 
 def translate_func():
-     #如果源语言就是eng，则直接存入subtitle表
+    #如果源语言就是eng，则直接存入subtitle表
     #   获取待翻译seed            
     seeds = request.GetWantSeed()
     if seeds is None or len(seeds) == 0 or seeds[0]["id"] == 0:

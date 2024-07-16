@@ -143,8 +143,11 @@ def crawl_video_links():
 
 #Populate the URL queue
 for p in range(2000):
-    url = f"https://missav.com/dm206/en/monthly-hot?page={p}"
+    #url = f"https://missav.com/dm206/en/monthly-hot?page={p}"
+    url = f"https://missav.com/dm509/en/new?page={p}"
+    #url = f"https://missav.com/dm504/en/release?page={p}"
     url_queue.put(url)
+    
 
 MAX_THREADS = 12
 
