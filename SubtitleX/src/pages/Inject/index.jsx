@@ -4,6 +4,7 @@ import { render } from 'react-dom';
 export default function detectSeed() {
   let jh_seed = null;
 
+  //jable.tv
   if (typeof hlsUrl != 'undefined' && typeof jh_currentUrl == 'undefined') {
     let jh_currentUrl = top.location?.href;
 
@@ -15,7 +16,7 @@ export default function detectSeed() {
       pageUrl: jh_currentUrl,
     };
   }
-
+  //missav.com
   if (typeof source1280 != 'undefined' && typeof jh_currentUrl == 'undefined') {
     let jh_currentUrl = window.location.href;
     jh_seed = {
@@ -40,7 +41,7 @@ export default function detectSeed() {
       ],
       videoName: '',
       m3u8Url: '',
-      pageUrl: '',
+      pageUrl: window.location.href,
     };
   }
 

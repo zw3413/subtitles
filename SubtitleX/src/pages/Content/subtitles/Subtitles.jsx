@@ -339,8 +339,8 @@ function Subtitles({ video, subsEnabled, speedDisplay, netflix, editRef }) {
             style={{
               backgroundColor: `rgba(0,0,0,${opacity})`,
             }}
-            onMouseEnter={pauseHandler}
-            onMouseLeave={playHandler}
+            // onMouseEnter={pauseHandler}
+            // onMouseLeave={playHandler}
           >
             {(!netflix && !infoDialog && silenceIndicator) && (
               <SubtitleButton

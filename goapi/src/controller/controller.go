@@ -60,12 +60,10 @@ func SaveSubtitle(c *gin.Context) {
 	startTimeStr := startTime.Format("20060102150405")
 	requestBody, err := io.ReadAll(c.Request.Body)
 	var seed_id string
+
 	defer func() {
 		costtime := (time.Now().UnixNano() - startTime.UnixNano()) / 1000000
 		responseInfo.CostTime = strconv.FormatInt(costtime, 10)
-
-		responseInfo.Rc = "000"
-		responseInfo.Rm = "OK"
 
 		if err != nil {
 			executeFlag = "N"
@@ -89,6 +87,8 @@ func SaveSubtitle(c *gin.Context) {
 		}
 		c.JSON(http.StatusOK, responseInfo)
 	}()
+	responseInfo.Rc = "000"
+	responseInfo.Rm = "OK"
 	err = json.Unmarshal(requestBody, &requestObj)
 	seed_id = getString(requestObj["seed_id"])
 	path := getString(requestObj["path"])
@@ -97,7 +97,16 @@ func SaveSubtitle(c *gin.Context) {
 	source := getString(requestObj["source"])
 	origin_id := getString(requestObj["origin_id"])
 
-	_, err = dao.InsertSubtitle(seed_id, path, language, format, source, origin_id)
+	rows, err := dao.InsertSubtitle(seed_id, path, language, format, source, origin_id)
+
+	val, ok := rows[0]["o_resultcode"]
+	if ok && val != nil {
+		responseInfo.Rc = val.(string)
+	}
+	val, ok = rows[0]["o_resultmsg"]
+	if ok && val != nil {
+		responseInfo.Rm = val.(string)
+	}
 }
 
 // 新增一个新的seed
