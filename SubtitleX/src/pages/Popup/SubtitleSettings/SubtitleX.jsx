@@ -59,7 +59,7 @@ const SubtitleX = ({ hide, setHide, setMenu }) => {
       '02ff8823-a0fd-420b-b39e-53b3a488365a',
       params
     );
-    if (result && result.rc === '000') {
+    if (result && result.rc === '000' && result.data && result.data.length>0) {
       seed = JSON.parse(result.data);
       return seed;
     } else {

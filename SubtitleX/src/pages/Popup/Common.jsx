@@ -48,7 +48,20 @@ export const getWantLangFromUserLang = (userLanguage) => {
   return wantLang;
 };
 export const fetchUserInfo = async (email) => {
+  console.log("fetchUserInfo")
   try {
+
+    const storage = await chrome.storage.sync.get("user");
+    const user = storage.user;
+
+    if(user.lastFetch){
+      const diff = (new Date().getTime() - new Date(user.lastFetch).getTime())/1000
+      if(diff < 10){
+        console.log("last fetch less than 10 seconds, ignore this request")
+        return;
+      }
+    }
+
     let url = subtitleXserverWeb + "/api/checkSubscription?email=";
     let response = await fetch(url + email, {
       method: "POST",
@@ -59,8 +72,8 @@ export const fetchUserInfo = async (email) => {
     });
     let userInfo = await response.json();
     console.log("subtitlex: user info fetched", userInfo);
-    const storage = await chrome.storage.sync.get("user");
-    const user = storage.user;
+
+    userInfo.lastFetch = new Date().getTime()
     Object.assign(user, userInfo);
     chrome.storage.sync.set({ user: user });
     console.log("subtitlex: user info saved", user);
@@ -69,6 +82,7 @@ export const fetchUserInfo = async (email) => {
     console.log("subtitlex: user info fetch failed", e);
     return null;
   }
+
 };
 export const findUser = async () => {
   let storage;

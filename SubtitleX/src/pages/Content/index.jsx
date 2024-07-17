@@ -82,10 +82,12 @@ const detectAndShowSubtitles =()=>{
           sitesWithSubtitles = storage.sitesWithSubtitles;
         }
         const thisSite =window.location.href.replace(/^.*\/\//, '').replace(/\/.*/, '');
-        sitesWithSubtitles.push(thisSite);
-        chrome.storage.sync.set({
-          sitesWithSubtitles: sitesWithSubtitles,
-        });
+        if(!sitesWithSubtitles.includes(thisSite)){
+          sitesWithSubtitles.push(thisSite);
+          chrome.storage.sync.set({
+            sitesWithSubtitles: sitesWithSubtitles,
+          });
+        }
       });
     }else{
       if(detectTime<5){
