@@ -56,8 +56,13 @@ const GeneralSection = ({ setDisplayShortcuts, popup }) => {
         {/* <ListItemText style={{ color: 'black' }}  >{userName.length>0?userName:"Login"}</ListItemText> */}
         <ListItemText style={{ color: 'black' }}  >{subscribed ?  chrome.i18n.getMessage('profile') : chrome.i18n.getMessage('subscribe')}</ListItemText>
         <ListItemSecondaryAction>
-          <IconButton edge="end" aria-label="feedback" size="large">
-            <AccountBoxIcon />
+          <IconButton onClick={() =>
+          openPage(
+            popup,
+            'https://www.subtitlex.xyz/Member'
+          )
+        } edge="end" aria-label="feedback" size="large">
+            <AccountBoxIcon   />
           </IconButton>
         </ListItemSecondaryAction>
       </ListItem>
@@ -73,8 +78,13 @@ const GeneralSection = ({ setDisplayShortcuts, popup }) => {
       >
         <ListItemText style={{ color: 'black' }} primary={chrome.i18n.getMessage('feedback')} />
         <ListItemSecondaryAction>
-          <IconButton edge="end" aria-label="feedback" size="large">
-            <FeedbackIcon />
+          <IconButton onClick={() =>
+          openPage(
+            popup,
+            'https://www.subtitlex.xyz/Extension#feedback'
+          )
+        } edge="end" aria-label="feedback" size="large">
+            <FeedbackIcon  />
           </IconButton>
         </ListItemSecondaryAction>
       </ListItem>

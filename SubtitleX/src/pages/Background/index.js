@@ -2,7 +2,36 @@
   const subtitleXserverApi = 'https://api.subtitlex.xyz';
   const subtitleXserverWeb = 'https://www.subtitlex.xyz';
   const subtitlexDomain = 'www.subtitlex.xyz';
+  const updateUser = async () => {
+    console.log('updateUser');
+    try {
+      const storage = await chrome.storage.sync.get('user');
+      let user = storage.user;
+      let flag = false;
+      //没有user 则新生成user对象
+      if (!user) {
+        console.log('generate new user with fetch uuid');
+        user = { uuid: await UUID() };
+        flag = true;
+      }
+      if (!user.uuid || user.uuid === '' || user.uuid === 'xxxx') {
+        console.log('user exist, fetch uuid');
+        Object.assign(user, { uuid: await UUID() });
+        flag = true;
+      }
+      if (flag) {
+        console.log('update the storage of user');
+        chrome.storage.sync.set({ user: user });
+      }
+      if (!user.email) {
+        checkCookie();
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
   const checkCookie = async () => {
+    console.log('checkCookie');
     try {
       const cookies = await chrome.cookies.getAll({ domain: subtitlexDomain });
 
@@ -43,16 +72,17 @@
           'Content-Type': 'application/json',
         },
       });
-      console.log(response);
-      if (response.status == '200') {
-        const result = await response.json();
-        if (result.rc == '000') {
-          return result.data;
-        }
+      if (!response || response.status != '200') {
+        console.error(response);
+        return 'xxxx';
       }
-      return 'xxxx';
+      const result = await response.json();
+      if (result.rc == '000') {
+        return result.data;
+      }
     } catch (e) {
       console.log(e);
+      return 'xxxx';
     }
   };
   try {
@@ -80,6 +110,8 @@
         });
       } else if (request.action === 'checkCookie') {
         checkCookie();
+      } else if (request.action == 'updateUser') {
+        updateUser();
       }
     });
     chrome.runtime.onInstalled.addListener((details) => {
@@ -91,9 +123,13 @@
         });
       } else if (details.reason === chrome.runtime.OnInstalledReason.UPDATE) {
         // When extension is updated
-      } else if (details.reason === chrome.runtime.OnInstalledReason.CHROME_UPDATE) {
+      } else if (
+        details.reason === chrome.runtime.OnInstalledReason.CHROME_UPDATE
+      ) {
         // When browser is updated
-      } else if (details.reason === chrome.runtime.OnInstalledReason.SHARED_MODULE_UPDATE) {
+      } else if (
+        details.reason === chrome.runtime.OnInstalledReason.SHARED_MODULE_UPDATE
+      ) {
         // When a shared module is updated
       }
     });

@@ -137,7 +137,7 @@ export default function processSubtitles(content, subsRef, setSubs) {
 
   // Delete the last node in the subtitle array if it has no text
   if (!newSubs[newSubs.length - 1].text.trim()) newSubs.pop();
-
+/*
   // Adding "Skip Start" manually
   if (newSubs[0].start > 5) {
     newSubs.unshift({
@@ -186,7 +186,7 @@ export default function processSubtitles(content, subsRef, setSubs) {
         'Music (' + (music.end - music.start).toFixed() + ' seconds)';
     }
   }
-
+*/
   subsRef.current = newSubs;
   setSubs(newSubs);
 }
