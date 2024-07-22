@@ -111,6 +111,7 @@ def crawl_video_links():
 
         #先爬取所有的url，放进pending列表中
         try:
+            print(url)
             dr = webdriver.Chrome(options=options)
             dr.get(url)
             bs = BeautifulSoup(dr.page_source, "html.parser")
@@ -122,7 +123,7 @@ def crawl_video_links():
                         href = a.get('href')
                         if href.count("#") > 0 :
                             href = href.split('#')[0]
-                        if re.match(url_pattern, href):
+                        if re.match(url_pattern, href) and 'page=' not in href:
                             #href = "https://missav.com"+href
                             target_video_no = href.split('/')[len(url.split('/'))-1].replace('-uncensored-leak','')
                             target_video_no_index = target_video_no.lower().replace('-chinese-subtitle','').replace('-uncensored-leak','').replace('-','').replace('_','').replace(' ','')
@@ -142,9 +143,9 @@ def crawl_video_links():
         url_queue.task_done()
 
 #Populate the URL queue
-for p in range(2000):
-    #url = f"https://missav.com/dm206/en/monthly-hot?page={p}"
-    url = f"https://missav.com/dm509/en/new?page={p}"
+for p in range(500):
+    url = f"https://missav.com/dm206/en/monthly-hot?page={p}"
+    #url = f"https://missav.com/dm509/en/new?page={p}"
     #url = f"https://missav.com/dm504/en/release?page={p}"
     url_queue.put(url)
     
