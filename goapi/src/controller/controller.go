@@ -9,9 +9,7 @@ import (
 	"goapi/src/utils"
 	"io"
 	"net/http"
-	"os"
 	"os/exec"
-	"path/filepath"
 	"strconv"
 	"time"
 
@@ -329,7 +327,6 @@ func GetSubtitle1(c *gin.Context) {
 			c.String(200, result)
 		}
 	}()
-	path, err := os.Getwd()
 	if err != nil {
 		log.LOGGER("SUBX").Error(err)
 	}
@@ -358,8 +355,7 @@ func GetSubtitle1(c *gin.Context) {
 		r, _ := dao.GetSubtitle_BySeedIdAndLanguage(id, seedUuid, subtitleId, language) //返回srt路径
 		fileName = r[0]["path"].(string)
 	}
-	filePath := filepath.Join(path, filePath_prefix, fileName)
-	result, err = utils.ReadFile(filePath)
+	result, err = utils.ReadSubtitle(fileName)
 }
 func GetSubtitleWithUUID(c *gin.Context) {
 	executeFlag := "Y" //执行成功标记
@@ -437,7 +433,7 @@ func GetSubtitleWithUUID(c *gin.Context) {
 		response = "error"
 		return
 	}
-	path, err := os.Getwd()
+	//path, err := os.Getwd()
 	if err != nil {
 		executeFlag = "N"
 		errMsg = err.Error()
@@ -449,8 +445,9 @@ func GetSubtitleWithUUID(c *gin.Context) {
 	if inLimit {
 		r, _ := dao.GetSubtitle_ByUuid(uuid) //返回srt路径
 		fileName = r[0]["path"].(string)
-		filePath = filepath.Join(path, filePath_prefix, fileName)
-		response, err = utils.ReadFile(filePath)
+		// filePath = filepath.Join(path, filePath_prefix, fileName)
+
+		response, err = utils.ReadSubtitle(fileName)
 		if err != nil {
 			executeFlag = "N"
 			errMsg = err.Error()
@@ -480,8 +477,8 @@ func GetSubtitleWithUUID(c *gin.Context) {
 		}
 	} else {
 		fileName = "overlimit.srt"
-		filePath = filepath.Join(path, filePath_prefix, fileName)
-		response, err = utils.ReadFile(filePath)
+		//filePath = filepath.Join(path, filePath_prefix, fileName)
+		response, err = utils.ReadSubtitle(fileName)
 		if err != nil {
 			executeFlag = "N"
 			errMsg = err.Error()
