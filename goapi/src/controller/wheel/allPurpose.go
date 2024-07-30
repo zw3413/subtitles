@@ -30,12 +30,13 @@ type responseInfo struct {
 	Data string `json:"data"`
 }
 type requestScrapScan struct {
-	Hashcode  string   `json:"hashcode"`
-	RequestID string   `json:"request_id"`
-	DeviceIp  string   `json:"device_ip"`
-	Function  string   `json:"function"`
-	Uuid      string   `json:"uuid"`
-	Params    []string `json:"params"`
+	Hashcode  string                 `json:"hashcode"`
+	RequestID string                 `json:"request_id"`
+	DeviceIp  string                 `json:"device_ip"`
+	Function  string                 `json:"function"`
+	Uuid      string                 `json:"uuid"`
+	User      map[string]interface{} `json:"user`
+	Params    []string               `json:"params"`
 }
 
 /*
@@ -154,6 +155,7 @@ func AllPurpose_external(c *gin.Context) {
 	executeFlag := "Y"
 	var responseInfo responseInfo
 	var requestInfo requestScrapScan
+	var userEmail string
 	startTime := time.Now()
 	startTimeStr := startTime.Format("20060102150405")
 	function_name := ""
@@ -175,7 +177,7 @@ func AllPurpose_external(c *gin.Context) {
 		jsonStr, _ := json.Marshal(responseInfo)
 		if executeFlag == "N" || utils.Iswritetsdb() == "Y" {
 			go utils.InfluxLogDataNew("wheel.AllPurpose_external", "", strconv.FormatInt(costtime, 10), c.Request.RequestURI,
-				function_name, client_uuid, executeFlag, string(reqBody), string(jsonStr), c.ClientIP(), "", "", startTimeStr, "", false, false)
+				function_name, client_uuid, executeFlag, string(reqBody), string(jsonStr), c.ClientIP(), "", "", startTimeStr, userEmail, false, false)
 		}
 		c.JSON(http.StatusOK, responseInfo)
 	}()
@@ -194,7 +196,7 @@ func AllPurpose_external(c *gin.Context) {
 	}
 	// 非空欄位驗證
 
-	notNullFields := []string{"function", "params", "uuid"}
+	notNullFields := []string{"function", "params"}
 	for _, field := range notNullFields {
 		fieldvalue, fieldErr := jsonparser.GetUnsafeString(reqBody, field)
 		if fieldErr != nil {
@@ -217,6 +219,26 @@ func AllPurpose_external(c *gin.Context) {
 		responseInfo.Rm = "JSON轉換異常"
 		return
 	}
+	//User 和 Uuid不能同时为空
+	if requestInfo.User == nil && len(requestInfo.Uuid) < 1 {
+		responseInfo.Rc = "5915"
+		responseInfo.Rm = "User and Uuid cannot be empty simultaneously."
+		executeFlag = "N"
+		return
+	}
+
+	if len(requestInfo.Uuid) < 1 {
+		requestInfo.Uuid = requestInfo.User["uuid"].(string)
+	}
+
+	//检查requestInfo.Uuid是否有效
+	if len(requestInfo.Uuid) < 1 {
+		responseInfo.Rc = "5916"
+		responseInfo.Rm = "Uuid is invalid."
+		executeFlag = "N"
+		return
+	}
+	//��验uuid是否存在
 	// if len(requestInfo.RequestID) > 0 {
 	// 	responseInfo.RequestUuid = requestInfo.RequestID
 	// } else {
@@ -231,13 +253,13 @@ func AllPurpose_external(c *gin.Context) {
 		executeFlag = "N"
 		errInfo := fmt.Sprintf("[wheel.AllPurpose] Func SQL execute error:%v", err)
 		responseInfo.Rc = "400"
-		responseInfo.Rm = "www.subtitlex.xyz/Jable-Helper"
+		responseInfo.Rm = "error 20801, sql execute error " + err.Error()
 		log.LOGGER("SUBX").Error(errInfo)
 		return
 	}
 	if len(result) < 1 {
 		responseInfo.Rc = "401"
-		responseInfo.Rm = "www.subtitlex.xyz/Jable-Helper"
+		responseInfo.Rm = "error 20802, didn't find the client uuid in database"
 		return
 	}
 	client_uuid = result[0]["client_uuid"].(string)

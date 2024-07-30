@@ -8,9 +8,7 @@ import (
 	"goapi/src/utils"
 	"net/http"
 	"path"
-	"runtime"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -54,13 +52,8 @@ func UserUpload(c *gin.Context) {
 	source := "user_upload"
 
 	filepath := "user_upload/" + startTime.Format("20060102") + "_" + filename
-	dst := "../file/subtitle/" + filepath
-	//将\替换成/
-	ostype := runtime.GOOS
-	if ostype == "windows" {
-		dst = strings.Replace(dst, "/", "\\", -1)
-	}
-	err := c.SaveUploadedFile(file, dst)
+
+	dst, _, err := utils.SaveUploadedFile(c, file, filepath)
 	if err != nil {
 		executeFlag = "N"
 		errMsg = err.Error()
