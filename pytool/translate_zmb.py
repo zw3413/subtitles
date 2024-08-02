@@ -10,7 +10,7 @@ import hashlib
 
 class Unbuffered:
     def __init__(self, stream):
-       self.stream = stream
+        self.stream = stream
 
     def write(self, data):
         try:        
