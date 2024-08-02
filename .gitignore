@@ -14,3 +14,5 @@ go.mod
 go.sum
 goapi/log/
 .vscode
+config.*
+.env*
