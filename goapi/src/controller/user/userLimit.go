@@ -66,9 +66,14 @@ func CheckIfInLimit(user model.User, subtitleUuid string) (bool, error) { // inL
 				limit_num = limit_subscribe_number //200
 				hours := limit_subscribe_frame     //"24 hour"
 				subtitleUuids := dao.GetTodayVisitedSubtitlesByUser(user.Email, user.Uuid, hours)
-				if len(subtitleUuids) <= limit_num { //每天50个
+				if len(subtitleUuids) <= limit_num { //每天200个
 					return true, nil
 				} else {
+					for _, uuid := range subtitleUuids { //达到200个，如果请求之前看过的，依然允许
+						if subtitleUuid == uuid {
+							return true, nil
+						}
+					}
 					return false, nil
 				}
 			}
@@ -81,12 +86,12 @@ func CheckIfInLimit(user model.User, subtitleUuid string) (bool, error) { // inL
 	subtitleUuids := dao.GetTodayVisitedSubtitlesByUser(user.Email, user.Uuid, hours)
 	limit_num = limit_unsubscribe_unlogin_number //10        //未登录
 	if user.Email != "" {                        //已登录
-		limit_num = limit_unsubscribe_login_number //10
+		limit_num = limit_unsubscribe_login_number //20
 	}
-	if len(subtitleUuids) <= limit_num { //不足5个，允许继续请求
+	if len(subtitleUuids) <= limit_num { //不足10个，允许继续请求
 		return true, nil
 	}
-	for _, uuid := range subtitleUuids { //达到5个，如果请求之前看过的，依然允许
+	for _, uuid := range subtitleUuids { //达到10个，如果请求之前看过的，依然允许
 		if subtitleUuid == uuid {
 			return true, nil
 		}
