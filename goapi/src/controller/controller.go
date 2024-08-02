@@ -17,8 +17,6 @@ import (
 	log "github.com/jeanphorn/log4go"
 )
 
-var filePath_prefix = "../file/subtitle/"
-
 // hashcode: "xxx",
 // request_id: "xxx",
 // device_ip: "0.0.0.0",
@@ -29,10 +27,11 @@ type RequestObj struct {
 	DeviceIp  string     `json:"device_ip"`
 	User      model.User `json:"user"`
 }
-type Seed struct {
-	id       string `json:"id"`
-	language string `json:"language"`
-}
+
+// type Seed struct {
+// 	id       string `json:"id"`
+// 	language string `json:"language"`
+// }
 
 func getString(value interface{}) string {
 	if value == nil {
@@ -41,13 +40,14 @@ func getString(value interface{}) string {
 		return value.(string)
 	}
 }
-func getInt(value interface{}) int {
-	if value == nil {
-		return -1
-	} else {
-		return value.(int)
-	}
-}
+
+//	func getInt(value interface{}) int {
+//		if value == nil {
+//			return -1
+//		} else {
+//			return value.(int)
+//		}
+//	}
 func SaveSubtitle(c *gin.Context) {
 	var err error
 	var errLog string
@@ -434,14 +434,14 @@ func GetSubtitleWithUUID(c *gin.Context) {
 		return
 	}
 	//path, err := os.Getwd()
-	if err != nil {
-		executeFlag = "N"
-		errMsg = err.Error()
-		log.LOGGER("SUBX").Error(err)
-		respCode = 500
-		response = "error"
-		return
-	}
+	// if err != nil {
+	// 	executeFlag = "N"
+	// 	errMsg = err.Error()
+	// 	log.LOGGER("SUBX").Error(err)
+	// 	respCode = 500
+	// 	response = "error"
+	// 	return
+	// }
 	if inLimit {
 		r, _ := dao.GetSubtitle_ByUuid(uuid) //返回srt路径
 		fileName = r[0]["path"].(string)
@@ -736,6 +736,13 @@ func Client_UUID(c *gin.Context) {
 		}
 		c.JSON(http.StatusOK, responseInfo)
 	}()
+	// json := make(map[string]interface{})
+	// c.BindJSON(&json)
+	// clientIp := getString(json["client_ip"])
+
+	// if clientIp == "" {
+	// 	clientIp = c.ClientIP()
+	// }
 	clientIp := c.ClientIP()
 	//去数据库client_uuid表中查其uuid
 	uuid, err = dao.GetUuidByClientIp(clientIp)

@@ -5,6 +5,7 @@ type JsonResponse struct {
 	State int         `json:"state"` // 错误码((1:成功, 0:失败, >1:错误码))
 	Msg   string      `json:"msg"`   // 提示信息
 	Data  interface{} `json:"data"`  // 返回数据(业务接口定义具体数据结构)
+	Cost  string      `json:"cost"`  //接口执行时间
 }
 
 // 成功無數據

@@ -1,4 +1,5 @@
 export const subtitleXserverApi = "https://api.subtitlex.xyz";
+//export const subtitleXserverApi = "http://127.0.0.1:12801";
 export const subtitleXserverWeb = "https://www.subtitlex.xyz";
 
 
@@ -130,7 +131,7 @@ export const remoteCall = async (f, pl) => {
         hashcode: "xxx",
         request_id: "xxx",
         device_ip: "0.0.0.0",
-        uuid: user.uuid,
+        user: user,
         function: f,
         params: pl,
       }),
@@ -171,6 +172,15 @@ export const fetchTextFromURL = async (subtitleId) => {
     return ''
   }
 };
+function base64ToArrayBuffer(base64) {
+  var binary_string = window.atob(base64);
+  var len = binary_string.length;
+  var bytes = new Uint8Array(len);
+  for (var i = 0; i < len; i++) {
+    bytes[i] = binary_string.charCodeAt(i);
+  }
+  return bytes.buffer;
+}
 const readFile = async (file) => {
   try {
     return new Promise((resolve, reject) => {
@@ -181,6 +191,7 @@ const readFile = async (file) => {
           //Base64 decoding
           let result = reader.result;
           let base64 = result.split(",")[1];
+          // eslint-disable-next-line no-undef
           let decoding = await new Blob([base64ToArrayBuffer(base64)]).text();
           //let decoding = atob()
           resolve(decoding);

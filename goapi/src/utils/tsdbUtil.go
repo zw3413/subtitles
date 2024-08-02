@@ -43,7 +43,7 @@ func init() {
 	iniConfig := new(configs.Config)
 	iniConfig.InitConfig()
 
-	logwrite = iniConfig.Read("influxdb", "logwrite")
+	logwrite = iniConfig.Read("timescaledb", "logwrite")
 	UseTimeScaleDbPool()
 }
 

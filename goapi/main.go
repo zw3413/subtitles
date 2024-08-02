@@ -7,11 +7,8 @@ import (
 	"goapi/src/controller/user"
 	"goapi/src/controller/wheel"
 	"goapi/src/dao"
-	"goapi/src/library/response"
 	"net/http"
 	"os/exec"
-	"runtime"
-	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -76,43 +73,12 @@ func main() {
 	r.POST("/check_if_wanted", controller.CheckIfWanted)
 	r.POST("/update_want_fullfilled", controller.WantFullfilled)
 	//r.POST("/check_save_get_seed", controller.CheckSaveGetSeed)
-	r.POST("/common/allPurpose", wheel.AllPurpose) //數據庫函數調用通用接口
-	r.POST("/api1", wheel.AllPurpose_external)     //數據庫函數調用通用接口
-	r.POST("/api2", controller.Client_UUID)        //用户开启浏览器时，根据ip地址获取uuid
-	r.POST("/api3", user.UserUpload)
-	r.POST("/pushSrtFile", func(c *gin.Context) {
-		// 单文件
-		file, _ := c.FormFile("file")
-		// 上传文件到指定的路径
-		filename := c.Query("filename")
-
-		dst := "../file/subtitle/" + filename
-
-		ostype := runtime.GOOS
-		if ostype == "windows" {
-			dst = strings.Replace(dst, "/", "\\", -1)
-		}
-		//将\替换成/
-		c.SaveUploadedFile(file, dst)
-		c.JSON(http.StatusOK, response.JsonSuccessData(dst))
-	})
-	r.POST("/upload-files", func(c *gin.Context) {
-		// 单文件
-		file, _ := c.FormFile("file")
-		// 上传文件到指定的路径
-
-		filename := c.Query("filename")
-
-		dst := "../file/subtitle/" + filename
-
-		ostype := runtime.GOOS
-		if ostype == "windows" {
-			dst = strings.Replace(dst, "/", "\\", -1)
-		}
-		//将\替换成/
-		c.SaveUploadedFile(file, dst)
-		c.JSON(http.StatusOK, response.JsonSuccessData(dst))
-	})
+	r.POST("/common/allPurpose", wheel.AllPurpose)  //數據庫函數調用通用接口
+	r.POST("/api1", wheel.AllPurpose_external)      //數據庫函數調用通用接口
+	r.POST("/api2", controller.Client_UUID)         //用户开启浏览器时，根据ip地址获取uuid
+	r.POST("/api3", user.UserUpload)                //用户上传文件接口
+	r.POST("/pushSrtFile", controller.PushSrtFile)  //
+	r.POST("/upload-files", controller.UploadFiles) //pytool推送文件接口
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"message": "pong",
