@@ -1,5 +1,6 @@
 (async () => {
   const subtitleXserverApi = 'https://api.subtitlex.xyz';
+  //const subtitleXserverApi = "http://127.0.0.1:12801";
   const subtitleXserverWeb = 'https://www.subtitlex.xyz';
   const subtitlexDomain = 'www.subtitlex.xyz';
   const updateUser = async () => {
@@ -37,7 +38,7 @@
 
       let session_token;
       for (var i = 0; i < cookies.length; i++) {
-        if (cookies[i].name == '__Secure-next-auth.session-token') {
+        if (cookies[i].name === '__Secure-next-auth.session-token') {
           session_token = cookies[i].value;
         }
       }
@@ -72,12 +73,12 @@
           'Content-Type': 'application/json',
         },
       });
-      if (!response || response.status != '200') {
+      if (!response || response.status !== 200) {
         console.error(response);
         return 'xxxx';
       }
       const result = await response.json();
-      if (result.rc == '000') {
+      if (result.rc === '000') {
         return result.data;
       }
     } catch (e) {
