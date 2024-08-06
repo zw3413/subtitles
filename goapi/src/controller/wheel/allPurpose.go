@@ -251,10 +251,12 @@ func AllPurpose_external(c *gin.Context) {
 	result, err := utils.GetAllData(sql, requestInfo.Uuid)
 	if err != nil {
 		executeFlag = "N"
-		errInfo := fmt.Sprintf("[wheel.AllPurpose] Func SQL execute error:%v", err)
+		errInfo := fmt.Sprintf("[wheel.AllPurpose_external] Func SQL execute error:%v", err)
 		responseInfo.Rc = "400"
 		responseInfo.Rm = "error 20801, sql execute error " + err.Error()
 		log.LOGGER("SUBX").Error(errInfo)
+		log.LOGGER("SUBX").Error(sql)
+		log.LOGGER("SUBX").Error(requestInfo.Uuid)
 		return
 	}
 	if len(result) < 1 {
@@ -270,10 +272,12 @@ func AllPurpose_external(c *gin.Context) {
 	result, err = utils.GetAllData(sql, requestInfo.Function)
 	if err != nil {
 		executeFlag = "N"
-		errInfo := fmt.Sprintf("[wheel.AllPurpose] Func SQL execute error:%v", err)
+		errInfo := fmt.Sprintf("[wheel.AllPurpose_external] Func SQL execute error:%v", err)
 		responseInfo.Rc = "5001"
 		responseInfo.Rm = errInfo
 		log.LOGGER("SUBX").Error(errInfo)
+		log.LOGGER("SUBX").Error(sql)
+		log.LOGGER("SUBX").Error(requestInfo.Function)
 		return
 	}
 
@@ -295,14 +299,15 @@ func AllPurpose_external(c *gin.Context) {
 		paramsCount++
 	}
 	sqlStr = string([]rune(sqlStr)[:len(sqlStr)-1]) + ")"
-
 	rows, err := utils.GetAllData(sqlStr, inParams...)
 	if err != nil {
 		executeFlag = "N"
-		errInfo := fmt.Sprintf("[wheel.AllPurpose] Func SQL execute error:%v", err)
+		errInfo := fmt.Sprintf("[wheel.AllPurpose_external] Func SQL execute error:%v", err)
 		responseInfo.Rc = "5001"
 		responseInfo.Rm = errInfo
 		log.LOGGER("SUBX").Error(errInfo)
+		log.LOGGER("SUBX").Error(function_name)
+		log.LOGGER("SUBX").Error(requestInfo.Params)
 		return
 	}
 	responseInfo.Rc = "000"

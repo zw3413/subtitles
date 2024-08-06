@@ -2,12 +2,12 @@
     "console": {
         "category": "SUBX",
         "enable": true,		
-        "level": "INFO",
+        "level": "DEBUG",
         "pattern": "[%D %T] [%C] [%L] (%S) %M"
     },  
     "files": [{ 
         "enable": true,
-        "level": "INFO",
+        "level": "DEBUG",
         "filename":"./log/subtitlex.log",
         "category": "SUBX",
         "pattern": "[%D %T] [%C] [%L] (%S) %M",

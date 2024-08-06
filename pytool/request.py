@@ -178,6 +178,20 @@ def GetWantSeed():
         print(e)
         return []
 
+def GetPendingTranslateSeed():
+    try:
+        pl = []
+        print("remote_call p_get_pending_translate_seed")
+        result = remote_call("p_get_pending_translate_seed", pl)
+        print(result)
+        if result["rc"] == "000":
+            return json.loads(result["data"])
+        else:
+            return None
+    except Exception as e:
+        print(e)
+        return None
+
 def PostWantFullfilled(want_id, errorMsg):
     try:
         url = serverIp + "/update_want_fullfilled"
