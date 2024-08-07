@@ -1,3 +1,8 @@
+--选择用colab执行的seed
+update seed set process_status = '7' where 
+id in (
+select id from seed where process_status = '0' and video_no is not null and video_no != '' order by wanttimes::numeric desc limit 100)
+
 --limitation限制
 select distinct subtitle_uuid
 	from subtitle_log 

@@ -7,6 +7,8 @@ pytool/__pycache__/
 docs/
 LibreTranslate/
 goapi/goapi.exe
+goapi/goapi
+goapi/config.ini
 file
 __pycache__
 *.out
@@ -14,3 +16,5 @@ go.mod
 go.sum
 goapi/log/
 .vscode
+config.*
+.env*
