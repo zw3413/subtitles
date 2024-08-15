@@ -22,7 +22,8 @@ url_pattern = re.compile(r'^.+/dm\d+/en/.+$')
 
 options = webdriver.ChromeOptions()
 options.add_argument('blink-settings=imagesEnabled=false')
-options.add_argument('window-size=1200,900')
+options.add_argument('window-size=600,600')
+#options.add_argument("--headless=new")
 # options.add_argument('no-startup-window') 
 # # If options.headless = True, the website will not load
 
@@ -125,7 +126,7 @@ def crawl_video_links():
                             href = href.split('#')[0]
                         if re.match(url_pattern, href) and 'page=' not in href:
                             #href = "https://missav.com"+href
-                            target_video_no = href.split('/')[len(url.split('/'))-1].replace('-uncensored-leak','')
+                            target_video_no = href.split('/')[len(href.split('/'))-1].replace('-uncensored-leak','')
                             target_video_no_index = target_video_no.lower().replace('-chinese-subtitle','').replace('-uncensored-leak','').replace('-','').replace('_','').replace(' ','')
                             if r.sismember(dealed_video_no_set,target_video_no_index) == 0 :
                                 pos = r.lpos(pending_check_url_list,href)
@@ -133,7 +134,8 @@ def crawl_video_links():
                                     r.rpush(pending_check_url_list, href)
         except Exception as e:
             print(f"Error: {e}")
-            r.rpush(pending_check_url_list,url)
+            if 'page=' not in url:
+                r.rpush(pending_check_url_list,url)
         finally:
             try:
                 dr.quit()
@@ -143,10 +145,11 @@ def crawl_video_links():
         url_queue.task_done()
 
 #Populate the URL queue
-for p in range(500):
-    url = f"https://missav.com/dm206/en/monthly-hot?page={p}"
+for p in range(448):
+    #url = f"https://missav.com/dm206/en/monthly-hot?page={p}"
     #url = f"https://missav.com/dm509/en/new?page={p}"
     #url = f"https://missav.com/dm504/en/release?page={p}"
+    url = f"https://missav.com/dm188/en/actors/Daisuke%20Sadamatsu?page={p}"
     url_queue.put(url)
     
 
