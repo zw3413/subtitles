@@ -16,3 +16,4 @@ goapi/log/
 .vscode
 config.*
 .env*
+goapi/goapi

@@ -219,25 +219,25 @@ func AllPurpose_external(c *gin.Context) {
 		responseInfo.Rm = "JSON轉換異常"
 		return
 	}
-	//User 和 Uuid不能同时为空
-	if requestInfo.User == nil && len(requestInfo.Uuid) < 1 {
-		responseInfo.Rc = "5915"
-		responseInfo.Rm = "User and Uuid cannot be empty simultaneously."
-		executeFlag = "N"
-		return
-	}
+	// //User 和 Uuid不能同时为空
+	// if requestInfo.User == nil && len(requestInfo.Uuid) < 1 {
+	// 	responseInfo.Rc = "5915"
+	// 	responseInfo.Rm = "User and Uuid cannot be empty simultaneously."
+	// 	executeFlag = "N"
+	// 	return
+	// }
 
-	if len(requestInfo.Uuid) < 1 {
-		requestInfo.Uuid = requestInfo.User["uuid"].(string)
-	}
+	// if len(requestInfo.Uuid) < 1 {
+	// 	requestInfo.Uuid = requestInfo.User["uuid"].(string)
+	// }
 
-	//检查requestInfo.Uuid是否有效
-	if len(requestInfo.Uuid) < 1 {
-		responseInfo.Rc = "5916"
-		responseInfo.Rm = "Uuid is invalid."
-		executeFlag = "N"
-		return
-	}
+	// //检查requestInfo.Uuid是否有效
+	// if len(requestInfo.Uuid) < 1 {
+	// 	responseInfo.Rc = "5916"
+	// 	responseInfo.Rm = "Uuid is invalid."
+	// 	executeFlag = "N"
+	// 	return
+	// }
 	//��验uuid是否存在
 	// if len(requestInfo.RequestID) > 0 {
 	// 	responseInfo.RequestUuid = requestInfo.RequestID
@@ -245,31 +245,31 @@ func AllPurpose_external(c *gin.Context) {
 	// 	responseInfo.RequestUuid = uuid.NewV4().String()
 	// }
 	//校验uuid是否存在
-	sql := `
-		select client_uuid from client_uuid where client_uuid = $1 and status = 'Y'
-	`
-	result, err := utils.GetAllData(sql, requestInfo.Uuid)
-	if err != nil {
-		executeFlag = "N"
-		errInfo := fmt.Sprintf("[wheel.AllPurpose_external] Func SQL execute error:%v", err)
-		responseInfo.Rc = "400"
-		responseInfo.Rm = "error 20801, sql execute error " + err.Error()
-		log.LOGGER("SUBX").Error(errInfo)
-		log.LOGGER("SUBX").Error(sql)
-		log.LOGGER("SUBX").Error(requestInfo.Uuid)
-		return
-	}
-	if len(result) < 1 {
-		responseInfo.Rc = "401"
-		responseInfo.Rm = "error 20802, didn't find the client uuid in database"
-		return
-	}
-	client_uuid = result[0]["client_uuid"].(string)
+	// sql := `
+	// 	select client_uuid from client_uuid where client_uuid = $1 and status = 'Y'
+	// `
+	// result, err := utils.GetAllData(sql, requestInfo.Uuid)
+	// if err != nil {
+	// 	executeFlag = "N"
+	// 	errInfo := fmt.Sprintf("[wheel.AllPurpose_external] Func SQL execute error:%v", err)
+	// 	responseInfo.Rc = "400"
+	// 	responseInfo.Rm = "error 20801, sql execute error " + err.Error()
+	// 	log.LOGGER("SUBX").Error(errInfo)
+	// 	log.LOGGER("SUBX").Error(sql)
+	// 	log.LOGGER("SUBX").Error(requestInfo.Uuid)
+	// 	return
+	// }
+	// if len(result) < 1 {
+	// 	responseInfo.Rc = "401"
+	// 	responseInfo.Rm = "error 20802, didn't find the client uuid in database"
+	// 	return
+	// }
+	// client_uuid = result[0]["client_uuid"].(string)
 	//查询存储过程匿名表
-	sql = `
+	sql := `
 		select function_name from functionmap where uuid = $1
 	`
-	result, err = utils.GetAllData(sql, requestInfo.Function)
+	result, err := utils.GetAllData(sql, requestInfo.Function)
 	if err != nil {
 		executeFlag = "N"
 		errInfo := fmt.Sprintf("[wheel.AllPurpose_external] Func SQL execute error:%v", err)

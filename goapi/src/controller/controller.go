@@ -386,7 +386,7 @@ func GetSubtitleWithUUID(c *gin.Context) {
 			errMsg = fmt.Sprintf("Recovered in GetSubtitleWithUUID, err=%v, costtime=%v", r, costtime)
 			log.LOGGER("SUBX").Error(errMsg)
 			respCode = 500
-			response = "error"
+			response = errMsg
 		}
 		//tsdb日志记录
 		if executeFlag == "N" || utils.Iswritetsdb() == "Y" {
@@ -412,7 +412,7 @@ func GetSubtitleWithUUID(c *gin.Context) {
 		response = "error"
 		return
 	}
-	//非登录用户，进行权限控制
+	//subtitle uuid
 	uuid = c.Query("id")
 
 	if len(uuid) == 0 {
@@ -424,30 +424,62 @@ func GetSubtitleWithUUID(c *gin.Context) {
 		return
 	}
 
-	inLimit, err = user.CheckIfInLimit(request.User, uuid)
-	if err != nil {
-		executeFlag = "N"
-		errMsg = err.Error()
-		log.LOGGER("SUBX").Error(err)
-		respCode = 500
-		response = "error"
-		return
-	}
-	//path, err := os.Getwd()
-	// if err != nil {
-	// 	executeFlag = "N"
-	// 	errMsg = err.Error()
-	// 	log.LOGGER("SUBX").Error(err)
-	// 	respCode = 500
-	// 	response = "error"
-	// 	return
-	// }
-	if inLimit {
+	mode := c.Query("mode")
+
+	if mode == "full" {
+		inLimit, err = user.CheckIfInLimit(request.User, uuid)
+		if err != nil {
+			executeFlag = "N"
+			errMsg = err.Error()
+			log.LOGGER("SUBX").Error(err)
+			respCode = 200
+			response = err.Error()
+			return
+		}
+		if inLimit {
+			r, _ := dao.GetSubtitle_ByUuid(uuid) //返回srt路径
+			fileName = r[0]["path"].(string)
+			// filePath = filepath.Join(path, filePath_prefix, fileName)
+
+			response, err = utils.ReadSubtitle(fileName)
+			if err != nil {
+				executeFlag = "N"
+				errMsg = err.Error()
+				log.LOGGER("SUBX").Error(err)
+				log.LOGGER("SUBX").Error(fileName)
+				log.LOGGER("SUBX").Error(filePath)
+				respCode = 500
+				response = "error"
+				return
+			}
+			if len(response) == 0 {
+				executeFlag = "N"
+				errMsg = "subtitle is null"
+				log.LOGGER("SUBX").Error(errMsg)
+				respCode = 500
+				response = "error"
+				return
+			}
+			err = dao.SaveSubtitleLog(request.User.Email, request.User.Uuid, uuid, "subtitle")
+			if err != nil {
+				executeFlag = "N"
+				errMsg = err.Error()
+				log.LOGGER("SUBX").Error(err)
+				respCode = 500
+				response = err.Error()
+				return
+			}
+		} else {
+			respCode = 200
+			response = "overLimit"
+			return
+		}
+	} else if mode == "demo" {
+		//获取一部分返回，不校验用户信息，不限制下载次数
 		r, _ := dao.GetSubtitle_ByUuid(uuid) //返回srt路径
 		fileName = r[0]["path"].(string)
 		// filePath = filepath.Join(path, filePath_prefix, fileName)
-
-		response, err = utils.ReadSubtitle(fileName)
+		response, err = utils.ReadSubtitle_Demo(fileName)
 		if err != nil {
 			executeFlag = "N"
 			errMsg = err.Error()
@@ -466,38 +498,11 @@ func GetSubtitleWithUUID(c *gin.Context) {
 			response = "error"
 			return
 		}
-		err = dao.SaveSubtitleLog(request.User.Email, request.User.Uuid, uuid, "subtitle")
-		if err != nil {
-			executeFlag = "N"
-			errMsg = err.Error()
-			log.LOGGER("SUBX").Error(err)
-			respCode = 500
-			response = "error"
-			return
-		}
 	} else {
-		fileName = "overlimit.srt"
-		//filePath = filepath.Join(path, filePath_prefix, fileName)
-		response, err = utils.ReadSubtitle(fileName)
-		if err != nil {
-			executeFlag = "N"
-			errMsg = err.Error()
-			log.LOGGER("SUBX").Error(err)
-			log.LOGGER("SUBX").Error(fileName)
-			log.LOGGER("SUBX").Error(filePath)
-			respCode = 500
-			response = "error"
-			return
-		}
-		if len(response) == 0 {
-			executeFlag = "N"
-			errMsg = "failed to read overlimit.srt"
-			log.LOGGER("SUBX").Error(errMsg)
-			respCode = 500
-			response = "error"
-			return
-		}
+		respCode = 200
+		response = "error 33891"
 	}
+
 }
 func GetSubtitleInfo(c *gin.Context) {
 	var err error

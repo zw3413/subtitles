@@ -1,6 +1,7 @@
 package user
 
 import (
+	"errors"
 	"goapi/src/configs"
 	"goapi/src/dao"
 	"goapi/src/model"
@@ -47,17 +48,17 @@ func CheckIfInLimit(user model.User, subtitleUuid string) (bool, error) { // inL
 	var limit_num int
 
 	//验证client uuid是否在数据库存在
-	uuid_valid, err := dao.CheckClientUUID(user.Uuid)
-	if err != nil {
-		return false, err
-	}
-	if !uuid_valid {
-		return false, nil
-	}
+	// uuid_valid, err := dao.CheckClientUUID(user.Uuid)
+	// if err != nil {
+	// 	return false, err
+	// }
+	// if !uuid_valid {
+	// 	return false, nil
+	// }
 
-	if user.Uuid == "oooooxxxxx" {
-		return true, nil
-	}
+	// if user.Uuid == "oooooxxxxx" {
+	// 	return true, nil
+	// }
 
 	//TODO 考虑增加逻辑，去vercel接口校验用户信息
 	if user.Email != "" { //已登录
@@ -67,7 +68,7 @@ func CheckIfInLimit(user model.User, subtitleUuid string) (bool, error) { // inL
 			//1714538617 //微秒
 			currentTime := time.Now().UnixNano()     //纳秒
 			if expireDate*1000000000 > currentTime { //订阅有效
-				limit_num = limit_subscribe_number //200
+				limit_num = limit_subscribe_number //20
 				hours := limit_subscribe_frame     //"24 hour"
 				subtitleUuids := dao.GetTodayVisitedSubtitlesByUser(user.Email, user.Uuid, hours)
 				if len(subtitleUuids) <= limit_num { //每天200个
@@ -81,7 +82,11 @@ func CheckIfInLimit(user model.User, subtitleUuid string) (bool, error) { // inL
 					return false, nil
 				}
 			}
+		} else {
+			return false, errors.New("noHasSub")
 		}
+	} else {
+		return false, errors.New("noLogin")
 	}
 
 	//根据邮箱或者客户uuid，查看用户今天已经获取过的subtitle数量
