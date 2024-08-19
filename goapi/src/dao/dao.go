@@ -81,7 +81,7 @@ func InsertWant(seed_id, client_ip, want_lang, fullfilled string) error {
 	return nil
 }
 
-func UpdateSeed(id, videoNo, videoName, videoPageUrl, videoM3u8Url, mp3Path, srtPath, videoLanguage, videoDesc, process_status, err_msg string) ([]map[string]interface{}, error) {
+func UpdateSeed(id, videoNo, videoName, videoPageUrl, videoM3u8Url, mp3Path, srtPath, videoLanguage, videoDesc, process_status, err_msg, transcribe_version string) ([]map[string]interface{}, error) {
 
 	defer func() {
 		if r := recover(); r != nil {
@@ -90,9 +90,9 @@ func UpdateSeed(id, videoNo, videoName, videoPageUrl, videoM3u8Url, mp3Path, srt
 		}
 	}()
 	sql := `
-	update seed set video_no=$1, video_name=$2, video_page_url=$3, video_m3u8_url=$4, mp3_path=$5, srt_path=$6, video_language=$7, video_desc=$8, update_time = $9 , process_status = $11, err_msg = $12 where id=$10
+	update seed set video_no=$1, video_name=$2, video_page_url=$3, video_m3u8_url=$4, mp3_path=$5, srt_path=$6, video_language=$7, video_desc=$8, update_time = $9 , process_status = $11, err_msg = $12, transcribe_version = $13 where id=$10
 	`
-	result, err := utils.GetAllData(sql, videoNo, videoName, videoPageUrl, videoM3u8Url, mp3Path, srtPath, videoLanguage, videoDesc, time.Now(), id, process_status, err_msg)
+	result, err := utils.GetAllData(sql, videoNo, videoName, videoPageUrl, videoM3u8Url, mp3Path, srtPath, videoLanguage, videoDesc, time.Now(), id, process_status, err_msg, transcribe_version)
 	if err != nil {
 		return nil, err
 	}

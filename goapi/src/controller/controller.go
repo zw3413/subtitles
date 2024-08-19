@@ -164,9 +164,10 @@ func SaveSeed(c *gin.Context) {
 	video_desc := getString(requestObj["video_desc"])
 	process_status := getString(requestObj["process_status"])
 	err_msg := getString(requestObj["err_msg"])
+	transcribe_version := getString(requestObj["transcribe_version"])
 
 	if id != "" {
-		_, err = dao.UpdateSeed(id, video_no, video_name, video_page_url, video_m3u8_url, mp3_path, srt_path, video_language, video_desc, process_status, err_msg)
+		_, err = dao.UpdateSeed(id, video_no, video_name, video_page_url, video_m3u8_url, mp3_path, srt_path, video_language, video_desc, process_status, err_msg, transcribe_version)
 	} else {
 		_, err = dao.InsertSeed(video_no, video_name, video_page_url, video_m3u8_url, mp3_path, srt_path, video_language, video_desc)
 	}
