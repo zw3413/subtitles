@@ -633,3 +633,20 @@ func SaveUserUploadSubtitle(language, filepath, format, seed_uuid, source, md5 s
 	}
 	return "saved", nil
 }
+
+func GetUserStripeIdByEmail(email string) (string, error) {
+	sql := `
+		select stripe_customer_id
+		from "User"
+		where email = $1;
+	`
+	data, err := utils.GetAllData(sql, email)
+	if err != nil {
+		return "", err
+	}
+	if len(data) > 0 {
+		return data[0]["stripe_customer_id"].(string), nil
+	} else {
+		return "", nil
+	}
+}

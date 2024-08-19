@@ -40,11 +40,11 @@ var fieldsValues = struct {
 	tables: make([]string, 0)}
 
 func init() {
-	iniConfig := new(configs.Config)
-	iniConfig.InitConfig()
+	// iniConfig := new(configs.Config)
+	// iniConfig.InitConfig()
 
-	logwrite = iniConfig.Read("timescaledb", "logwrite")
-	UseTimeScaleDbPool()
+	// logwrite = iniConfig.Read("timescaledb", "logwrite")
+	// UseTimeScaleDbPool()
 }
 
 // ok的时候是否写influxab    Y:写入  N:不写入

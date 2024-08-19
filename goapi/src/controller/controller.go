@@ -1,6 +1,8 @@
 package controller
 
 import (
+	"crypto/md5"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"goapi/src/controller/user"
@@ -428,6 +430,23 @@ func GetSubtitleWithUUID(c *gin.Context) {
 	mode := c.Query("mode")
 
 	if mode == "full" {
+		//先核对user_secret
+		////email+weekday+salt(stripe_customer_id) md5
+		//根据email获取stripe_customer_id
+		stripe_customer_id, err := dao.GetUserStripeIdByEmail(request.User.Email)
+		hash := md5.New()
+		hash.Write([]byte(request.User.Email + strconv.Itoa(int(time.Now().UTC().Weekday())) + stripe_customer_id))
+		hashBytes := hash.Sum(nil)
+		hashString := hex.EncodeToString(hashBytes)
+		if hashString != request.User.User_Secret {
+			executeFlag = "N"
+			errMsg = "user_secret error"
+			log.LOGGER("SUBX").Error(errMsg)
+			respCode = 400
+			response = "user_secret error"
+			return
+		}
+
 		inLimit, err = user.CheckIfInLimit(request.User, uuid)
 		if err != nil {
 			executeFlag = "N"
