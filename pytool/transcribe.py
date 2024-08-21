@@ -95,7 +95,7 @@ def transcribe_func() :
             beam_size=5, 
             vad_filter=True, 
             #vad_parameters= vad,
-            initial_prompt = prompt_j,
+            initial_prompt = prompt_e,
             task = "transcribe"
             )
         
@@ -107,11 +107,12 @@ def transcribe_func() :
                 vad_filter=True, 
                 #vad_parameters=vad,
                 language="ja",
-                initial_prompt = prompt_j,
+                initial_prompt = prompt_e,
                 task = "transcribe"
                 )
             print(cmd,"Detected language '%s' with probability %f" % (info.language, info.language_probability))
         language = info.language
+        video_length = info.duration
         #srtPath = filePath.split('.')[0]+ info.language + '.srt'
         srtPath = filePath_prefix + flvPath.replace(MP3_afterfix,SRT_afterfix).replace(FLV_afterfix, SRT_afterfix).replace('_worst','').replace('_best','')
             #delete the file at filePath if exist
