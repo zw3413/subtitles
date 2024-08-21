@@ -145,6 +145,7 @@ def transcribe_func() :
         seed["srt_path"] =file_name
         seed["video_language"] = language
         seed["process_status"] = "2"
+        seed["transcribe_version"] = '24.07.11-l'
         seed["err_msg"]= ""
         request.SaveSeed(seed)
         subtitle = {}
