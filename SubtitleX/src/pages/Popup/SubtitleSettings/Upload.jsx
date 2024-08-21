@@ -23,7 +23,7 @@ const Upload = ({ popup, setMenu, setHide }) => {
     document.dispatchEvent(fileUpload);
     setMenu(false);
     //上传subtitle
-    setUploadFile(file);
+    //setUploadFile(file);
   }
   useEffect(() => {
     if (uploadFile && uploadFile.name) {

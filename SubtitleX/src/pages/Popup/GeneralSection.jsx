@@ -19,7 +19,6 @@ const GeneralSection = ({ setDisplayShortcuts, popup }) => {
 
   useEffect(()=>{
     findUser().then((user)=>{
-      console.log(user)
       let un = user.name? user.name:user.email
       setUsername(un?un:'')
       setSubscribed(user.hasSub || user.subscribed)
@@ -54,7 +53,7 @@ const GeneralSection = ({ setDisplayShortcuts, popup }) => {
         }
       >
         {/* <ListItemText style={{ color: 'black' }}  >{userName.length>0?userName:"Login"}</ListItemText> */}
-        <ListItemText style={{ color: 'black' }}  >{subscribed ?  chrome.i18n.getMessage('profile') : chrome.i18n.getMessage('subscribe')}</ListItemText>
+        <ListItemText style={{ color: 'black' }}  >{subscribed ?  userName || chrome.i18n.getMessage('profile') : chrome.i18n.getMessage('subscribe')}</ListItemText>
         <ListItemSecondaryAction>
           <IconButton onClick={() =>
           openPage(

@@ -147,6 +147,9 @@ function Subtitles({ video, subsEnabled, speedDisplay, netflix, editRef }) {
     }
     // eslint-disable-next-line
   }, [subs]);
+  useEffect(()=>{
+    console.log("[subtitles] pos", pos)
+  },[pos])
 
   if (!listening) {
     // Make sure only to set up one listener!
@@ -168,7 +171,9 @@ function Subtitles({ video, subsEnabled, speedDisplay, netflix, editRef }) {
     document.addEventListener(
       'fileUpload',
       function (e) {
-        const file = e.detail;
+        console.log("[subtitles] received event fileUpload with ",e )
+        const file = e.detail.file;
+        const mode = e.detail.mode;
         const extRegEx = new RegExp('^.*\.(srt|sub|txt)$', 'i');
         const validExt = extRegEx.test(file.name);
 
@@ -189,7 +194,7 @@ function Subtitles({ video, subsEnabled, speedDisplay, netflix, editRef }) {
               setUpload(true);
               
               try {
-                processSubtitles(content.split('\n'), subsRef, setSubs);
+                processSubtitles(content.split('\n'), subsRef, setSubs, mode);
                 setInfoDialog('');
                 setSubtitleColor(subtitles.color.default);
 
@@ -352,15 +357,16 @@ function Subtitles({ video, subsEnabled, speedDisplay, netflix, editRef }) {
               </SubtitleButton>
             )}
             <SubtitleArea>
+              {infoDialog ? infoDialog : subs[pos]?.text &&
               <SubtitleText
-                dangerouslySetInnerHTML={{ __html: infoDialog ? infoDialog : subs[pos].text }}
+                dangerouslySetInnerHTML={{ __html: infoDialog ? infoDialog : subs[pos]?.text }}
                 className={classes.root}
                 style={{
                   userSelect: editMode ? 'text' : 'none',
                   color: subtitleColor,
                 }}
-              ></SubtitleText>
-              {subs[pos].music && (
+              ></SubtitleText>}
+              {subs[pos]?.music && (
                 <Grid
                   container
                   justifyContent="center"
@@ -371,7 +377,7 @@ function Subtitles({ video, subsEnabled, speedDisplay, netflix, editRef }) {
                     color="primary"
                     onClick={() =>
                       !netflix
-                        ? (video.currentTime = subs[pos].music.end)
+                        ? (video.currentTime = subs[pos]?.music?.end)
                         : null
                     }
                     onMouseEnter={() => setMusicHover(true)}
@@ -379,7 +385,7 @@ function Subtitles({ video, subsEnabled, speedDisplay, netflix, editRef }) {
                   >
                     {musicHover && !netflix
                       ? 'Skip the music!'
-                      : subs[pos].music.text}
+                      : subs[pos]?.music?.text}
                   </Button>
                 </Grid>
               )}

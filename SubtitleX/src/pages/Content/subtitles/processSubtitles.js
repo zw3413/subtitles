@@ -1,6 +1,6 @@
 import timeInSeconds from './timeInSeconds';
 
-export default function processSubtitles(content, subsRef, setSubs) {
+export default function processSubtitles(content, subsRef, setSubs, mode) {
   const newSubs = [];
   const emptyLines = [];
   const musicRegEx = new RegExp(/♪|\[Music\]/);
@@ -137,6 +137,17 @@ export default function processSubtitles(content, subsRef, setSubs) {
 
   // Delete the last node in the subtitle array if it has no text
   if (!newSubs[newSubs.length - 1].text.trim()) newSubs.pop();
+
+  //demo模式，最后添加订阅提示
+  console.log("[subtitles] mode",mode)
+  if(mode === 'demo'){
+    const newLine = {}
+    newLine.start = newSubs[newSubs.length-1].end+10
+    newLine.end = newLine.start + 120
+    newLine.text = chrome.i18n.getMessage("demoTip")
+    newSubs.push(newLine)
+    console.log('[subtitles] added demo tip line', newSubs)
+  }
 /*
   // Adding "Skip Start" manually
   if (newSubs[0].start > 5) {

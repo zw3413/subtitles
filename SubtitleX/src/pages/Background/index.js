@@ -3,93 +3,116 @@
   //const subtitleXserverApi = "http://127.0.0.1:12801";
   const subtitleXserverWeb = 'https://www.subtitlex.xyz';
   const subtitlexDomain = 'www.subtitlex.xyz';
+
+  //更新用户信息
   const updateUser = async () => {
     console.log('updateUser');
     try {
-      const storage = await chrome.storage.sync.get('user');
-      let user = storage.user;
-      let flag = false;
-      //没有user 则新生成user对象
+      // const storage = await chrome.storage.sync.get('user');
+      // let user = storage.user;
+      let user = {};
+      //建立user
       if (!user) {
-        console.log('generate new user with fetch uuid');
-        user = { uuid: await UUID() };
-        flag = true;
+        console.log('[background] user not exist, create one');
+        user = {};
       }
-      if (!user.uuid || user.uuid === '' || user.uuid === 'xxxx') {
-        console.log('user exist, fetch uuid');
-        Object.assign(user, { uuid: await UUID() });
-        flag = true;
-      }
-      if (flag) {
-        console.log('update the storage of user');
-        chrome.storage.sync.set({ user: user });
-      }
+      //建立user email
       if (!user.email) {
-        checkCookie();
+        console.log(
+          '[background] user email not exist, check user email from cookie'
+        );
+        const email = await checkCookie();
+        user.email = email;
       }
+      if (user.email) {
+        //刷新user 信息，并保存进chrome.storage
+        const user_info = await fetchUserInfo(user);
+        Object.assign(user, user_info);
+      }
+
+      chrome.storage.sync.set({ user: user });
     } catch (e) {
       console.error(e);
     }
   };
+  const fetchUserInfo = async (user) => {
+    try {
+      if (user.lastFetch) {
+        //10s内不重复请求
+        const diff =
+          (new Date().getTime() - new Date(user.lastFetch).getTime()) / 1000;
+        if (diff < 10) {
+          console.log(
+            '[fetchUserInfo] last fetch less than 10 seconds, ignore this request'
+          );
+          return;
+        }
+      }
+      let url =
+        subtitleXserverWeb + '/api/checkSubscription?email=' + user.email;
+      console.log('[fetchUserInfo] fetch', url);
+      let response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+        },
+      });
+      let userInfo = await response.json();
+      console.log('[fetchUserInfo] get user info', userInfo);
+      userInfo.lastFetch = new Date().getTime();
+      userInfo.subscribed = userInfo.hasSub
+        ? new Date() < new Date(userInfo.expireDate * 1000)
+        : false;
+      return userInfo;
+    } catch (e) {
+      console.error('[fetchUserInfo] fetch user exception', e);
+      return null;
+    }
+  };
+  //检查www.subtitle.xyz的cookie,通过session接口获取到email，保存进storage的user对象
   const checkCookie = async () => {
-    console.log('checkCookie');
     try {
       const cookies = await chrome.cookies.getAll({ domain: subtitlexDomain });
-
       let session_token;
       for (var i = 0; i < cookies.length; i++) {
         if (cookies[i].name === '__Secure-next-auth.session-token') {
           session_token = cookies[i].value;
         }
       }
-      console.log('get seesion token :' + session_token);
+      if (session_token) {
+        console.log(
+          '[checkCookie] get seesion token from cookies',
+          session_token
+        );
+        const url = subtitleXserverWeb + '/api/auth/session';
+        console.log('[checkCookie] fetch', url);
+        const response = await fetch(url, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            cookie: '__Secure-next-auth.session-token=' + session_token,
+          },
+        });
+        const session_info = await response.json();
+        console.log('[checkCookie] get seesion_info', session_info);
+        const user_email = session_info?.user?.email;
+        if (user_email) {
+          console.log('[checkCookie] get user email', user_email);
+          return user_email;
+        } else {
+          console.log('[checkCookie] no user email found in session');
+        }
+      } else {
+        console.log('[checkCookie] no session token found in cookie');
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
-      const response = await fetch(subtitleXserverWeb + '/api/auth/session', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          cookie: '__Secure-next-auth.session-token=' + session_token,
-        },
-      });
-      const session_info = await response.json();
-      console.log(session_info);
-      const user_email = session_info?.user?.email;
-      if (user_email) {
-        console.log('get user email :' + user_email);
-        const storage = await chrome.storage.sync.get('user');
-        const user = storage.user;
-        user.email = user_email;
-        chrome.storage.sync.set({ user: user });
-      }
-    } catch (e) {
-      console.log(e);
-    }
-  };
-  const UUID = async () => {
-    try {
-      const response = await fetch(subtitleXserverApi + '/api2', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      if (!response || response.status !== 200) {
-        console.error(response);
-        return 'xxxx';
-      }
-      const result = await response.json();
-      if (result.rc === '000') {
-        return result.data;
-      }
-    } catch (e) {
-      console.log(e);
-      return 'xxxx';
-    }
-  };
+  //开始注册事件监听
   try {
-    const uuid = await UUID();
-    chrome.storage.sync.set({ user: { uuid: uuid } });
-    await checkCookie();
     //监听外部消息，接受来自subtitlex.xyz的登陆用户，并保存
     chrome.runtime.onMessageExternal.addListener(
       async (obj, sender, response) => {
@@ -103,27 +126,33 @@
         response({ success: 'received' });
       }
     );
+
+    //监听内部事件
     chrome.runtime.onMessage.addListener(function (request) {
       if (request.link) {
+        //打开链接
         chrome.tabs.create({
           active: true,
           url: request.link,
         });
-      } else if (request.action === 'checkCookie') {
-        checkCookie();
-      } else if (request.action == 'updateUser') {
+      } else if (request.action === 'updateUser') {
+        //加载content.js的时候更新用户信息
+        // 更新user信息
         updateUser();
       }
     });
+
+    //extension安装更新事件
     chrome.runtime.onInstalled.addListener((details) => {
       if (details.reason === chrome.runtime.OnInstalledReason.INSTALL) {
-        // Code to be executed on first install
-        // eg. open a tab with a url
+        //首次安装，自动打开帮助页面
         chrome.tabs.create({
           url: subtitleXserverWeb + '/Extension#help',
         });
       } else if (details.reason === chrome.runtime.OnInstalledReason.UPDATE) {
-        // When extension is updated
+        chrome.tabs.create({
+          url: subtitleXserverWeb + '/Extension#help',
+        });
       } else if (
         details.reason === chrome.runtime.OnInstalledReason.CHROME_UPDATE
       ) {
@@ -134,10 +163,28 @@
         // When a shared module is updated
       }
     });
+
+    //卸载事件
     chrome.runtime.setUninstallURL(
       subtitleXserverWeb + '/survey/uninstall',
       () => {}
     );
+
+    //action点击事件
+    chrome.action.onClicked.addListener(async (tab) => {
+      //const prevState = await chrome.action.getBadgeText({ tabId: tab.id });
+      const nextState = 'ON';
+      await chrome.action.setBadgeText({
+        tabId: tab.id,
+        text: nextState,
+      });
+
+      //insert content script when user turns the extension on
+      chrome.scripting.executeScript({
+        target: { tabId: tab.id },
+        files: ['contentScript.bundle.js'],
+      });
+    });
   } catch (e) {
     console.log(e);
   }

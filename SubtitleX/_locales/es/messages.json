@@ -43,6 +43,9 @@
     },
     "chooseSubtitle": {
       "message": "Elige un subtítulo"
-    }
+    },
+"demoTip": {
+"message":"Este es un subtítulo de demostración, obtén una suscripción premium para cargar la versión completa de los subtítulos."
+}
   }
   

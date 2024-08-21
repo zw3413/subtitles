@@ -14,6 +14,8 @@ const BlurredBackground = styled('div')({
   backdropFilter: 'blur(10px)',
   zIndex: 2147483647,
 });
+
+
 chrome.runtime.sendMessage({action:"updateUser"})
 export default function Content({ video, iconWrapper }) {
   const subsEnabledRef = useRef(true);
@@ -23,7 +25,6 @@ export default function Content({ video, iconWrapper }) {
   const [menu, setMenu] = useState(false);
   const netflix = window.location.hostname === 'www.netflix.com';
   const editRef = useRef(false);
- 
   // Close the in-video popup menu when the real popup is opened
   // chrome.runtime.onMessage.addListener((msg) => {
   //   if (msg.activation) {
