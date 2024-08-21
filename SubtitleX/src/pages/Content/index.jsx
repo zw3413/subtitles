@@ -3,8 +3,9 @@ import { render } from 'react-dom';
 import Content from './Content';
 import videoPlayerDetector from './videoPlayerDetector/videoPlayerDetector';
 
+//注入js，获取原window下的变量
 if (!document.querySelector('#subtitlex_injectScript')) {
-  console.log("subx inject script to detect seed info ")
+  console.log('[content] inject script injected ');
   var s = document.createElement('script');
   s.src = chrome.runtime.getURL('injectScript.bundle.js');
   s.id = 'subtitlex_injectScript';
@@ -44,33 +45,26 @@ if (!document.querySelector('#subtitlex_injectScript')) {
 // });
 let displayingExtension = false;
 let detectTime = 0;
-const detectAndShowSubtitles =()=>{
+const detectAndShowSubtitles = () => {
   if (!displayingExtension) {
-    
-    detectTime ++
-    console.log('start to detect the video player');
+    detectTime++;
+    console.log('[content] start to detect the video player');
     // Try to detect the video and display the subtitles
     const video = videoPlayerDetector('video');
     const container = videoPlayerDetector('container');
     const iconWrapper = videoPlayerDetector('iconWrapper');
 
-    if(!video){
-      console.log("video was not detected")
+    if (!video) {
+      console.log('[content] video was not detected');
     }
-    if(!container){
-      console.log("container was not detected")
+    if (!container) {
+      console.log('[content] container was not detected');
     }
-    if(!iconWrapper){
-      console.log("iconWrapper was not detected")
+    if (!iconWrapper) {
+      console.log('[content] iconWrapper was not detected');
     }
 
     if (video && container && iconWrapper) {
-      //检测missav.com和jable.tv的seed
-      window.postMessage({
-        from: 'subtitlex_contentScript',
-        type: 'detectSeed',
-        data: {},
-      });
       // Video detected
       // Render the subtitles and the menu
       render(<Content video={video} iconWrapper={iconWrapper} />, container);
@@ -81,26 +75,30 @@ const detectAndShowSubtitles =()=>{
         if (storage.sitesWithSubtitles) {
           sitesWithSubtitles = storage.sitesWithSubtitles;
         }
-        const thisSite =window.location.href.replace(/^.*\/\//, '').replace(/\/.*/, '');
-        if(!sitesWithSubtitles.includes(thisSite)){
+        const thisSite = window.location.href
+          .replace(/^.*\/\//, '')
+          .replace(/\/.*/, '');
+        if (!sitesWithSubtitles.includes(thisSite)) {
           sitesWithSubtitles.push(thisSite);
           chrome.storage.sync.set({
             sitesWithSubtitles: sitesWithSubtitles,
           });
         }
       });
-    }else{
-      if(detectTime<5){
-        setTimeout(detectAndShowSubtitles,10000)
+    } else {
+      if (detectTime < 5) {
+        setTimeout(detectAndShowSubtitles, 5000);
       }
     }
   }
-}
-//document.addEventListener('DOMContentLoaded', () => {
-window.addEventListener('load', () => {
+};
 
-
+if (document.readyState === 'complete') {
+  console.log('[content] document is ready, subtitlex will start now.');
   detectAndShowSubtitles();
-
-
-});
+} else {
+  console.log(
+    '[content] document is not ready, subtitlex will be started after the window loaded'
+  );
+  window.addEventListener('load', detectAndShowSubtitles);
+}

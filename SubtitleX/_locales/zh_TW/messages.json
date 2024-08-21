@@ -43,5 +43,8 @@
   },
   "chooseSubtitle": {
     "message": "選擇字幕"
-  }
+  },
+"demoTip": {
+"message":"這是一個演示字幕，請獲取高級訂閱以加載完整字幕。"
+}
 }

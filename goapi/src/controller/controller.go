@@ -1,6 +1,8 @@
 package controller
 
 import (
+	"crypto/md5"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"goapi/src/controller/user"
@@ -164,9 +166,10 @@ func SaveSeed(c *gin.Context) {
 	video_desc := getString(requestObj["video_desc"])
 	process_status := getString(requestObj["process_status"])
 	err_msg := getString(requestObj["err_msg"])
+	transcribe_version := getString(requestObj["transcribe_version"])
 
 	if id != "" {
-		_, err = dao.UpdateSeed(id, video_no, video_name, video_page_url, video_m3u8_url, mp3_path, srt_path, video_language, video_desc, process_status, err_msg)
+		_, err = dao.UpdateSeed(id, video_no, video_name, video_page_url, video_m3u8_url, mp3_path, srt_path, video_language, video_desc, process_status, err_msg, transcribe_version)
 	} else {
 		_, err = dao.InsertSeed(video_no, video_name, video_page_url, video_m3u8_url, mp3_path, srt_path, video_language, video_desc)
 	}
@@ -427,12 +430,29 @@ func GetSubtitleWithUUID(c *gin.Context) {
 	mode := c.Query("mode")
 
 	if mode == "full" {
+		//先核对user_secret
+		////email+weekday+salt(stripe_customer_id) md5
+		//根据email获取stripe_customer_id
+		stripe_customer_id, err := dao.GetUserStripeIdByEmail(request.User.Email)
+		hash := md5.New()
+		hash.Write([]byte(request.User.Email + strconv.Itoa(int(time.Now().UTC().Weekday())) + stripe_customer_id))
+		hashBytes := hash.Sum(nil)
+		hashString := hex.EncodeToString(hashBytes)
+		if hashString != request.User.User_Secret {
+			executeFlag = "N"
+			errMsg = "user_secret error"
+			log.LOGGER("SUBX").Error(errMsg)
+			respCode = 400
+			response = "user_secret error"
+			return
+		}
+
 		inLimit, err = user.CheckIfInLimit(request.User, uuid)
 		if err != nil {
 			executeFlag = "N"
 			errMsg = err.Error()
 			log.LOGGER("SUBX").Error(err)
-			respCode = 200
+			respCode = 500
 			response = err.Error()
 			return
 		}
@@ -465,12 +485,9 @@ func GetSubtitleWithUUID(c *gin.Context) {
 				executeFlag = "N"
 				errMsg = err.Error()
 				log.LOGGER("SUBX").Error(err)
-				respCode = 500
-				response = err.Error()
-				return
 			}
 		} else {
-			respCode = 200
+			respCode = 400
 			response = "overLimit"
 			return
 		}
@@ -499,7 +516,7 @@ func GetSubtitleWithUUID(c *gin.Context) {
 			return
 		}
 	} else {
-		respCode = 200
+		respCode = 400
 		response = "error 33891"
 	}
 

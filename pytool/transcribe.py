@@ -147,6 +147,7 @@ def transcribe_func() :
         seed["process_status"] = "2"
         seed["transcribe_version"] = '24.07.11-l'
         seed["err_msg"]= ""
+        seed["transcribe_version"] = "24.07.11"
         request.SaveSeed(seed)
         subtitle = {}
         subtitle["language"] = utils.language_codes[language]

@@ -43,5 +43,8 @@
   },
   "chooseSubtitle":{
     "message":"Choose a subtitle"
+  },
+  "demoTip":{
+    "message":"This is a demo subtitle, please get premium subscription to load full version of subtitles."
   }
 }

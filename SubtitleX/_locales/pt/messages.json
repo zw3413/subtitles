@@ -43,6 +43,10 @@
     },
     "chooseSubtitle": {
       "message": "Escolha uma legenda"
-    }
+    },
+"demoTip": {
+"message":"Esta é uma legenda de demonstração, obtenha uma assinatura premium para carregar a versão completa das legendas."
+}
+
   }
   
