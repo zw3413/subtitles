@@ -452,7 +452,7 @@ func GetSubtitleWithUUID(c *gin.Context) {
 			executeFlag = "N"
 			errMsg = err.Error()
 			log.LOGGER("SUBX").Error(err)
-			respCode = 200
+			respCode = 500
 			response = err.Error()
 			return
 		}
@@ -485,12 +485,9 @@ func GetSubtitleWithUUID(c *gin.Context) {
 				executeFlag = "N"
 				errMsg = err.Error()
 				log.LOGGER("SUBX").Error(err)
-				respCode = 500
-				response = err.Error()
-				return
 			}
 		} else {
-			respCode = 200
+			respCode = 400
 			response = "overLimit"
 			return
 		}
@@ -519,7 +516,7 @@ func GetSubtitleWithUUID(c *gin.Context) {
 			return
 		}
 	} else {
-		respCode = 200
+		respCode = 400
 		response = "error 33891"
 	}
 
