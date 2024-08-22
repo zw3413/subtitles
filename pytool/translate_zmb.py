@@ -83,7 +83,8 @@ def translate_func():
             tgt_filename = uuid +"_"+tgt_lang+".srt"
             tgt_path = LocalPathPrefix + tgt_filename
             src_lang = 'auto'
-            out_put = translate(src_path, tgt_path, src_lang, tgt_lang) 
+            result = []
+            out_put = translate(src_path, tgt_path, src_lang, tgt_lang, result) 
             if len(out_put) > 0:
                 msg = f"翻译失败，subtitle_id = {subtitle_id}，接口输出报错{out_put}"
                 r.lpush('zmb_error_list', subtitle_id)
