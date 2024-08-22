@@ -112,7 +112,7 @@ def transcribe_func() :
                 )
             print(cmd,"Detected language '%s' with probability %f" % (info.language, info.language_probability))
         language = info.language
-        video_length = info.duration
+        video_length = info.duration #in seconds
         #srtPath = filePath.split('.')[0]+ info.language + '.srt'
         srtPath = filePath_prefix + flvPath.replace(MP3_afterfix,SRT_afterfix).replace(FLV_afterfix, SRT_afterfix).replace('_worst','').replace('_best','')
             #delete the file at filePath if exist
@@ -123,11 +123,14 @@ def transcribe_func() :
         lineCount = 0
         t_start = datetime.now()
         pt = ''
+        words_num = 0
+        subtitle_duration = 0
         for segment in segments :
             lineCount += 1
             f.write(str(lineCount)+"\n")
             s = utils.secondsToStr(segment.start)
             e = utils.secondsToStr(segment.end)
+            subtitle_duration = segment.end
             f.write( s + ' --> ' + e +"\n")
             t = e.split(",",1)[0].replace(":","")[0:3]
             if t != pt:
@@ -136,19 +139,22 @@ def transcribe_func() :
             #print("write segment text")
             #str_content = str(segment.text.encode('gbk'),encoding = 'utf-8')
             f.write(segment.text)
+            words_num += len(segment.text)
             f.write("\n\n")
             #print(segment.text)
             lineCount = lineCount + 1
         f.flush()
         f.close()
+
+        file_size = os.path.getsize(srtPath) # in Byte
         file_name =  srtPath.replace(filePath_prefix,"")
         request.PushSubtitleToServer(srtPath, file_name)
         seed["srt_path"] =file_name
         seed["video_language"] = language
         seed["process_status"] = "2"
         seed["transcribe_version"] = '24.07.11-l'
+        seed['video_length'] = video_length
         seed["err_msg"]= ""
-        seed["transcribe_version"] = "24.07.11"
         request.SaveSeed(seed)
         subtitle = {}
         subtitle["language"] = utils.language_codes[language]
@@ -156,6 +162,9 @@ def transcribe_func() :
         subtitle["seed_id"] = seed["id"]
         subtitle["format"] = SRT_afterfix
         subtitle["source"] = '1'
+        subtitle["words_num"] = words_num
+        subtitle["duration"] = subtitle_duration
+        subtitle["file_size"] = file_size
         request.SaveSubtitle(subtitle)
         
     except Exception as e:

@@ -10,6 +10,16 @@ pattern_domain = r'^http[s]://(?:[a-zA-Z]|[0-9]|[$-.@+])+'
 
 tgt_langs = ("cmn","cmn_Hant","spa","por","swe","deu","arb","rus","fra","jpn")
 
+
+def convert_hhmmss_to_seconds(duration):
+    # Split the duration string into hours, minutes, and seconds
+    hours, minutes, seconds = map(int, duration.split(':'))
+
+    # Convert hours and minutes to seconds and add them to the seconds part
+    total_seconds = hours * 3600 + minutes * 60 + seconds
+
+    return total_seconds
+
 def secondsToStr(t):
     return "%02d:%02d:%02d,%03d" % reduce(lambda ll,b : divmod(ll[0],b) + ll[1:],[(round(t*1000),),1000,60,60])
 

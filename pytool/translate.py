@@ -77,11 +77,18 @@ def translate_func():
             src_lang = 'auto'
         tgt_lang = seed["want_lang"]
         tgt_path, extension, tgt_filename = generate_new_filepath(src_path, tgt_lang)
-        out_put = translate(src_path, tgt_path, src_lang, tgt_lang) 
+        result = []
+        out_put = translate(src_path, tgt_path, src_lang, tgt_lang, result) 
+        #翻译失败
         if len(out_put) > 0:
             request.PostWantFullfilled(seed["want_id"],out_put)
             print(out_put)
             return
+        words_num = 0
+        duration = 0 
+        file_size = 0
+        if len(result) == 3 :
+            [words_num, duration,file_size] = result
         
         #构建subtitle对象，存入数据库
         subtitle = {}
@@ -90,6 +97,9 @@ def translate_func():
         subtitle["seed_id"] = seed["id"]
         subtitle["format"] = extension
         subtitle['source'] = '2'
+        subtitle["words_num"] = words_num
+        subtitle["duration"] = duration
+        subtitle["file_size"] = file_size
         request.PushSubtitleToServer(tgt_path,tgt_filename)
         request.SaveSubtitle(subtitle)  
         

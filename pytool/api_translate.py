@@ -59,7 +59,7 @@ def translate_by_google(enText,sl,tl):  #enText length<5000
 
 cmd ="translate"
 
-def translate(src_path, tgt_path, src_lang, tgt_lang) :
+def translate(src_path, tgt_path, src_lang, tgt_lang, result) :
     start_time = time.time()
     print(tgt_lang+" "+ time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
     if src_path is None or src_path == "":
@@ -114,6 +114,8 @@ def translate(src_path, tgt_path, src_lang, tgt_lang) :
         tgt_file_tmp = open(tgt_path_tmp, "r", encoding='utf-8')
 
         count = 0
+        words_num = 0
+        last_timestamp_line = ''
         for line_from_file in tgt_file_tmp:
             line = line_from_file.strip()
             if len(line) == 0:
@@ -127,10 +129,20 @@ def translate(src_path, tgt_path, src_lang, tgt_lang) :
                 count += 1
                 tgt_file.write(str(count))
                 tgt_file.write('\n')
+                last_timestamp_line = line
+            else:
+                words_num += len(line)
             tgt_file.write(line)
             tgt_file.write('\n')
         tgt_file.close()
         tgt_file_tmp.close()
+        result.append(words_num)
+        duration_in_hhmiss = last_timestamp_line.split("-->")[1].strip().split(",")[0]
+        duration = convert_hhmmss_to_seconds(duration_in_hhmiss)
+        result.append(duration)
+        file_size = os.path.getsize(tgt_path) # in Byte
+        result.append(file_size)
+
         if count <= 2 :
             return "line count less than 2"
         #os.remove(tgt_path_tmp)

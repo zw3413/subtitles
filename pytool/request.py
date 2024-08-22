@@ -4,8 +4,8 @@ import os
 from utils import *
 
 #serverIp = "http://127.0.0.1:12801"
-serverIp = "https://api.subtitlex.xyz"
-#serverIp = "http://192.168.2.105:12801"
+#serverIp = "https://api.subtitlex.xyz"
+serverIp = "http://192.168.2.101:12801"
 
 def remote_call(f, pl):  
     headers = {  
