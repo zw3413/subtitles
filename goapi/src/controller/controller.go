@@ -43,13 +43,13 @@ func getString(value interface{}) string {
 	}
 }
 
-//	func getInt(value interface{}) int {
-//		if value == nil {
-//			return -1
-//		} else {
-//			return value.(int)
-//		}
-//	}
+func getInt(value interface{}) int {
+	if value == nil {
+		return -1
+	} else {
+		return int(value.(float64))
+	}
+}
 func SaveSubtitle(c *gin.Context) {
 	var err error
 	var errLog string
@@ -96,8 +96,11 @@ func SaveSubtitle(c *gin.Context) {
 	format := getString(requestObj["format"])
 	source := getString(requestObj["source"])
 	origin_id := getString(requestObj["origin_id"])
+	words_num := getInt(requestObj["words_num"])
+	duration := getInt(requestObj["duration"])
+	file_size := getInt(requestObj["file_size"])
 
-	rows, err := dao.InsertSubtitle(seed_id, path, language, format, source, origin_id)
+	rows, err := dao.InsertSubtitle(seed_id, path, language, format, source, origin_id, words_num, duration, file_size)
 
 	val, ok := rows[0]["o_resultcode"]
 	if ok && val != nil {
@@ -167,9 +170,10 @@ func SaveSeed(c *gin.Context) {
 	process_status := getString(requestObj["process_status"])
 	err_msg := getString(requestObj["err_msg"])
 	transcribe_version := getString(requestObj["transcribe_version"])
+	video_length := getInt(requestObj["video_length"])
 
 	if id != "" {
-		_, err = dao.UpdateSeed(id, video_no, video_name, video_page_url, video_m3u8_url, mp3_path, srt_path, video_language, video_desc, process_status, err_msg, transcribe_version)
+		_, err = dao.UpdateSeed(id, video_no, video_name, video_page_url, video_m3u8_url, mp3_path, srt_path, video_language, video_desc, process_status, err_msg, transcribe_version, video_length)
 	} else {
 		_, err = dao.InsertSeed(video_no, video_name, video_page_url, video_m3u8_url, mp3_path, srt_path, video_language, video_desc)
 	}
