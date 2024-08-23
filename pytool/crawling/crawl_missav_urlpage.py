@@ -1,6 +1,9 @@
 import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 import re
 import os
 import json
@@ -46,10 +49,10 @@ options.add_argument("window-size=600,600")
 # chrome_options.add_argument('--blink-settings=imagesEnabled=false')
 
 # dr = uc.Chrome(options=chrome_options)
-
+import time
 import redis
 import threading
-
+import traceback
 # 创建Redis连接对象
 r = redis.Redis(host="192.168.2.203", port=6379, db=0, decode_responses=True)
 pending_check_url_list = "pending_check_url_list_urlpage"
@@ -88,6 +91,7 @@ def crawl_video_contents():
             dr = webdriver.Chrome(options=options)
             try:
                 dr.get(url)
+                #WebDriverWait(dr, 30).until(lambda d: d.execute_script("return document.readyState") == "complete")
                 bs = BeautifulSoup(dr.page_source, "html.parser")
                 # 如果未存在，先抓取seed信息，保存进数据库
                 video_no = url.split("/")[len(url.split("/")) - 1]
@@ -106,9 +110,17 @@ def crawl_video_contents():
                 ):
                     pass
                 else:
+                    title_ele = bs.find("title")
+                    for i in range(10):
+                        if title_ele is  None:
+                            time.sleep(5)
+                            title_ele = bs.find("title")
+                        else:
+                            break
+                    if title_ele is None :
+                        raise Exception("没有获取到title元素")
+                    video_name = title_ele.text
                     hlsUrl = dr.execute_script("return window.source1280")
-                    video_name = bs.find("title").text
-
                     if target in ["all","seed"]:
                         seed = {}
                         seed["video_page_url"] = url
@@ -170,49 +182,60 @@ def crawl_video_contents():
                             print(e)
 
                         try:
-                            detail_eles = bs.find("div", class_="space-y-2").contents
-                            eles = []
-                            delimiter = ","
-                            for item in detail_eles:
-                                if item != "\n":
-                                    eles.append(item)
-                            if len(eles) > 0:
-                                for i in range(len(eles)):
-                                    first_span = eles[i].find("span")
-                                    contents = removeNewline(eles[i].contents)
-                                    second_ele = contents[1] if len(contents) >= 2 else None
-                                    if first_span is not None and second_ele is not None:
-                                        first_span_text = first_span.text.strip()
-                                        if first_span_text == "Release date:":
-                                            jav["publish_time"] = second_ele.text.strip()
-                                        elif first_span_text == "Title:":
-                                            jav["jav_name"] = second_ele.text.strip()
-                                        elif first_span_text == "Actress:":
-                                            infos = []
-                                            for t in eles[i].find_all("a"):
-                                                if t is not None:
-                                                    infos.append(t.text)
-                                            jav["actress_1"] = delimiter.join(infos)
-                                        elif first_span_text in ["Genre:","Tag:"]:
-                                            infos = []
-                                            for t in eles[i].find_all("a"):
-                                                if t is not None and t.text != "Uncensored Leak":
-                                                    infos.append(t.text)
-                                            jav["tag"] = delimiter.join(infos)
-                                        elif first_span_text == "Maker:":
-                                            infos = []
-                                            for t in eles[i].find_all("a"):
-                                                if t is not None:
-                                                    infos.append(t.text)
-                                            jav["publisher"] = delimiter.join(infos)
-                                        elif first_span_text == "Director:":
-                                            infos = []
-                                            for t in eles[i].find_all("a"):
-                                                if t is not None:
-                                                    infos.append(t.text)
-                                            jav["director"] = delimiter.join(infos)
+                            detail = bs.find("div", class_="space-y-2")
+                            detail_eles = []
+                            for i in range(10):
+                                if detail is  None:
+                                    time.sleep(5)
+                                    detail = bs.find("div", class_="space-y-2")
+                                else:
+                                    break
+                            if detail is not None :
+                                detail_eles = detail.contents
+                                eles = []
+                                delimiter = ","
+                                for item in detail_eles:
+                                    if item != "\n":
+                                        eles.append(item)
+                                if len(eles) > 0:
+                                    for i in range(len(eles)):
+                                        first_span = eles[i].contents[0]
+                                        contents = removeNewline(eles[i].contents)
+                                        second_ele = contents[1] if len(contents) >= 2 else None
+                                        if first_span is not None and second_ele is not None:
+                                            first_span_text = first_span.text.strip()
+                                            if first_span_text == "Release date:":
+                                                jav["publish_time"] = second_ele.text.strip()
+                                            elif first_span_text == "Title:":
+                                                jav["jav_name"] = second_ele.text.strip()
+                                            elif first_span_text == "Actress:":
+                                                infos = []
+                                                for t in eles[i].find_all("a"):
+                                                    if t is not None:
+                                                        infos.append(t.text)
+                                                jav["actress_1"] = delimiter.join(infos)
+                                            elif first_span_text in ["Genre:","Tag:"]:
+                                                infos = []
+                                                for t in eles[i].find_all("a"):
+                                                    if t is not None and t.text != "Uncensored Leak":
+                                                        infos.append(t.text)
+                                                jav["tag"] = delimiter.join(infos)
+                                            elif first_span_text == "Maker:":
+                                                infos = []
+                                                for t in eles[i].find_all("a"):
+                                                    if t is not None:
+                                                        infos.append(t.text)
+                                                jav["publisher"] = delimiter.join(infos)
+                                            elif first_span_text == "Director:":
+                                                infos = []
+                                                for t in eles[i].find_all("a"):
+                                                    if t is not None:
+                                                        infos.append(t.text)
+                                                jav["director"] = delimiter.join(infos)
                         except Exception as e:
                             print("extract jav detail failed")
+                            tb = traceback.format_exc()
+                            print("Traceback: ", tb)
                             raise e
 
                         params = [json.dumps(jav)]
@@ -224,6 +247,8 @@ def crawl_video_contents():
                     r.sadd(dealed_video_no_set, video_no_index)
             except Exception as e:
                 print(f"抓取信息发生异常: {e}")
+                tb = traceback.format_exc()
+                print("Traceback: ", tb)
                 r.rpush(pending_check_url_list, url)
             finally:
                 try:
@@ -319,7 +344,7 @@ default_pages = 500
 
 
 def start_auto_crawling():
-    MAX_THREADS = 1
+    MAX_THREADS = 12
     if mode =="auto":
         # collect video urls
         index_page = [
