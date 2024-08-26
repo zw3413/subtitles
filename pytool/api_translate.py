@@ -138,7 +138,7 @@ def translate(src_path, tgt_path, src_lang, tgt_lang, result) :
         tgt_file_tmp.close()
         result.append(words_num)
         duration_in_hhmiss = last_timestamp_line.split("-->")[1].strip().split(",")[0]
-        duration = convert_hhmmss_to_seconds(duration_in_hhmiss)
+        duration = convert_hhmmss_to_seconds(duration_in_hhmiss,last_timestamp_line)
         result.append(duration)
         file_size = os.path.getsize(tgt_path) # in Byte
         result.append(file_size)
