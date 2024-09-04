@@ -240,7 +240,7 @@ func IncreaseWantTime(id int64) ([]map[string]interface{}, error) {
 	return data, nil
 }
 
-func GetSubtitle_BySeedIdAndLanguage(id, uuid, subtitleId, language string) ([]map[string]interface{}, error) {
+func GetSubtitle_BySeedIdAndLanguage(id, uuid, subtitleId, language, subtitleUUID string) ([]map[string]interface{}, error) {
 
 	var sql string
 	var data []map[string]interface{}
@@ -287,6 +287,15 @@ func GetSubtitle_BySeedIdAndLanguage(id, uuid, subtitleId, language string) ([]m
 			order by create_time desc limit 1 
 		`
 		data, err = utils.GetAllData(sql, id, language)
+	} else if len(subtitleUUID) > 0 {
+		sql = `
+			select t1.*, t2.name as language_name, t3.video_no 
+			from subtitle t1
+			left join language t2 on t1.language = t2.code
+			join seed t3 on t1.seed_id = t3.id
+			where t1.uuid = $1
+		`
+		data, err = utils.GetAllData(sql, subtitleUUID)
 	}
 
 	if err != nil {
@@ -312,9 +321,15 @@ func GetSubtitle_ByUuid(id string) ([]map[string]interface{}, error) {
 	}()
 
 	sql = `
-		select * 
-		from subtitle 
-		where  uuid = $1
+		update subtitle set count = case when count is null then 1 else count+1 end where uuid = $1;
+		`
+	_, err = utils.GetAllData(sql, id)
+	if err != nil {
+		log.Println(err)
+	}
+
+	sql = `
+		select * from subtitle where  uuid = $1;
 	`
 	data, err = utils.GetAllData(sql, id)
 

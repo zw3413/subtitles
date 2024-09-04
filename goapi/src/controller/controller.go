@@ -359,7 +359,7 @@ func GetSubtitle1(c *gin.Context) {
 		if len(language) == 0 {
 			language = "eng"
 		}
-		r, _ := dao.GetSubtitle_BySeedIdAndLanguage(id, seedUuid, subtitleId, language) //返回srt路径
+		r, _ := dao.GetSubtitle_BySeedIdAndLanguage(id, seedUuid, subtitleId, language, "") //返回srt路径
 		fileName = r[0]["path"].(string)
 	}
 	result, err = utils.ReadSubtitle(fileName)
@@ -545,20 +545,21 @@ func GetSubtitleInfo(c *gin.Context) {
 	language := c.Query("lang")
 	subtitleId := c.Query("titleSubaId")
 	seedUuid := c.Query("uuid")
+	subtitleUuid := c.Query("subtitleUuid")
 
 	//id+language
 	//uuid+language
 	//subtitleId
 	//以上三种情形，必须满足一种
 
-	if len(id) == 0 && len(subtitleId) == 0 && len(seedUuid) == 0 {
+	if len(id) == 0 && len(subtitleId) == 0 && len(seedUuid) == 0 && len(subtitleUuid) == 0 {
 		c.JSON(400, "error，id is null")
 		return
 	}
 	if len(language) == 0 {
 		language = "eng"
 	}
-	r, _ := dao.GetSubtitle_BySeedIdAndLanguage(id, seedUuid, subtitleId, language) //返回srt路径
+	r, _ := dao.GetSubtitle_BySeedIdAndLanguage(id, seedUuid, subtitleId, language, subtitleUuid) //返回srt路径
 	result = r
 }
 func CmdPythonProduceSubtitle(m3u8Url string) (string, error) {
