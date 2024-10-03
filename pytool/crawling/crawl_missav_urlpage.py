@@ -54,18 +54,19 @@ import redis
 import threading
 import traceback
 # 创建Redis连接对象
-r = redis.Redis(host="192.168.2.203", port=6379, db=0, decode_responses=True)
+#r = redis.Redis(host="192.168.2.203", port=6379, db=0, decode_responses=True)
+r = redis.Redis(host="127.0.0.1", port=6379, db=0, decode_responses=True)
 pending_check_url_list = "pending_check_url_list_urlpage"
 dealed_video_no_set = "dealed_video_no_set"
 
 #接收参数列表
 # full 全自动，先从索引页抓取视频页，然后遍历视频页抓取信息
 # semi 半自动，直接遍历视频页抓取信息
-mode = "semi"
+mode = "full"
 # all  抓取seed和jav信息
 # seed 仅抓取seed信息
 # jav  仅抓取jav信息
-target = "jav"
+target = "all"
 
 
 url_fortest = None
@@ -344,16 +345,17 @@ default_pages = 500
 
 
 def start_auto_crawling():
-    MAX_THREADS = 12
-    if mode =="auto":
+    MAX_THREADS = 1
+    if mode =="full":
         # collect video urls
         index_page = [
-            Page("https://missav.com/dm30/en/actresses/Kana%20Mito", 12),
-            Page("https://missav.com/dm38/en/labels/Madonna", 649),
-            Page("https://missav.com/dm188/en/actors/Daisuke%20Sadamatsu", default_pages),
-            Page("https://missav.com/dm206/en/monthly-hot", default_pages),
-            Page("https://missav.com/dm509/en/new", default_pages),
-            Page("https://missav.com/dm504/en/release", default_pages),
+            # Page("https://missav.com/dm30/en/actresses/Kana%20Mito", 12),
+            # Page("https://missav.com/dm38/en/labels/Madonna", 649),
+            # Page("https://missav.com/dm188/en/actors/Daisuke%20Sadamatsu", default_pages),
+            # Page("https://missav.com/dm206/en/monthly-hot", default_pages),
+            # Page("https://missav.com/dm509/en/new", default_pages),
+            # Page("https://missav.com/dm504/en/release", default_pages),
+            Page("https://missav.com/dm25/en/actresses/Remu%20Suzumori",3)
         ]
 
         for page in index_page:
@@ -381,6 +383,15 @@ def start_auto_crawling():
                 worker.join()
 
             print("collect links completed.")
+            for _ in range(MAX_THREADS):
+                worker = threading.Thread(target=crawl_video_contents)
+                thread_pool.append(worker)
+                worker.start()
+
+            for worker in thread_pool:
+                worker.join()
+
+            print("crawling contents complete")
 
     elif mode == "semi":
         # crawling video infos
