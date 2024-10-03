@@ -7,6 +7,8 @@ pytool/__pycache__/
 pytool/storage/r2_initialize.py
 pytool/storage/r2_readFileInfo.py
 goapi/src/utils/fileUtil.go
+pytool/storage/r2_init.py
+goapi/config.ini
 docs/
 LibreTranslate/
 goapi/goapi.exe
