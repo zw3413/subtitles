@@ -4,6 +4,7 @@ seamless_communication/
 desktop.ini
 */*/.vscode/
 pytool/__pycache__/
+pytool/storage/r2_initialize.py
 docs/
 LibreTranslate/
 goapi/goapi.exe
