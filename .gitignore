@@ -5,6 +5,8 @@ desktop.ini
 */*/.vscode/
 pytool/__pycache__/
 pytool/storage/r2_initialize.py
+pytool/storage/r2_readFileInfo.py
+goapi/src/utils/fileUtil.go
 docs/
 LibreTranslate/
 goapi/goapi.exe
